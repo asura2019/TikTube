@@ -145,7 +145,7 @@ public class FileController {
                 if (key == null) {
                     return null;
                 }
-                String originalText = AesUtil.decrypt(key, WebConstant.AES_KEY);
+                String originalText = AesUtil.getInstance().decrypt(key);
                 if (originalText == null) {
                     return null;
                 }

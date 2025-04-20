@@ -26,6 +26,7 @@ public class WebConstant {
     /**
      * AES 加密密钥
      * 使用 UUID 每次启动随机生成
+     * UUID.randomUUID().toString()
      * */
     public final static String AES_KEY = UUID.randomUUID().toString();
 

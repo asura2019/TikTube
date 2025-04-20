@@ -529,7 +529,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
                 isAdmin = true;
             }
         } catch (Exception e) {
-            log.error("获取用户角色失败: {}", e.getMessage());
+            // log.error("获取用户角色失败: {}", e.getMessage());
         }
 
         ArticleEntity articleEntity = this.getOne(wrapper);
@@ -578,9 +578,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         
         // 并行处理文件列表以生成加密密钥
         videos.parallelStream().forEach(video -> {
-            video.setKey(AesUtil.encrypt(
-                    userId + "#" + video.getId() + "#" + (time + WebConstant.KEY_EXPIRY_DATE) + "#" + video.getFileNewName(),
-                    WebConstant.AES_KEY
+            video.setKey(AesUtil.getInstance().encrypt(
+                    userId + "#" + video.getId() + "#" + (time + WebConstant.KEY_EXPIRY_DATE) + "#" + video.getFileNewName()
             ));
             if (video.getType().equals(FileTypeEnum.PHOTO.getCode()) || video.getType().equals(FileTypeEnum.VIDEO_PHOTO.getCode())) {
                 viewData.setImageId(video.getId());

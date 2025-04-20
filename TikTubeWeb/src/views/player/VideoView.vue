@@ -9,9 +9,9 @@
       <v-row style="padding-top: 12px; padding-bottom: 12px">
         <v-col style="padding-bottom: 0px">
           <PlayerVideo
-            v-if="videoData != null"
+            v-if="playVideoData != null"
             :article="parseInt(id)"
-            :video="videoData.video[0]"
+            :video="playVideoData"
             :picurl="videoData.imgUrl"
           />
         </v-col>
@@ -198,6 +198,7 @@ export default {
       TimeUtil,
       id: 0,
       videoData: null,
+      playVideoData: null,
       windowSize: {},
       colsWidth: 8,
       isLiked: false,
@@ -240,6 +241,7 @@ export default {
       this.httpGet(`/article/video/${this.id}`, (json) => {
         if (json.status === 200 && json.data.isShow) {
           this.videoData = json.data
+          this.playVideoData = this.videoData.video.find(item => item.type === 0);
           document.title = json.data.title
           // 假设数据中包含点赞和点踩数量，如果没有则使用默认值
           this.likeCount = json.data.likeCount || 0

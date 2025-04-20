@@ -20,14 +20,14 @@ public enum FileTypeEnum {
     TOP_IMAGE(4, "个人主页顶部大图"),
     VIDEO_PHOTO(5, "系统生成视频封面")
     ;
-    int code;
-    String msg;
+    final int code;
+    final String msg;
 
-    private static String[] videoType = {
+    private static final String[] videoType = {
             ".MP4", ".MKV", ".OGM", ".WMV", ".MPG", ".WEBM", ".OGV", ".MOV", ".ASX", ".MPEG", "M4V", ".AVI", ".FLV"
     };
 
-    private static String[] photoType = {
+    private static final String[] photoType = {
             ".JPEG", ".JPG", ".GIF", ".PNG", ".TIFF", ".PJP", ".JFIF", ".SVG", ".BMP", ".SVGZ", ".WEBP", ".ICO"
             , ".XBM", ".DIB", ".TIF", ".PJEPG", ".AVIF"
 
