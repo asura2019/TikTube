@@ -35,6 +35,10 @@
 
 <img src="/img/user.png" title="个人主页" alt="个人主页">
 
+### 消息通知
+
+<img src="/img/notification.png" title="消息通知" alt="消息通知">
+
 ### 投稿
 
 <img src="/img/publish.png" title="投稿" alt="投稿">

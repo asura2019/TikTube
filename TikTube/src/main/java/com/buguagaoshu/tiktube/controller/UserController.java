@@ -11,6 +11,7 @@ import com.buguagaoshu.tiktube.service.NotificationService;
 import com.buguagaoshu.tiktube.service.UserService;
 import com.buguagaoshu.tiktube.utils.JwtUtil;
 import com.buguagaoshu.tiktube.utils.MyStringUtils;
+import com.buguagaoshu.tiktube.utils.PageUtils;
 import com.buguagaoshu.tiktube.vo.AdminAddUserData;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
 import com.buguagaoshu.tiktube.vo.User;
@@ -23,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -100,10 +102,22 @@ public class UserController {
         return ResponseDetails.ok(userService.updateInfo(user, request));
     }
 
+    @GetMapping("/api/user/list/search")
+    public ResponseDetails searchUser(@RequestParam Map<String, Object> params) {
+        String search = (String) params.get("search");
+        if (search != null && !search.isEmpty()) {
+            PageUtils pageUtils = userService.userList(params);
+            List<User> list = (List<User>) pageUtils.getList();
+            list.forEach(u -> u.setMail(""));
+            return ResponseDetails.ok().put("data", pageUtils);
+        }
+        return ResponseDetails.ok();
+    }
+
 
     /**
      * 管理员读取用户列表
-     * */
+     */
     @GetMapping("/api/admin/user/list")
     public ResponseDetails userList(@RequestParam Map<String, Object> params) {
         return ResponseDetails.ok().put("data", userService.userList(params));

@@ -18,6 +18,7 @@
           variant="solo"
           class="mr-4 rounded-pill"
           style="max-width: 300px"
+          @keydown="searchUser"
         ></v-text-field>
         <v-btn
           color="white"
@@ -35,7 +36,6 @@
         <v-data-table
           :headers="headers"
           :items="users"
-          :search="search"
           :loading="loading"
           :items-per-page="pageSize"
           class="elevation-0 rounded-lg"
@@ -747,6 +747,26 @@ export default {
         }
         this.loading = false
       })
+    },
+    searchUser(e) {
+      if (e.key !== 'Enter') {
+        return
+      }
+      if (this.search == '') {
+        this.fetchUsers()
+        return
+      }
+      this.httpGet(
+        `/admin/user/list?limit=${this.pageSize}&page=${this.page}&search=${this.search}`,
+        (json) => {
+          if (json && json.data) {
+            this.users = json.data.list
+            this.totalCount = json.data.totalCount
+            this.totalPage = json.data.totalPage
+          }
+          this.loading = false
+        }
+      )
     },
     formatDate(timestamp) {
       if (!timestamp) return '-'

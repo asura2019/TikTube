@@ -78,6 +78,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<ArticleEntity> wrapper = createNormalArticleWrapper();
+        String search = (String) params.get("search");
+        if (search != null && !search.isEmpty()) {
+            wrapper.like("title", search);
+            // wrapper.or().like("description", search);
+        }
         IPage<ArticleEntity> page = this.page(
                 new Query<ArticleEntity>().getPage(params),
                 wrapper

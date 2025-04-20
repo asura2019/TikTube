@@ -92,11 +92,17 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     @Override
     public PageUtils userList(Map<String, Object> params) {
         QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
+        String search = (String) params.get("search");
+        if (search != null && !search.isEmpty()) {
+            wrapper.like("username", search);
+        }
         wrapper.orderByDesc("create_time");
+
         IPage<UserEntity> page = this.page(
                 new Query<UserEntity>().getPage(params),
                 wrapper
         );
+
         // 将用户列表转换为只包含用户ID的Set
         Set<Long> userIdSet = page.getRecords().stream()
                 .map(UserEntity::getId)

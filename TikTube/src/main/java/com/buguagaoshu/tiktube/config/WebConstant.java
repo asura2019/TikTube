@@ -1,5 +1,8 @@
 package com.buguagaoshu.tiktube.config;
 
+import io.jsonwebtoken.Jwts;
+
+import javax.crypto.SecretKey;
 import java.util.UUID;
 
 /**
@@ -14,9 +17,10 @@ public class WebConstant {
 
     /**
      * JWT 密钥
-     * TODO： 修改为随机生成
+     * 你指定的密钥字节数组仅有 144 位，而对于任何 JWT HMAC - SHA 算法来说，这是不够安全的。根据 JWT JWA 规范（RFC 7518，第 3.2 节），
+     * 使用 HMAC - SHA 算法的密钥大小必须大于或等于 256 位（密钥大小必须大于或等于哈希输出大小）
      * */
-    public final static String SECRET_KEY = "adfads@44$q232343#";
+    public final static SecretKey SECRET_KEY = Jwts.SIG.HS512.key().build();
 
 
     /**

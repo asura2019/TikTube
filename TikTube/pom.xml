@@ -17,7 +17,7 @@
     <properties>
         <java.version>17</java.version>
         <mybatis-plus.version>3.5.11</mybatis-plus.version>
-        <jjwt.version>0.9.1</jjwt.version>
+        <jjwt.version>0.12.6</jjwt.version>
         <javacv.version>1.5.11</javacv.version>
     </properties>
 
@@ -63,27 +63,21 @@
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
+            <artifactId>jjwt-api</artifactId>
             <version>${jjwt.version}</version>
         </dependency>
-<!--        尝试升级到最新版本 jjwt 但是出现了 jakarta.servlet.ServletException: Handler dispatch failed: java.lang.NoClassDefFoundError: 错误，等待解决后再升级-->
-<!--        <dependency>-->
-<!--            <groupId>io.jsonwebtoken</groupId>-->
-<!--            <artifactId>jjwt-api</artifactId>-->
-<!--            <version>${jjwt.version}</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.jsonwebtoken</groupId>-->
-<!--            <artifactId>jjwt-impl</artifactId>-->
-<!--            <version>${jjwt.version}</version>-->
-<!--&lt;!&ndash;            <scope>runtime</scope>&ndash;&gt;-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.jsonwebtoken</groupId>-->
-<!--            <artifactId>jjwt-jackson</artifactId>-->
-<!--            <version>${jjwt.version}</version>-->
-<!--&lt;!&ndash;            <scope>runtime</scope>&ndash;&gt;-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv-platform</artifactId>

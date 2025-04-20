@@ -17,6 +17,8 @@
         single-line
         label="搜索"
         color="#F44336"
+        v-model="searchText"
+        @keydown="search"
       ></v-text-field>
       <!-- </v-col>
         </v-row>
@@ -109,6 +111,7 @@ export default {
     ],
     userInfo: useUserStore(),
     notificationCount: 0,
+    searchText: '',
   }),
   created() {
     this.webInfo = useWebInfoStore().webInfo
@@ -137,6 +140,24 @@ export default {
       this.httpGet('/notification/count', (json) => {
         this.notificationCount = json.data
       })
+    },
+    search(e) {
+      if (e.key === 'Enter') {
+        if (this.searchText === '') {
+          return
+        }
+
+        if (this.$route.path === '/search') {
+          this.$router.push({
+            path: this.$router.path,
+            query: { key: this.searchText },
+          })
+          this.$refs.childRef.setSearchKey(this.searchText)
+        } else {
+          this.$router.push({ path: '/search', query: { key: this.searchText } })
+        }
+        this.searchText = ''
+      }
     },
   },
   watch: {

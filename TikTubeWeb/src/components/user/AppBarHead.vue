@@ -63,30 +63,13 @@ export default {
     },
     logout() {
       this.userInfo.deleteUserData()
-      fetch(`/api/logout`, {
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN'),
-        },
-        method: 'GET',
-        credentials: 'include',
+      this.httpPost(`/logout`, {}, (json) => {
+        if (this.$route.path === '/') {
+          location.reload()
+        } else {
+          this.$router.push('/')
+        }
       })
-        .then((response) => response.json())
-        .then((json) => {
-          if (json.status === 200) {
-            this.userInfo.deleteUserData()
-            if (this.$route.path === '/') {
-              location.reload()
-            } else {
-              this.$router.push('/')
-            }
-          } else {
-            //
-          }
-        })
-        .catch((e) => {
-          return null
-        })
     },
   },
 }

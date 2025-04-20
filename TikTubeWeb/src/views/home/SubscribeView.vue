@@ -340,7 +340,7 @@ export default {
       allFollowUsers: [],
       loadingUsers: true,
       followUsersPage: 1,
-      followUsersSize: 10,
+      followUsersSize: 12,
       followUsersTotalPage: 1,
       followUsersTotalCount: 0,
       followUsersDialog: false,

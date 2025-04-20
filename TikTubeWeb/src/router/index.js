@@ -49,6 +49,12 @@ const router = createRouter({
           }
         },
         {
+          path: '/search',
+          name: 'SearchView',
+          component: () => import('@/views/search/SearchIndex.vue'),
+          meta: { title: '搜索' }
+        },
+        {
           path: '/user/:id',
           name: 'User',
           component: () => import('@/views/user/UserIndexView.vue'),

@@ -109,6 +109,10 @@ http://127.0.0.1:5173
 
 <img src="/img/user.png" title="User Home" alt="User Home">
 
+### Notification
+
+<img src="/img/notification.png" title="Notification" alt="Notification">
+
 ### Publish
 
 <img src="/img/publish.png" title="Publish" alt="Publish">
