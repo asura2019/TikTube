@@ -1,6 +1,5 @@
 package com.buguagaoshu.tiktube.file;
 
-import com.buguagaoshu.tiktube.config.WebConstant;
 import com.buguagaoshu.tiktube.entity.FileTableEntity;
 import com.buguagaoshu.tiktube.enums.FileTypeEnum;
 import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
@@ -63,7 +62,7 @@ public class FileController {
     //@ResponseBody
     public VditorFiles save(@RequestParam(value = "file[]") MultipartFile[] files,
                             HttpServletRequest request) {
-        long userId = Long.parseLong(JwtUtil.getUser(request).getId());
+        long userId = JwtUtil.getUserId(request);
         return fileRepository.vditorFileSave(files, userId);
     }
 
@@ -96,7 +95,6 @@ public class FileController {
     public ResponseDetails saveAvatar(@RequestParam(value = "file[]") MultipartFile[] files,
                                  HttpServletRequest request) throws FileNotFoundException {
         long userId = JwtUtil.getUserId(request);
-        System.out.println(userId);
         return ResponseDetails.ok()
                 .put("data",
                         fileRepository.videoAndPhotoSave(files, FileTypeEnum.AVATAR.getCode(), userId));
@@ -107,7 +105,7 @@ public class FileController {
     @ResponseBody
     public ResponseDetails saveTop(@RequestParam(value = "file[]") MultipartFile[] files,
                                       HttpServletRequest request) throws FileNotFoundException {
-        long userId = Long.parseLong(JwtUtil.getUser(request).getId());
+        long userId = JwtUtil.getUserId(request);
         return ResponseDetails.ok()
                 .put("data",
                         fileRepository.videoAndPhotoSave(files, FileTypeEnum.TOP_IMAGE.getCode(),  userId));

@@ -1,5 +1,10 @@
 <template>
   <v-container fluid>
+    <v-banner class="my-4" color="warning" icon="$warning" lines="one" v-if="systemNotice != null">
+      <v-banner-text>
+        {{ systemNotice.content }}
+      </v-banner-text>
+    </v-banner>
     <!-- 分区 -->
     <v-row>
       <v-col>
@@ -61,6 +66,7 @@ export default {
       size: 24,
       length: 0,
       categoryList: [],
+      systemNotice: {},
     }
   },
   created() {
@@ -71,11 +77,17 @@ export default {
     }
     this.getCategory()
     this.getVideoList()
+    this.getSystemNotice()
   },
   methods: {
     getCategory() {
       this.httpGet(`/category/tree`, (json) => {
         this.categoryList = json.data
+      })
+    },
+    getSystemNotice() {
+      this.httpGet(`/web/notice`, (json) => {
+        this.systemNotice = json.data
       })
     },
     setCategory(value) {

@@ -843,9 +843,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
     public Boolean hasThisVideoPlayPower(FileTableEntity file, Long userId, HttpServletRequest request) {
         // 记录播放历史并更新播放计数
         long result = playRecordingService.saveHistory(file, userId, IpUtil.getUa(request));
-        if (result != 0) {
-            this.addViewCount(result, 1L);
-        }
+
         
         return true;
                 /*

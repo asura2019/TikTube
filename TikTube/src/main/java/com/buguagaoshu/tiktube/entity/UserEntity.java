@@ -54,7 +54,7 @@ public class UserEntity {
 	/**
 	 * 手机号
 	 */
-	@Size(min = 6, max = 50, message = "电话长度错误")
+	@Size(max = 50, message = "电话长度错误")
 	private String phone;
 
 	/**

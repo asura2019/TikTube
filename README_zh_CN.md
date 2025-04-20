@@ -9,6 +9,48 @@
 # TikTube 一个能发弹幕的简单的视频网站
 
 
+## 简介 
+
+一个简单的视频网站
+
+网站名称是 TikTok 与 YouTube 的缝合，Logo 为豆包 AI 生成
+
+主要界面参考了 [Youtube](https://www.youtube.com/)，部分功能借鉴了 [哔哩哔哩](https://www.bilibili.com/)
+
+后端 Spring Boot， MySQL
+
+前端 Vue， Vuetifyjs
+
+已经完成大部分功能，比如：
+
+- 视频投稿
+- 弹幕
+- 视频播放
+- 播放历史
+- 收藏
+- 评论
+- 点赞
+- 自动生成封面图
+- 数据管理等
+
+还剩一些细节功能在逐渐优化中
+
+请使用 TikTubeWeb 下的前端项目编译新版前端界面
+
+为了使用与部署方便，唯一外部依赖只有数据库
+
+
+## 在线体验
+
+关于在线 DEMO: [https://tiktube.buguagaoshu.com/](https://tiktube.buguagaoshu.com/)
+
+*该 DEMO 该版本仅为展示系统，故管理员关闭了普通用户的投稿，评论功能，如需要体验这两功能，请自行部署体验！*
+
+测试账号为：test@test.com
+
+密码：test123456test
+
+
 ## 截图
 
 ### 主页 
@@ -51,36 +93,6 @@
 
 <img src="/img/admin_user.png" title="用户管理" alt="用户管理">
 
-
-## 简介 
-
-一个简单的视频网站
-
-网站名称是 TikTok 与 YouTube 的缝合，Logo 为豆包 AI 生成
-
-主要界面参考了 [Youtube](https://www.youtube.com/)，部分功能借鉴了 [哔哩哔哩](https://www.bilibili.com/)
-
-后端 Spring Boot， MySQL
-
-前端 Vue， Vuetifyjs
-
-已经完成大部分功能，比如：
-
-- 视频投稿
-- 弹幕
-- 视频播放
-- 播放历史
-- 收藏
-- 评论
-- 点赞
-- 自动生成封面图
-- 数据管理等
-
-还剩一些细节功能在逐渐优化中
-
-请使用 TikTubeWeb 下的前端项目编译新版前端界面
-
-为了使用与部署方便，唯一外部依赖只有数据库
 
 
 ## 快速运行

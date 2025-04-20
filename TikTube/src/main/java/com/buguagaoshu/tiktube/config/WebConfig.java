@@ -32,11 +32,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final AdminInterceptor adminInterceptor;
 
+    private final VipInterceptor vipInterceptor;
+
 
     @Autowired
-    public WebConfig(LoginInterceptor loginInterceptor, AdminInterceptor adminInterceptor) {
+    public WebConfig(LoginInterceptor loginInterceptor,
+                     AdminInterceptor adminInterceptor,
+                     VipInterceptor vipInterceptor) {
         this.loginInterceptor = loginInterceptor;
         this.adminInterceptor = adminInterceptor;
+        this.vipInterceptor = vipInterceptor;
     }
 
     @Bean
@@ -76,6 +81,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "/api/user/list/search",
                     "/api/verifyImage", 
                     "/api/web/info",
+                    "/api/web/notice",
                     "/api/article/**", 
                     "/api/category/**",
                     "/api/danmaku/**",
@@ -84,7 +90,28 @@ public class WebConfig implements WebMvcConfigurer {
                 );
 
         registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/api/admin/**");
+                .addPathPatterns(
+                        "/api/admin/**"
+                );
+
+
+//        registry.addInterceptor(vipInterceptor)
+//                .addPathPatterns(
+//                        // 发布视频接口
+//                        "/api/article/video",
+//                        // 更新视频接口
+//                        "/api/article/video/update",
+//                        // 删除视频接口
+//                        "/api/studio/article/delete",
+//                        // 发送评论
+//                        "/api/comment/save",
+//                        // 用户状态更新接口
+//                        "/api/user/update/**",
+//                        "/api/upload/video",
+//                        "/api/upload/photo",
+//                        "/api/upload/avatar",
+//                        "/api/upload/top"
+//                );
     }
 
     @Bean

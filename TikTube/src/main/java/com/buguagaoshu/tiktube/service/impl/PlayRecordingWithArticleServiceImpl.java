@@ -125,8 +125,12 @@ public class PlayRecordingWithArticleServiceImpl implements PlayRecordingWithArt
                 PlayRecordingEntity nowLog =
                         playRecordingService.findPlayRecordingEntityByArticleIdAndVideoId(videoFile.getArticleId(), videoFile.getId(), userId);
                 if (nowLog == null) {
+                    if (playRecording.getCreateTime() == null) {
+                        playRecording.setCreateTime(System.currentTimeMillis());
+                    }
                     playRecording.setUpdateTime(System.currentTimeMillis());
                     playRecording.setUa(IpUtil.getUa(request));
+                    articleService.addViewCount(playRecording.getArticleId(), 1L);
                     playRecordingService.save(playRecording);
                 } else {
                     nowLog.setUa(IpUtil.getUa(request));

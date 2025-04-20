@@ -40,7 +40,17 @@ Some minor features are still being optimized.
 
 Please compile the new frontend interface using the project under "TikTubeWeb".  
 
-For ease of use and deployment, the only external dependency is the database.  
+For ease of use and deployment, the only external dependency is the database. 
+
+Regarding the Online DEMO: [https://tiktube.buguagaoshu.com/](https://tiktube.buguagaoshu.com/)
+
+*This version of the DEMO is for display purposes only. As such, the administrator has disabled submission and commenting functions for regular users. If you wish to experience these features, please deploy the system yourself for testing.*
+
+Test account:
+
+Email: test@test.com
+
+Password: test123456test
 
 ## Quick start
 
