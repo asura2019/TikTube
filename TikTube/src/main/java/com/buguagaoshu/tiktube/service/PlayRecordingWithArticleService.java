@@ -18,4 +18,5 @@ public interface PlayRecordingWithArticleService {
 
 
     String savePlayLog(PlayRecordingEntity playRecording, HttpServletRequest request);
+
 }

@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useWebInfoStore = defineStore('webInfo', {
   state: () => ({
     webInfo: {
-      name: 'PornTube',
+      name: 'TikTube',
       openNoVipLimit: 1,
       noVipViewCount: 5,
       logoUrl: '/favicon.png',

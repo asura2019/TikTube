@@ -1,5 +1,6 @@
 package com.buguagaoshu.tiktube.service.impl;
 
+import com.buguagaoshu.tiktube.cache.CountRecorder;
 import com.buguagaoshu.tiktube.dto.ArtDanmakuDto;
 import com.buguagaoshu.tiktube.dto.DanmakuDto;
 import com.buguagaoshu.tiktube.entity.FileTableEntity;
@@ -36,10 +37,15 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
 
     private final FileTableService fileTableService;
 
+    private final CountRecorder countRecorder;
+
     @Autowired
-    public DanmakuServiceImpl(ArticleService articleService, FileTableService fileTableService) {
+    public DanmakuServiceImpl(ArticleService articleService,
+                              FileTableService fileTableService,
+                              CountRecorder countRecorder) {
         this.articleService = articleService;
         this.fileTableService = fileTableService;
+        this.countRecorder = countRecorder;
     }
 
     @Override
@@ -102,8 +108,7 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
         danmakuEntity.setTime(danmakuDto.getTime());
         danmakuEntity.setType(danmakuDto.getType());
         this.save(danmakuEntity);
-        // TODO 加入缓存，提升效率
-        articleService.addDanmakuCount(fileTableEntity.getArticleId(), 1L);
+        countRecorder.recordDanmaku(fileTableEntity.getArticleId(), 1L);
         return ReturnCodeEnum.SUCCESS;
     }
 
@@ -150,8 +155,7 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
         // 将十六进制字符串转换为十进制整数
         danmakuEntity.setColorDec(Long.parseLong(cleanHex, 16));
         this.save(danmakuEntity);
-        // TODO 加入缓存，提升效率
-        articleService.addDanmakuCount(fileTableEntity.getArticleId(), 1L);
+        countRecorder.recordDanmaku(fileTableEntity.getArticleId(), 1L);
         return ReturnCodeEnum.SUCCESS;
     }
 

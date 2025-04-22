@@ -99,7 +99,7 @@
           hide-default-footer
         >
           <template #[`item.text`]="{ item }">
-            <div class="d-flex flex-column" :style="{ color: item.color }">
+            <div class="d-flex flex-column">
               <div class="text-body-1">{{ item.text }}</div>
               <div class="text-caption mt-1">
                 <v-chip size="x-small" color="grey-lighten-2" class="mr-1">

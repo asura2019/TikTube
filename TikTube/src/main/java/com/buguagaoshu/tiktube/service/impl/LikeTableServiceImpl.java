@@ -1,5 +1,6 @@
 package com.buguagaoshu.tiktube.service.impl;
 
+import com.buguagaoshu.tiktube.cache.CountRecorder;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.entity.CommentEntity;
 import com.buguagaoshu.tiktube.service.ArticleService;
@@ -23,11 +24,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service("likeTableService")
 public class LikeTableServiceImpl extends ServiceImpl<LikeTableDao, LikeTableEntity> implements LikeTableService {
-    @Autowired
-    ArticleService articleService;
+    final ArticleService articleService;
 
-    @Autowired
-    CommentService commentService;
+    final CommentService commentService;
+
+    final CountRecorder countRecorder;
+
+    public LikeTableServiceImpl(ArticleService articleService,
+                                CommentService commentService,
+                                CountRecorder countRecorder) {
+        this.articleService = articleService;
+        this.commentService = commentService;
+        this.countRecorder = countRecorder;
+    }
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -72,9 +81,11 @@ public class LikeTableServiceImpl extends ServiceImpl<LikeTableDao, LikeTableEnt
 
             // 更新点赞计数
             if (type == 0) {
-                articleService.addCount("like_count", likeObjId, -1);
+                countRecorder.recordArticleLike(likeObjId, -1);
+                //articleService.addCount("like_count", likeObjId, -1);
             } else {
-                commentService.addCount("like_count", likeObjId, -1);
+                countRecorder.recordCommentLike(likeObjId, -1);
+                //commentService.addCount("like_count", likeObjId, -1);
             }
 
             map.put("info", "已经点过赞了");
@@ -90,9 +101,11 @@ public class LikeTableServiceImpl extends ServiceImpl<LikeTableDao, LikeTableEnt
 
             // 更新点赞计数
             if (type == 0) {
-                articleService.addCount("like_count", likeObjId, 1L);
+                countRecorder.recordArticleLike(likeObjId, 1);
+                // articleService.addCount("like_count", likeObjId, 1L);
             } else {
-                commentService.addCount("like_count", likeObjId, 1L);
+                countRecorder.recordCommentLike(likeObjId, 1);
+                //commentService.addCount("like_count", likeObjId, 1L);
             }
 
             map.put("info", "点赞成功！");

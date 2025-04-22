@@ -1,5 +1,6 @@
 package com.buguagaoshu.tiktube.service.impl;
 
+import com.buguagaoshu.tiktube.cache.CountRecorder;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.entity.UserEntity;
 import com.buguagaoshu.tiktube.enums.ArticleStatusEnum;
@@ -44,13 +45,18 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     private final NotificationService notificationService;
 
+
+    private final CountRecorder countRecorder;
+
     @Autowired
     public CommentServiceImpl(ArticleService articleService,
                               UserService userService,
-                              NotificationService notificationService) {
+                              NotificationService notificationService,
+                              CountRecorder countRecorder) {
         this.articleService = articleService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.countRecorder = countRecorder;
     }
 
 
@@ -123,10 +129,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
 
             if (!commentEntity.getCommentId().equals(commentEntity.getParentCommentId())) {
-                this.addCount("comment_count", commentEntity.getCommentId(), 1L);
+                countRecorder.recordComment(commentEntity.getCommentId(), 1L);
+                //this.addCount("comment_count", commentEntity.getCommentId(), 1L);
             }
-
-            this.addCount("comment_count", fatherComment.getId(), 1L);
+            countRecorder.recordComment(fatherComment.getId(), 1L);
+            // this.addCount("comment_count", fatherComment.getId(), 1L);
         }
 
         commentEntity.setIp(IpUtil.getIpAddr(request));
@@ -135,7 +142,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
         // TODO 保存地址信息，包括视频等
         // 保存评论
         this.save(commentEntity);
-        articleService.addCount("comment_count", articleEntity.getId(), 1L);
+        countRecorder.recordArticleComment(articleEntity.getId(), 1L);
+
         // TODO 通知作者
         // 一级评论只通知稿件作者，二级评论只通知评论作者
         if (commentEntity.getType() == 1) {
@@ -199,6 +207,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
         List<CommentWithUserVo> commentWithUserVoList = new ArrayList<>();
 
         for (CommentEntity comment : page.getRecords()) {
+
+            countRecorder.syncCommentCount(comment);
+
             CommentWithUserVo commentWithUserVo = new CommentWithUserVo();
             BeanUtils.copyProperties(comment, commentWithUserVo);
             BeanUtils.copyProperties(userMap.get(comment.getUserId()), commentWithUserVo);
@@ -212,13 +223,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
         }
 
-        IPage<CommentWithUserVo> commentWithUserVoIPage = new CustomPage<>(
-                commentWithUserVoList,
-                page.getTotal(),
-                page.getSize(),
-                page.getCurrent()
-        );
-        return new PageUtils(commentWithUserVoIPage);
+        return new PageUtils(commentWithUserVoList, page.getTotal(), page.getSize(), page.getCurrent());
     }
 
     @Override
@@ -242,6 +247,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
                 new Query<CommentEntity>().getPage(params),
                 wrapper
         );
+        // 数据同步
+        page.getRecords().forEach(countRecorder::syncCommentCount);
 
         return new PageUtils(page);
     }

@@ -1,7 +1,9 @@
 package com.buguagaoshu.tiktube.controller;
 
+import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.entity.PlayRecordingEntity;
 import com.buguagaoshu.tiktube.service.PlayRecordingWithArticleService;
+import com.buguagaoshu.tiktube.utils.IpUtil;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +19,13 @@ import java.util.Map;
 public class PlayRecordingController {
     private final PlayRecordingWithArticleService playRecordingWithArticleService;
 
+    private final PlayCountRecorder playCountRecorder;
+
     @Autowired
-    public PlayRecordingController(PlayRecordingWithArticleService playRecordingWithArticleService) {
+    public PlayRecordingController(PlayRecordingWithArticleService playRecordingWithArticleService,
+                                   PlayCountRecorder playCountRecorder) {
         this.playRecordingWithArticleService = playRecordingWithArticleService;
+        this.playCountRecorder = playCountRecorder;
     }
 
     @GetMapping("/api/user/playrecording/list")
@@ -34,5 +40,14 @@ public class PlayRecordingController {
 
         return ResponseDetails.ok().put("data",
                 playRecordingWithArticleService.savePlayLog(playRecording, request));
+    }
+
+    /**
+     * 增加播放量
+     * */
+    @PostMapping("/api/article/playrecording/view/{id}")
+    public ResponseDetails addViewCount(@PathVariable("id") Long id, HttpServletRequest request) {
+        playCountRecorder.recordPlay(id, IpUtil.getIpAddr(request));
+        return ResponseDetails.ok();
     }
 }

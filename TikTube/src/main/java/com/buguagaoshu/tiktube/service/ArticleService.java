@@ -125,8 +125,6 @@ public interface ArticleService extends IService<ArticleEntity> {
     boolean restore(ArticleEntity articleEntity, HttpServletRequest request);
 
 
-    void addViewCount(Long articleId, long count);
-
 
     void addCount(String col, Long articleId, long count);
 }

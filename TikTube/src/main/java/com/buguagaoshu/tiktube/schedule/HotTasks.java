@@ -27,7 +27,7 @@ public class HotTasks {
      * 一小时计算一次
      * */
     @Scheduled(fixedRate = 3600000)
-    public void deleteFile() {
+    public void hotTask() {
         log.info("开始计算当前热门内容......");
         HotCache.hotList = articleService.hotView(WebConstant.HOT_NUM);
         log.info("热门内容计算完成。");

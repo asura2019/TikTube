@@ -34,14 +34,31 @@
         <result property="ip" column="ip"/>
         <result property="city" column="city"/>
     </resultMap>
+    
     <update id="addViewCount">
         update article set view_count = view_count + #{count} where id = #{id}
     </update>
+    
     <update id="addCount">
         update article set ${col} = ${col} + #{count} where id = #{id}
     </update>
+    
     <update id="addDanmakuCount">
         update article set danmaku_count = danmaku_count + #{count} where id = #{id}
+    </update>
+    
+    <!-- 批量更新文章计数的SQL - 优化版 -->
+    <update id="batchUpdateCount">
+        UPDATE article
+        SET ${col} = CASE id
+        <foreach collection="countMap.entrySet()" item="count" index="id">
+            WHEN #{id} THEN ${col} + #{count}
+        </foreach>
+        END
+        WHERE id IN
+        <foreach collection="countMap.keySet()" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
 
     <select id="findHotArticlesWithScore" resultMap="articleMap">

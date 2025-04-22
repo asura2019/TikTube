@@ -12,4 +12,5 @@ import java.util.List;
  */
 public class HotCache {
     public static List<ArticleViewData> hotList = new ArrayList<>();
+
 }

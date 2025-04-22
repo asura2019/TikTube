@@ -161,6 +161,9 @@ export default {
 
     this.instance.on('play', () => {
       console.info('play')
+
+      // 记录播放量
+      this.httpPost(`/article/playrecording/view/${this.video.articleId}`, {}, (json) => {})
       const userId = userInfo.userData.id
       // 构造播放历史记录请求数据
       const data = {

@@ -23,8 +23,23 @@
         <result property="city" column="city"/>
         <result property="commentId" column="comment_id"/>
     </resultMap>
+    
     <update id="addCount">
         update comment set ${col} = ${col} + #{count} where id = #{id}
+    </update>
+    
+    <!-- 批量更新评论计数的SQL - 优化版 -->
+    <update id="batchUpdateCount">
+        UPDATE comment
+        SET ${col} = CASE id
+        <foreach collection="countMap.entrySet()" item="count" index="id">
+            WHEN #{id} THEN ${col} + #{count}
+        </foreach>
+        END
+        WHERE id IN
+        <foreach collection="countMap.keySet()" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
 
 </mapper>

@@ -1,5 +1,7 @@
 package com.buguagaoshu.tiktube.service.impl;
 
+import com.buguagaoshu.tiktube.cache.CountRecorder;
+import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.enums.ArticleStatusEnum;
 import com.buguagaoshu.tiktube.enums.ExamineTypeEnum;
@@ -28,9 +30,17 @@ public class FavoritesTableServiceImpl extends ServiceImpl<FavoritesTableDao, Fa
 
     final ArticleService articleService;
 
+    final CountRecorder countRecorder;
+
+    final PlayCountRecorder playCountRecorder;
+
     @Autowired
-    public FavoritesTableServiceImpl(ArticleService articleService) {
+    public FavoritesTableServiceImpl(ArticleService articleService,
+                                     CountRecorder countRecorder,
+                                     PlayCountRecorder playCountRecorder) {
         this.articleService = articleService;
+        this.countRecorder = countRecorder;
+        this.playCountRecorder = playCountRecorder;
     }
 
     @Override
@@ -59,12 +69,14 @@ public class FavoritesTableServiceImpl extends ServiceImpl<FavoritesTableDao, Fa
             // TODO 待实现收藏标签
             favoritesTableEntity.setFavoritesLabelId(null);
             this.save(favoritesTableEntity);
-            articleService.addCount("favorite_count", favorite.getArticeId(), 1);
+            countRecorder.recordArticleFavorite(favorite.getArticeId(), 1);
+            // articleService.addCount("favorite_count", favorite.getArticeId(), 1);
             return favoritesTableEntity;
         } else {
             // 取消收藏
             this.removeById(one);
-            articleService.addCount("favorite_count", one.getArticeId(), -1);
+            countRecorder.recordArticleFavorite(favorite.getArticeId(), -1);
+            // articleService.addCount("favorite_count", one.getArticeId(), -1);
             return favorite;
         }
     }
@@ -100,6 +112,10 @@ public class FavoritesTableServiceImpl extends ServiceImpl<FavoritesTableDao, Fa
             articleEntity.setExamineUser(null);
             articleEntity.setExamineMessage("");
             if (articleEntity.getExamineStatus().equals(ExamineTypeEnum.SUCCESS.getCode()) && articleEntity.getStatus().equals(ArticleStatusEnum.NORMAL.getCode())) {
+                //articleEntity.setViewCount(articleEntity.getViewCount() + countRecorder.geta);
+
+                countRecorder.syncArticleCount(articleEntity);
+                articleEntity.setViewCount(articleEntity.getViewCount() + playCountRecorder.getPlayCount(articleEntity.getId()));
                 map.put(articleEntity.getId(), articleEntity);
             }
         }

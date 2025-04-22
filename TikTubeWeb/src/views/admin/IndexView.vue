@@ -10,6 +10,9 @@
       <v-col>
         <v-btn @click="deleteTempFile">手动清理临时文件</v-btn>
       </v-col>
+      <v-col>
+        <v-btn @click="syscData">立即同步缓存</v-btn>
+      </v-col>
     </v-row>
     <v-row> </v-row>
   </v-container>
@@ -34,6 +37,9 @@ export default {
           //
         }
       })
+    },
+    syscData() {
+      this.httpPost('/admin/system/data/sync', {}, (json) => {})
     },
   },
 }

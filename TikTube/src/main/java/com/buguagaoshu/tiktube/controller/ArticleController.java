@@ -1,6 +1,8 @@
 package com.buguagaoshu.tiktube.controller;
 
+import com.buguagaoshu.tiktube.cache.CountRecorder;
 import com.buguagaoshu.tiktube.cache.HotCache;
+import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.dto.VideoArticleDto;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.service.ArticleService;
@@ -21,9 +23,17 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
+    private final CountRecorder countRecorder;
+
+    private final PlayCountRecorder playCountRecorder;
+
     @Autowired
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService,
+                             CountRecorder countRecorder,
+                             PlayCountRecorder playCountRecorder) {
         this.articleService = articleService;
+        this.countRecorder = countRecorder;
+        this.playCountRecorder = playCountRecorder;
     }
 
 
@@ -34,6 +44,7 @@ public class ArticleController {
 
     @GetMapping("/api/article/hot")
     public ResponseDetails hot() {
+        // TODO 同步缓存数据
         return ResponseDetails.ok().put("data", HotCache.hotList);
     }
 

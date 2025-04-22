@@ -4,7 +4,7 @@
     <!-- 首页顶部大图 -->
     <v-row v-if="userInfo != null">
       <v-col style="padding: 0px">
-        <v-img :src="userInfo.topImgUrl" :aspect-ratio="5.98" />
+        <v-img cover :src="userInfo.topImgUrl" :aspect-ratio="5.98" />
       </v-col>
     </v-row>
     <v-container>

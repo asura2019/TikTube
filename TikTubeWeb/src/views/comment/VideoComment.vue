@@ -5,7 +5,7 @@
       <v-row>
         <v-col>
           <div class="d-flex align-center mb-4">
-            <h2 class="text-h5 font-weight-medium">{{ commentCount }} 条评论</h2>
+            <h2 class="text-h5 font-weight-medium">{{ total }} 条评论</h2>
             <v-spacer></v-spacer>
           </div>
         </v-col>

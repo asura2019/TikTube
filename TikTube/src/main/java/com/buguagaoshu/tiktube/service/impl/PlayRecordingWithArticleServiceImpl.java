@@ -2,6 +2,7 @@ package com.buguagaoshu.tiktube.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.entity.FileTableEntity;
 import com.buguagaoshu.tiktube.entity.PlayRecordingEntity;
@@ -35,8 +36,11 @@ public class PlayRecordingWithArticleServiceImpl implements PlayRecordingWithArt
 
     private final FileTableService fileTableService;
 
+
     @Autowired
-    public PlayRecordingWithArticleServiceImpl(PlayRecordingService playRecordingService, ArticleService articleService, FileTableService fileTableService) {
+    public PlayRecordingWithArticleServiceImpl(PlayRecordingService playRecordingService,
+                                               ArticleService articleService,
+                                               FileTableService fileTableService) {
         this.playRecordingService = playRecordingService;
         this.articleService = articleService;
         this.fileTableService = fileTableService;
@@ -63,53 +67,7 @@ public class PlayRecordingWithArticleServiceImpl implements PlayRecordingWithArt
                 play.add(playRecordingWithArticleVo);
             }
         }
-        IPage<PlayRecordingWithArticleVo> iPage = new IPage<PlayRecordingWithArticleVo>() {
-            @Override
-            public List<OrderItem> orders() {
-                return null;
-            }
-
-            @Override
-            public List<PlayRecordingWithArticleVo> getRecords() {
-                return play;
-            }
-
-            @Override
-            public IPage<PlayRecordingWithArticleVo> setRecords(List<PlayRecordingWithArticleVo> records) {
-                return null;
-            }
-
-            @Override
-            public long getTotal() {
-                return page.getTotal();
-            }
-
-            @Override
-            public IPage<PlayRecordingWithArticleVo> setTotal(long total) {
-                return null;
-            }
-
-            @Override
-            public long getSize() {
-                return page.getSize();
-            }
-
-            @Override
-            public IPage<PlayRecordingWithArticleVo> setSize(long size) {
-                return null;
-            }
-
-            @Override
-            public long getCurrent() {
-                return page.getCurrent();
-            }
-
-            @Override
-            public IPage<PlayRecordingWithArticleVo> setCurrent(long current) {
-                return null;
-            }
-        };
-        return new PageUtils(iPage);
+        return new PageUtils(play, page.getTotal(), page.getCurrent(), page.getSize());
     }
 
     @Override
@@ -130,7 +88,6 @@ public class PlayRecordingWithArticleServiceImpl implements PlayRecordingWithArt
                     }
                     playRecording.setUpdateTime(System.currentTimeMillis());
                     playRecording.setUa(IpUtil.getUa(request));
-                    articleService.addViewCount(playRecording.getArticleId(), 1L);
                     playRecordingService.save(playRecording);
                 } else {
                     nowLog.setUa(IpUtil.getUa(request));

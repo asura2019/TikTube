@@ -1,6 +1,8 @@
 package com.buguagaoshu.tiktube.service.impl;
 
 import com.buguagaoshu.tiktube.cache.CategoryCache;
+import com.buguagaoshu.tiktube.cache.CountRecorder;
+import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.cache.WebSettingCache;
 import com.buguagaoshu.tiktube.config.WebConstant;
 import com.buguagaoshu.tiktube.dto.ExamineDto;
@@ -55,19 +57,27 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
     private PlayRecordingService playRecordingService;
     private NotificationService notificationService;
 
+    private final PlayCountRecorder playCountRecorder;
+
+    private final CountRecorder countRecorder;
+
     @Autowired
     public ArticleServiceImpl(CategoryCache categoryCache,
                               WebSettingCache webSettingCache,
                               FileTableService fileTableService,
                               UserService userService,
                               UserRoleService userRoleService,
-                              NotificationService notificationService) {
+                              NotificationService notificationService,
+                              PlayCountRecorder playCountRecorder,
+                              CountRecorder countRecorder) {
         this.categoryCache = categoryCache;
         this.webSettingCache = webSettingCache;
         this.fileTableService = fileTableService;
         this.userService = userService;
         this.userRoleService = userRoleService;
         this.notificationService = notificationService;
+        this.playCountRecorder = playCountRecorder;
+        this.countRecorder = countRecorder;
     }
 
     @Autowired
@@ -149,6 +159,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         return articleEntityList.parallelStream().map(a -> {
             ArticleViewData viewData = new ArticleViewData();
             UserEntity userEntity = userEntityMap.get(a.getUserId());
+            // 数据同步
+            countRecorder.syncArticleCount(a);
             
             // 拷贝基本属性
             BeanUtils.copyProperties(a, viewData);
@@ -169,7 +181,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
                     viewData.setFatherCategory(f);
                 }
             }
-            
+            // 为 viewData 增加缓存中的播放量
+            viewData.setViewCount(viewData.getViewCount() + playCountRecorder.getPlayCount(a.getId()));
             return viewData;
         }).collect(Collectors.toList());
     }
@@ -559,6 +572,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
      */
     private ArticleViewData buildArticleViewData(ArticleEntity article, long userId) {
         ArticleViewData viewData = new ArticleViewData();
+
+        countRecorder.syncArticleCount(article);
+
+        // 数据同步
         BeanUtils.copyProperties(article, viewData);
         
         // 添加作者信息
@@ -600,6 +617,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         addCategoryInfo(viewData, article.getCategory());
         
         viewData.setIsShow(true);
+        // 增加播放量
+        viewData.setViewCount(viewData.getViewCount() + playCountRecorder.getPlayCount(article.getId()));
+
         return viewData;
     }
 
@@ -763,7 +783,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
             list = this.list(wrapper);
             // 计算 sort 值, 播放量加权 1， 评论 2， 收藏 4， 弹幕 1.5, 点赞 2， 不喜欢 -2
             for (ArticleEntity vd : list) {
-                double sort = vd.getViewCount()
+                countRecorder.syncArticleCount(vd);
+                double sort = (vd.getViewCount() + playCountRecorder.getPlayCount(vd.getId()))
                         + vd.getCommentCount() * 2
                         + vd.getFavoriteCount() * 4
                         + vd.getDanmakuCount() * 1.5
@@ -847,7 +868,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         
         return true;
                 /*
-        // 原有会员限制代码，已注释
+        // TODO 代码有待完善，故注释
+        //  原有会员限制代码，已注释
         if (userId == -1) {
             return false;
         }
@@ -968,10 +990,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         return true;
     }
 
-    @Override
-    public void addViewCount(Long articleId, long count) {
-        this.baseMapper.addViewCount(articleId, count);
-    }
 
     @Override
     public void addCount(String col, Long articleId, long count) {
@@ -993,6 +1011,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         // 使用并行流处理转换，提高大数据量处理效率
         return page.getRecords().parallelStream()
             .map(article -> {
+                countRecorder.syncArticleCount(article);
+                article.setViewCount(
+                        article.getViewCount() + playCountRecorder.getPlayCount(article.getId())
+                );
                 ArticleViewData viewData = new ArticleViewData();
                 BeanUtils.copyProperties(article, viewData);
                 

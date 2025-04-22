@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 视频，图片，文章 发帖表
@@ -24,6 +25,14 @@ public interface ArticleDao extends BaseMapper<ArticleEntity> {
     void addViewCount(@Param("id") long articleId, @Param("count") Long count);
 
     void addCount(@Param("col") String col, @Param("id") long articleId, @Param("count") Long count);
+    
+    /**
+     * 批量更新文章计数
+     * @param col 要更新的列名
+     * @param countMap ID和计数的映射，key是文章ID，value是要增加的数值
+     * @return 更新的记录数
+     */
+    int batchUpdateCount(@Param("col") String col, @Param("countMap") Map<Long, Long> countMap);
     
     /**
      * 查询热门文章，直接在数据库层计算热度值

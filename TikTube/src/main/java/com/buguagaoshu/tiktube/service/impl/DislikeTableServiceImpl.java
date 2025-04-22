@@ -1,5 +1,6 @@
 package com.buguagaoshu.tiktube.service.impl;
 
+import com.buguagaoshu.tiktube.cache.CountRecorder;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.entity.CommentEntity;
 import com.buguagaoshu.tiktube.service.ArticleService;
@@ -29,11 +30,15 @@ public class DislikeTableServiceImpl extends ServiceImpl<DislikeTableDao, Dislik
 
     final CommentService commentService;
 
+    final CountRecorder countRecorder;
+
     @Autowired
     public DislikeTableServiceImpl(ArticleService articleService,
-                                   CommentService commentService) {
+                                   CommentService commentService,
+                                   CountRecorder countRecorder) {
         this.articleService = articleService;
         this.commentService = commentService;
+        this.countRecorder = countRecorder;
     }
 
     @Override
@@ -79,9 +84,11 @@ public class DislikeTableServiceImpl extends ServiceImpl<DislikeTableDao, Dislik
 
             // 更新点踩计数
             if (type == 0) {
-                articleService.addCount("dislike_count", dislikeObjId, -1);
+                countRecorder.recordArticleDislike(dislikeObjId, -1);
+                //articleService.addCount("dislike_count", dislikeObjId, -1);
             } else {
-                commentService.addCount("dislike_count", dislikeObjId, -1);
+                countRecorder.recordCommentDislike(dislikeObjId, -1);
+                // commentService.addCount("dislike_count", dislikeObjId, -1);
             }
 
             map.put("info", "取消点踩");
@@ -97,9 +104,11 @@ public class DislikeTableServiceImpl extends ServiceImpl<DislikeTableDao, Dislik
 
             // 更新点踩计数
             if (type == 0) {
-                articleService.addCount("dislike_count", dislikeObjId, 1L);
+                countRecorder.recordArticleDislike(dislikeObjId, 1);
+                // articleService.addCount("dislike_count", dislikeObjId, 1L);
             } else {
-                commentService.addCount("dislike_count", dislikeObjId, 1L);
+                countRecorder.recordCommentDislike(dislikeObjId, 1);
+                // commentService.addCount("dislike_count", dislikeObjId, 1L);
             }
 
             map.put("info", "点踩成功！");
