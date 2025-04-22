@@ -61,7 +61,7 @@
         <p class="text-body-1 mb-4">
           TikTube是一个开源项目，我们欢迎开发者参与贡献，共同改进这个平台。您可以通过以下链接访问我们的代码仓库：
         </p>
-        
+
         <v-list>
           <v-list-item>
             <template v-slot:prepend>
@@ -71,8 +71,8 @@
             </template>
             <v-list-item-title class="text-subtitle-1 font-weight-medium">GitHub</v-list-item-title>
             <v-list-item-subtitle>
-              <a 
-                href="https://github.com/PuZhiweizuishuai/TikTube" 
+              <a
+                href="https://github.com/PuZhiweizuishuai/TikTube"
                 target="_blank"
                 class="text-decoration-none"
               >
@@ -80,19 +80,21 @@
               </a>
             </v-list-item-subtitle>
           </v-list-item>
-          
+
           <v-divider class="my-3"></v-divider>
-          
+
           <v-list-item>
             <template v-slot:prepend>
               <v-avatar color="grey-lighten-3" size="36">
                 <v-icon color="red">mdi-source-branch</v-icon>
               </v-avatar>
             </template>
-            <v-list-item-title class="text-subtitle-1 font-weight-medium">码云 Gitee</v-list-item-title>
+            <v-list-item-title class="text-subtitle-1 font-weight-medium"
+              >码云 Gitee</v-list-item-title
+            >
             <v-list-item-subtitle>
-              <a 
-                href="https://gitee.com/puzhiweizuishuai/VideoWeb" 
+              <a
+                href="https://gitee.com/puzhiweizuishuai/VideoWeb"
                 target="_blank"
                 class="text-decoration-none"
               >
@@ -146,8 +148,8 @@
         <div class="d-flex align-center mb-3">
           <v-icon color="primary" class="mr-3">mdi-github</v-icon>
           <span class="text-body-1">GitHub Issues: </span>
-          <a 
-            href="https://github.com/PuZhiweizuishuai/TikTube/issues" 
+          <a
+            href="https://github.com/PuZhiweizuishuai/TikTube/issues"
             target="_blank"
             class="text-decoration-none ml-2"
           >
@@ -157,11 +159,11 @@
         <div class="d-flex align-center">
           <v-icon color="red" class="mr-3">mdi-gitee</v-icon>
           <span class="text-body-1">码云 Issues: </span>
-          <a 
-            href="https://gitee.com/puzhiweizuishuai/VideoWeb/issues" 
+          <a
+            href="https://gitee.com/puzhiweizuishuai/VideoWeb/issues"
             class="text-decoration-none ml-2"
           >
-          提交问题或建议
+            提交问题或建议
           </a>
         </div>
       </v-card-text>
@@ -169,7 +171,11 @@
 
     <!-- 页脚版权信息 -->
     <div class="text-center mt-8 text-body-2 text-medium-emphasis">
-      <p><a href="https://www.buguagaoshu.com" target="_blank"><strong>不挂高数</strong> </a> ©2020 - {{ new Date().getFullYear() }}</p>
+      <p>
+        <a href="https://www.buguagaoshu.com" target="_blank"><strong>不挂高数</strong> </a> ©2020 -
+        {{ new Date().getFullYear() }}
+      </p>
+      <p>version: 1.0.0 2025-04-22</p>
     </div>
   </v-container>
 </template>
@@ -179,7 +185,7 @@ export default {
   name: 'AboutView',
   created() {
     document.title = '关于我们 - TikTube'
-  }
+  },
 }
 </script>
 

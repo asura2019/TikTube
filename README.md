@@ -52,6 +52,12 @@ Email: test@test.com
 
 Password: test123456test
 
+## Video demo
+
+YouTube：<a href="https://youtu.be/HX3812cRtYA" target="_blank">https://youtu.be/HX3812cRtYA</a>
+
+Bilibili：<a href="https://www.bilibili.com/video/BV1AV59z5ESV" target="_blank">https://www.bilibili.com/video/BV1AV59z5ESV</a>
+
 ## Quick start
 
 **Run Environment: Java17+, Node 20+, Maven 3.9+，MySQL 8.0+**

@@ -26,6 +26,11 @@
       <!-- 占位分割 -->
       <v-spacer />
       <!-- 发布 -->
+      <v-tooltip location="bottom" text="Github 开源地址">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" icon="mdi-github" @click="gotoGithub()"></v-btn>
+        </template>
+      </v-tooltip>
       <v-tooltip location="bottom" text="发布">
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon="mdi-video-plus" @click="goToPublish()"></v-btn>
@@ -140,6 +145,9 @@ export default {
       this.httpGet('/notification/count', (json) => {
         this.notificationCount = json.data
       })
+    },
+    gotoGithub() {
+      window.open('https://github.com/PuZhiweizuishuai/TikTube', '_blank')
     },
     search(e) {
       if (e.key === 'Enter') {

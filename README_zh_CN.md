@@ -50,6 +50,11 @@
 
 密码：test123456test
 
+## 视频演示
+
+
+哔哩哔哩：<a href="https://www.bilibili.com/video/BV1AV59z5ESV" target="_blank">https://www.bilibili.com/video/BV1AV59z5ESV</a>
+
 
 ## 截图
 
