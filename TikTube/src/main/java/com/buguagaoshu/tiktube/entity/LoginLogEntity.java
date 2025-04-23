@@ -42,4 +42,10 @@ public class LoginLogEntity {
 	 */
 	private Long userid;
 
+
+	/**
+	 * 记录登录地址
+	 * */
+	private String city;
+
 }

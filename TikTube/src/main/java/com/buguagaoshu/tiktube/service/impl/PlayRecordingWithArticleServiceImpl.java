@@ -36,14 +36,18 @@ public class PlayRecordingWithArticleServiceImpl implements PlayRecordingWithArt
 
     private final FileTableService fileTableService;
 
+    private final IpUtil ipUtil;
+
 
     @Autowired
     public PlayRecordingWithArticleServiceImpl(PlayRecordingService playRecordingService,
                                                ArticleService articleService,
-                                               FileTableService fileTableService) {
+                                               FileTableService fileTableService,
+                                               IpUtil ipUtil) {
         this.playRecordingService = playRecordingService;
         this.articleService = articleService;
         this.fileTableService = fileTableService;
+        this.ipUtil = ipUtil;
     }
 
 
@@ -53,7 +57,7 @@ public class PlayRecordingWithArticleServiceImpl implements PlayRecordingWithArt
         Set<Long> aids = page.getRecords().stream().map(PlayRecordingEntity::getArticleId).collect(Collectors.toSet());
         List<ArticleEntity> articleEntities = articleService.listByIds(aids);
         List<PlayRecordingWithArticleVo> play = new LinkedList<>();
-        if (articleEntities != null && articleEntities.size() != 0) {
+        if (articleEntities != null && !articleEntities.isEmpty()) {
             Map<Long, ArticleEntity> articleEntityMap =  articleEntities.stream().collect(Collectors.toMap(ArticleEntity::getId, a->a));
 
             for (PlayRecordingEntity playRecordingEntity : page.getRecords()) {
@@ -67,7 +71,7 @@ public class PlayRecordingWithArticleServiceImpl implements PlayRecordingWithArt
                 play.add(playRecordingWithArticleVo);
             }
         }
-        return new PageUtils(play, page.getTotal(), page.getCurrent(), page.getSize());
+        return new PageUtils(play, page.getTotal(), page.getSize(), page.getCurrent());
     }
 
     @Override
@@ -87,10 +91,10 @@ public class PlayRecordingWithArticleServiceImpl implements PlayRecordingWithArt
                         playRecording.setCreateTime(System.currentTimeMillis());
                     }
                     playRecording.setUpdateTime(System.currentTimeMillis());
-                    playRecording.setUa(IpUtil.getUa(request));
+                    playRecording.setUa(ipUtil.getUa(request));
                     playRecordingService.save(playRecording);
                 } else {
-                    nowLog.setUa(IpUtil.getUa(request));
+                    nowLog.setUa(ipUtil.getUa(request));
                     nowLog.setVideoTime(playRecording.getVideoTime());
                     nowLog.setUpdateTime(System.currentTimeMillis());
                     playRecordingService.updateById(nowLog);

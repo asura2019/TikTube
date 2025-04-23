@@ -39,13 +39,17 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
 
     private final CountRecorder countRecorder;
 
+    private final IpUtil ipUtil;
+
     @Autowired
     public DanmakuServiceImpl(ArticleService articleService,
                               FileTableService fileTableService,
-                              CountRecorder countRecorder) {
+                              CountRecorder countRecorder,
+                              IpUtil ipUtil) {
         this.articleService = articleService;
         this.fileTableService = fileTableService;
         this.countRecorder = countRecorder;
+        this.ipUtil = ipUtil;
     }
 
     @Override
@@ -56,60 +60,6 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
         );
 
         return new PageUtils(page);
-    }
-
-    @Override
-    public List<Object> danmakuList(Long id, Integer max) {
-        Map<String, Object> params = new HashMap<>(2);
-        params.put("limit", max);
-        IPage<DanmakuEntity> page = this.page(
-                new Query<DanmakuEntity>().getPage(params),
-                new QueryWrapper<DanmakuEntity>().eq("video_id", id)
-        );
-        List<DanmakuEntity> danmakuEntities = page.getRecords();
-
-       List<Object> danmakuDtos = new LinkedList<>();
-       danmakuEntities.forEach(d->{
-           danmakuDtos.add(DanmakuUtils.createDanmaku(
-                   d.getTime(),
-                   d.getType(),
-                   d.getColorDec(),
-                   d.getColor(),
-                   d.getText()
-           ));
-
-       });
-       return danmakuDtos;
-    }
-
-
-    @Override
-    public ReturnCodeEnum saveDanmaku(DanmakuDto danmakuDto, HttpServletRequest request) {
-        long userId = -1;
-        try {
-            userId = JwtUtil.getUserId(request);
-        }catch (UserNotLoginException e) {
-            return ReturnCodeEnum.NO_LOGIN;
-        }
-
-        // ArticleEntity video = articleService.getById(danmakuDto.getId());
-        FileTableEntity fileTableEntity = fileTableService.getById(danmakuDto.getId());
-        if (fileTableEntity == null && fileTableEntity.getArticleId() != null) {
-            return ReturnCodeEnum.NOO_FOUND;
-        }
-
-        DanmakuEntity danmakuEntity = new DanmakuEntity();
-        danmakuEntity.setAuthor(userId);
-
-        danmakuEntity.setColorDec(danmakuDto.getColor());
-        danmakuEntity.setVideoId(danmakuDto.getId());
-        danmakuEntity.setText(danmakuDto.getText());
-        danmakuEntity.setColor(Long.toHexString(danmakuDto.getColor()));
-        danmakuEntity.setTime(danmakuDto.getTime());
-        danmakuEntity.setType(danmakuDto.getType());
-        this.save(danmakuEntity);
-        countRecorder.recordDanmaku(fileTableEntity.getArticleId(), 1L);
-        return ReturnCodeEnum.SUCCESS;
     }
 
     /**
@@ -135,7 +85,10 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
 
         // ArticleEntity video = articleService.getById(danmakuDto.getId());
         FileTableEntity fileTableEntity = fileTableService.getById(danmakuDto.getId());
-        if (fileTableEntity == null && fileTableEntity.getArticleId() != null) {
+        if (fileTableEntity == null) {
+            return ReturnCodeEnum.NOO_FOUND;
+        }
+        if (fileTableEntity.getArticleId() == null) {
             return ReturnCodeEnum.NOO_FOUND;
         }
 
@@ -147,8 +100,10 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
         danmakuEntity.setColor(danmakuDto.getColor());
         danmakuEntity.setTime(danmakuDto.getTime());
         danmakuEntity.setType(danmakuDto.getType());
-        danmakuEntity.setIp(IpUtil.getIpAddr(request));
-        danmakuEntity.setUa(IpUtil.getUa(request));
+        String ip = ipUtil.getIpAddr(request);
+        danmakuEntity.setIp(ip);
+        danmakuEntity.setUa(ipUtil.getUa(request));
+        danmakuEntity.setCity(ipUtil.getCity(ip));
         // TODO 升级完成后这部分可以删除
         // 去掉开头的 # 符号
         String cleanHex = danmakuDto.getColor().replace("#", "");
@@ -214,6 +169,11 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
                 new Query<DanmakuEntity>().getPage(params),
                 new QueryWrapper<DanmakuEntity>().eq("video_id", id)
         );
+        page.getRecords().parallelStream().forEach(d -> {
+            d.setCity(null);
+            d.setIp(null);
+            d.setUa(null);
+        });
         return page.getRecords();
     }
 

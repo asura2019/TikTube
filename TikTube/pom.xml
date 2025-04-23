@@ -19,6 +19,7 @@
         <mybatis-plus.version>3.5.11</mybatis-plus.version>
         <jjwt.version>0.12.6</jjwt.version>
         <javacv.version>1.5.11</javacv.version>
+        <ip2region.version>2.7.0</ip2region.version>
     </properties>
 
     <repositories>
@@ -55,6 +56,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.lionsoul</groupId>
+            <artifactId>ip2region</artifactId>
+            <version>${ip2region.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>

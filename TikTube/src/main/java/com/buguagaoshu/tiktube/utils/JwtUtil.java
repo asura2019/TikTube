@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.WebUtils;
 
 
@@ -18,6 +19,7 @@ public class JwtUtil {
     //private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(WebConstant.SECRET_KEY.getBytes());
     // private static final SecretKey SECRET_KEY = Jwts.SIG.HS512.key().build();
     // SECRET_KEY 从 WebConstant 类统一获取
+
 
     public static String createJwt(String email, String userId, String role, long expirationTime, Long stopTime) {
         if (stopTime == null) {
@@ -46,7 +48,7 @@ public class JwtUtil {
                         .parseSignedClaims(token)
                         .getPayload();
             } catch (Exception e) {
-                log.warn("来自 IP： {} 的用户 JWT TOKEN解析失败！", IpUtil.getIpAddr(request));
+                //log.warn("来自 IP： {} 的用户 JWT TOKEN解析失败！", ipUtil.getIpAddr(request));
                 return null;
             }
         }

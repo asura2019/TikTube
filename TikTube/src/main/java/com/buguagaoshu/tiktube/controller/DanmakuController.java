@@ -31,24 +31,6 @@ public class DanmakuController {
         this.danmakuService = danmakuService;
     }
 
-    @GetMapping("/api/danmaku/v3/")
-    public ResponseDetails get(@RequestParam("id") Long id,
-                               @RequestParam("max") Integer max) {
-        return ResponseDetails.ok().put("data", danmakuService.danmakuList(id, max))
-                .put("code", DPlayerConstants.DPLAYER_SUCCESS_CODE);
-    }
-
-
-    @PostMapping("/api/danmaku/v3/")
-    public ResponseDetails post(@RequestBody DanmakuDto danmakuDto,
-                                HttpServletRequest request) {
-        ReturnCodeEnum codeEnum = danmakuService.saveDanmaku(danmakuDto, request);
-        if (codeEnum.equals(ReturnCodeEnum.NO_LOGIN)) {
-            return ResponseDetails.ok(codeEnum).put("code", 1);
-        }
-        return ResponseDetails.ok(codeEnum)
-                .put("code", DPlayerConstants.DPLAYER_SUCCESS_CODE);
-    }
 
     @GetMapping("/api/danmaku/v1")
     public ResponseDetails getArt(@RequestParam("id") Long id) {

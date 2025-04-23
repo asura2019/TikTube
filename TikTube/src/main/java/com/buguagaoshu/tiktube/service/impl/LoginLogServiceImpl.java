@@ -3,6 +3,7 @@ package com.buguagaoshu.tiktube.service.impl;
 import com.buguagaoshu.tiktube.entity.UserEntity;
 import com.buguagaoshu.tiktube.utils.IpUtil;
 import com.buguagaoshu.tiktube.utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -20,6 +21,13 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Service("loginLogService")
 public class LoginLogServiceImpl extends ServiceImpl<LoginLogDao, LoginLogEntity> implements LoginLogService {
+
+    private final IpUtil ipUtil;
+
+    @Autowired
+    public LoginLogServiceImpl(IpUtil ipUtil) {
+        this.ipUtil = ipUtil;
+    }
 
     @Override
     public PageUtils queryPage(HttpServletRequest request, Map<String, Object> params) {
@@ -39,9 +47,11 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogDao, LoginLogEntity
     public void saveLoginLog(UserEntity userEntity, HttpServletRequest request) {
         LoginLogEntity loginLogEntity = new LoginLogEntity();
         loginLogEntity.setUserid(userEntity.getId());
-        loginLogEntity.setIp(IpUtil.getIpAddr(request));
+        String ip = ipUtil.getIpAddr(request);
+        loginLogEntity.setIp(ip);
         loginLogEntity.setLoginTime(System.currentTimeMillis());
-        loginLogEntity.setUa(IpUtil.getUa(request));
+        loginLogEntity.setUa(ipUtil.getUa(request));
+        loginLogEntity.setCity(ipUtil.getCity(ip));
         save(loginLogEntity);
     }
 

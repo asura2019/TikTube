@@ -21,11 +21,14 @@ public class PlayRecordingController {
 
     private final PlayCountRecorder playCountRecorder;
 
+    private final IpUtil ipUtil;
+
     @Autowired
     public PlayRecordingController(PlayRecordingWithArticleService playRecordingWithArticleService,
-                                   PlayCountRecorder playCountRecorder) {
+                                   PlayCountRecorder playCountRecorder, IpUtil ipUtil) {
         this.playRecordingWithArticleService = playRecordingWithArticleService;
         this.playCountRecorder = playCountRecorder;
+        this.ipUtil = ipUtil;
     }
 
     @GetMapping("/api/user/playrecording/list")
@@ -47,7 +50,7 @@ public class PlayRecordingController {
      * */
     @PostMapping("/api/article/playrecording/view/{id}")
     public ResponseDetails addViewCount(@PathVariable("id") Long id, HttpServletRequest request) {
-        playCountRecorder.recordPlay(id, IpUtil.getIpAddr(request));
+        playCountRecorder.recordPlay(id, ipUtil.getIpAddr(request));
         return ResponseDetails.ok();
     }
 }

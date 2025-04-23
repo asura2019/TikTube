@@ -10,6 +10,7 @@
         <result property="ip" column="ip"/>
         <result property="ua" column="ua"/>
         <result property="userid" column="userId"/>
+        <result property="city" column="city"/>
     </resultMap>
 
 

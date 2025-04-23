@@ -61,6 +61,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
 
     private final CountRecorder countRecorder;
 
+    private final IpUtil ipUtil;
+
     @Autowired
     public ArticleServiceImpl(CategoryCache categoryCache,
                               WebSettingCache webSettingCache,
@@ -69,7 +71,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
                               UserRoleService userRoleService,
                               NotificationService notificationService,
                               PlayCountRecorder playCountRecorder,
-                              CountRecorder countRecorder) {
+                              CountRecorder countRecorder,
+                              IpUtil ipUtil) {
         this.categoryCache = categoryCache;
         this.webSettingCache = webSettingCache;
         this.fileTableService = fileTableService;
@@ -78,6 +81,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         this.notificationService = notificationService;
         this.playCountRecorder = playCountRecorder;
         this.countRecorder = countRecorder;
+        this.ipUtil = ipUtil;
     }
 
     @Autowired
@@ -225,9 +229,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
 
         // 构建文章实体
         ArticleEntity articleEntity = buildArticleEntity(videoArticleDto, userId, imageFile, videoFile);
-        articleEntity.setIp(IpUtil.getIpAddr(request));
-        articleEntity.setUa(IpUtil.getUa(request));
-
+        String ip = ipUtil.getIpAddr(request);
+        articleEntity.setIp(ip);
+        articleEntity.setUa(ipUtil.getUa(request));
+        articleEntity.setCity(ipUtil.getCity(ip));
         // 保存文章
         this.save(articleEntity);
         userService.updateLastPublishTime(System.currentTimeMillis(), userId);
@@ -327,8 +332,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         article.setCategory(dto.getCategory());
         article.setImgUrl(imageFile.getFileUrl());
         article.setUpdateTime(System.currentTimeMillis());
-        article.setUa(IpUtil.getUa(request));
-        article.setIp(IpUtil.getIpAddr(request));
+        String ip = ipUtil.getIpAddr(request);
+        article.setUa(ipUtil.getUa(request));
+        article.setIp(ip);
+        article.setCity(ipUtil.getCity(ip));
         
         // 设置标签
         try {
@@ -863,7 +870,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
     @Override
     public Boolean hasThisVideoPlayPower(FileTableEntity file, Long userId, HttpServletRequest request) {
         // 记录播放历史并更新播放计数
-        long result = playRecordingService.saveHistory(file, userId, IpUtil.getUa(request));
+        long result = playRecordingService.saveHistory(file, userId, ipUtil.getUa(request));
 
         
         return true;

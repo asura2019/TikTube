@@ -246,6 +246,7 @@ CREATE TABLE `login_log`  (
   `ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '登录IP',
   `ua` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '浏览器UA',
   `userId` bigint NOT NULL COMMENT '登录用户ID',
+  `city` varchar(255),
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_user_log_by_id_index`(`userId`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;

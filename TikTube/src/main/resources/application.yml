@@ -1,3 +1,10 @@
+tiktube:
+  # 是否配置代理访问，如果前置配置了 nginx 等代理服务器，则需要将此配置修改为 true，不然为 false，防止用户 ip 伪造
+  # 默认 false
+  is-the-proxy-configured: false
+  # IP地址数据库
+  ip-db-path: E:\\Spring\\PornTube\\TikTube\\ip2region.xdb
+
 server:
   port: 8080
   http2:

@@ -1,7 +1,9 @@
 package com.buguagaoshu.tiktube;
 
+import com.buguagaoshu.tiktube.config.MyConfigProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -9,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * */
 @SpringBootApplication
 @EnableScheduling
+@EnableConfigurationProperties(MyConfigProperties.class)
 public class TikTubeApplication {
 
     public static void main(String[] args) {

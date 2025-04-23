@@ -79,6 +79,7 @@ export default {
           key: 'loginTime',
         },
         { title: 'IP', align: 'start', sortable: false, key: 'ip' },
+        { title: 'City', align: 'start', sortable: false, key: 'city' },
         { title: '登录设备', align: 'start', sortable: false, key: 'ua' },
       ],
     }

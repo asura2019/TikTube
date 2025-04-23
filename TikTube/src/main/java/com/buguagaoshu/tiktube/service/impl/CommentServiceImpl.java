@@ -48,15 +48,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     private final CountRecorder countRecorder;
 
+    private final IpUtil ipUtil;
+
     @Autowired
     public CommentServiceImpl(ArticleService articleService,
                               UserService userService,
                               NotificationService notificationService,
-                              CountRecorder countRecorder) {
+                              CountRecorder countRecorder,
+                              IpUtil ipUtil) {
         this.articleService = articleService;
         this.userService = userService;
         this.notificationService = notificationService;
         this.countRecorder = countRecorder;
+        this.ipUtil = ipUtil;
     }
 
 
@@ -135,9 +139,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
             countRecorder.recordComment(fatherComment.getId(), 1L);
             // this.addCount("comment_count", fatherComment.getId(), 1L);
         }
-
-        commentEntity.setIp(IpUtil.getIpAddr(request));
-        commentEntity.setUa(IpUtil.getUa(request));
+        String ip = ipUtil.getIpAddr(request);
+        commentEntity.setIp(ip);
+        commentEntity.setUa(ipUtil.getUa(request));
+        commentEntity.setCity(ipUtil.getCity(ip));
         commentEntity.setComment(commentVo.getComment());
         // TODO 保存地址信息，包括视频等
         // 保存评论
