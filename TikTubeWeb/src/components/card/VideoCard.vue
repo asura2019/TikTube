@@ -32,19 +32,24 @@
       </v-col>
       <v-col>
         <div class="video-title">
-          <router-link :to="`/video/${videoInfo.id}`" class="text-decoration-none">
-            <span class="text-subtitle-1 font-weight-medium text-black">{{ videoInfo.title }}</span>
-            <v-chip
-              v-if="videoInfo.pixelsNumber >= 2073600"
-              class="ml-2"
-              color="orange"
-              size="x-small"
-              text-color="white"
-            >
-              {{ StringUtils.clarityDisplay(videoInfo.pixelsNumber) }}
-            </v-chip>
-          </router-link>
+          <v-tooltip
+            :text="videoInfo.title"
+            location="top"
+            open-delay="500"
+          >
+            <template v-slot:activator="{ props }">
+              <router-link :to="`/video/${videoInfo.id}`" class="text-decoration-none">
+                <span 
+                  v-bind="props"
+                  class="text-subtitle-1 font-weight-medium text-black title-text"
+                >
+                  {{ videoInfo.title }}
+                </span>
+              </router-link>
+            </template>
+          </v-tooltip>
         </div>
+
         <div class="video-meta text-caption text-medium-emphasis mt-1">
           {{ videoInfo.viewCount }} 观看
           <span class="mx-1">•</span>
@@ -67,6 +72,15 @@
           </router-link>
           <span class="mx-1">•</span>
           <span v-text="TimeUtil.timeToNowStrning(videoInfo.createTime)" />
+          <v-chip
+              v-if="videoInfo.pixelsNumber >= 2073600"
+              class="ml-2"
+              color="orange"
+              size="x-small"
+              text-color="white"
+            >
+              {{ StringUtils.clarityDisplay(videoInfo.pixelsNumber) }}
+            </v-chip>
         </div>
       </v-col>
     </v-row>
@@ -99,7 +113,7 @@ export default {
 .video-card {
   transition: all 0.2s ease-in-out;
   cursor: pointer;
-  padding-bottom: 16px;
+  /*padding-bottom: 8px;*/
 }
 
 .video-card:hover {
@@ -130,15 +144,33 @@ export default {
 }
 
 .video-title {
+  height: 48px; /* 固定高度，适合两行文字 */
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.title-text {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-word;
+  line-height: 1.2;
 }
 
 .video-meta {
+  height: 60px; /* 固定高度 */
+  overflow: hidden;
   line-height: 1.4;
+}
+
+.meta-content {
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3; /* 最多显示3行 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .category-link {

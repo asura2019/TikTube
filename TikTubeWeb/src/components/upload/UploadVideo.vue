@@ -227,10 +227,10 @@
                   label="标题"
                   variant="outlined"
                   density="comfortable"
-                  counter="50"
+                  counter="100"
                   :rules="[
                     (v) => !!v || '标题不能为空',
-                    (v) => (v && v.length <= 50) || '标题不能超过50个字符',
+                    (v) => (v && v.length <= 100) || '标题不能超过100个字符',
                   ]"
                   prepend-inner-icon="mdi-format-title"
                 ></v-text-field>
@@ -243,12 +243,12 @@
                   v-model="article.describe"
                   label="简介"
                   variant="outlined"
-                  counter="200"
+                  counter="1000"
                   auto-grow
-                  rows="3"
+                  rows="5"
                   placeholder="填写更全面的视频信息，让更多人找到你的视频"
                   prepend-inner-icon="mdi-text-box-outline"
-                  :rules="[(v) => !v || v.length <= 200 || '简介不能超过200个字符']"
+                  :rules="[(v) => !v || v.length <= 1000 || '简介不能超过1000个字符']"
                 ></v-textarea>
               </v-col>
             </v-row>
