@@ -44,8 +44,6 @@ import jakarta.servlet.http.HttpServletRequest;
 public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> implements ArticleService {
 
     private static final String TAG = "ArticleServiceImpl";
-    private static final int MAX_TITLE_LENGTH = 50;
-    private static final int MAX_DESCRIBE_LENGTH = 200;
     private static final int ONE_DAY_MILLIS = 86400000;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -246,22 +244,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
      * 验证视频文章DTO
      */
     private ReturnCodeEnum validateVideoArticleDto(VideoArticleDto dto) {
-        // 标题验证
-        if (dto.getTitle().length() > MAX_TITLE_LENGTH) {
-            return ReturnCodeEnum.TITLE_TO_LONG;
-        }
-
-        // 描述验证
-        if (!StringUtils.hasText(dto.getDescribe()) && dto.getDescribe().length() > MAX_DESCRIBE_LENGTH) {
-            return ReturnCodeEnum.DESCRIBE_TO_LONG;
-        }
-
         // 分类验证
         CategoryEntity categoryEntity = categoryCache.getCategoryEntityMap().get(dto.getCategory());
         if (categoryEntity == null) {
             return ReturnCodeEnum.CATEGORY_NOT_FOUND;
         }
-        
         return ReturnCodeEnum.SUCCESS;
     }
     

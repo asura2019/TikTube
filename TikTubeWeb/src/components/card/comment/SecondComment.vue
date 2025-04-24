@@ -174,6 +174,17 @@ export default {
           this.comment.comment = ''
           this.$refs.secondCommentView.setTextValue('')
           this.getSecondList()
+        } else if (json.status === 4002) {
+          let result = '';
+          if (json.data != null) {
+            for (const key in json.data) {
+              result += json.data[key] + '\n';
+            }
+            this.message = result
+          } else {
+            this.message = json.message
+          }
+          this.showMessage = true
         } else {
           this.message = json.message
           this.showMessage = true

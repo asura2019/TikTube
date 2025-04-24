@@ -18,6 +18,9 @@
         <result property="topImgUrl" column="top_img_url"/>
         <result property="introduction" column="introduction"/>
         <result property="lastPublishTime" column="last_publish_time"/>
+        <result property="otp" column="otp"/>
+        <result property="status" column="status"/>
+        <result property="blockEndTime" column="block_end_time"/>
     </resultMap>
     <update id="addSubmitCount">
          update user set submit_count = submit_count + #{count} where id = #{userId}

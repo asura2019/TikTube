@@ -1,6 +1,7 @@
 package com.buguagaoshu.tiktube.vo;
 
 import com.buguagaoshu.tiktube.valid.ListValue;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotBlank;
@@ -24,6 +25,7 @@ public class CommentVo {
      * 评论
      */
     @NotBlank(message = "评论正文不能为空！")
+    @Size(max = 10001, message = "评论正文不能超过 10000 字")
     private String comment;
 
     /**

@@ -518,6 +518,16 @@ export default {
             this.editCode !== -1 ? '更新成功' : '投稿成功，等待审核通过后你就可以看到你的视频了'
           )
           this.$router.push('/studio')
+        } else if(json.status === 4002) {
+          let result = '';
+          if (json.data != null) {
+            for (const key in json.data) {
+              result += json.data[key] + '\n';
+            }
+            this.showErrorMessage(result)
+          } else {
+            this.showErrorMessage('数据校验错误')
+          }
         } else {
           this.showErrorMessage(json.message || '提交失败')
         }

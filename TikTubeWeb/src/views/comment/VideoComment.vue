@@ -167,6 +167,17 @@ export default {
           this.commentData.comment = ''
           this.$refs.commentVditor.setTextValue('')
           this.getCommentList()
+        } else if (json.status === 4002) {
+          let result = '';
+          if (json.data != null) {
+            for (const key in json.data) {
+              result += json.data[key] + '\n';
+            }
+            this.message = result
+          } else {
+            this.message = json.message
+          }
+          this.showMessage = true
         } else {
           this.message = json.message
           this.showMessage = true

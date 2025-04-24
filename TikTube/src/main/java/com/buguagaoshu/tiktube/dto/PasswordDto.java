@@ -1,5 +1,6 @@
 package com.buguagaoshu.tiktube.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotBlank;
@@ -12,12 +13,15 @@ import jakarta.validation.constraints.NotBlank;
 @Data
 public class PasswordDto {
     @NotBlank(message = "请输入原始密码")
+    @Size(max = 50)
     private String oldPassword;
 
     @NotBlank(message = "请输入新密码")
+    @Size(max = 50)
     private String newPassword;
 
 
     @NotBlank(message = "验证码不能为空")
+    @Size(max = 8)
     private String verifyCode;
 }

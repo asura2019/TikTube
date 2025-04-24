@@ -1,12 +1,11 @@
 package com.buguagaoshu.tiktube.controller;
 
-import com.buguagaoshu.tiktube.config.DPlayerConstants;
 import com.buguagaoshu.tiktube.dto.ArtDanmakuDto;
-import com.buguagaoshu.tiktube.dto.DanmakuDto;
 import com.buguagaoshu.tiktube.entity.DanmakuEntity;
 import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
 import com.buguagaoshu.tiktube.service.DanmakuService;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +37,7 @@ public class DanmakuController {
     }
 
     @PostMapping("/api/danmaku/v1")
-    public ResponseDetails saveArt(@RequestBody ArtDanmakuDto danmakuDto,
+    public ResponseDetails saveArt(@Valid @RequestBody ArtDanmakuDto danmakuDto,
                                    HttpServletRequest request) {
         ReturnCodeEnum codeEnum = danmakuService.saveArtDanmaku(danmakuDto, request);
         if (codeEnum.equals(ReturnCodeEnum.NO_LOGIN)) {

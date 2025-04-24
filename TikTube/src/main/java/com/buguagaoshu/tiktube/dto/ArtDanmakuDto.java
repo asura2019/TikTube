@@ -1,5 +1,6 @@
 package com.buguagaoshu.tiktube.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -16,6 +17,7 @@ public class ArtDanmakuDto {
     /**
      * 弹幕颜色
      * */
+    @Size(max = 100)
     private String color;
 
     /**
@@ -26,6 +28,7 @@ public class ArtDanmakuDto {
     /**
      * 正文
      * */
+    @Size(max = 100, message = "弹幕最大长度不能超过 100 字！")
     private String text;
 
     /**

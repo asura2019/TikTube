@@ -156,6 +156,4 @@ public class UserController {
                                         HttpServletRequest request) {
         return ResponseDetails.ok(userService.addUser(adminAddUserData, request));
     }
-
-
 }

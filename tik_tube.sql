@@ -159,7 +159,7 @@ CREATE TABLE `favorites_table`  (
 
 
 -- ----------------------------
--- 收藏夹，暂未实现
+-- 收藏夹
 -- ----------------------------
 DROP TABLE IF EXISTS `favorites_lable`;
 CREATE TABLE `favorites_label`  (
@@ -325,6 +325,9 @@ CREATE TABLE `user`  (
   `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '手机号',
   `create_time` bigint NOT NULL COMMENT '创建时间',
   `last_publish_time` bigint NULL COMMENT '上次投稿时间',
+  `otp` int DEFAULT 0 COMMENT '是否开启totp二次认证',
+  `status` int DEFAULT 0 COMMENT '账号状态 0 正常，1 封禁',
+  `block_end_time` int DEFAULT NULL COMMENT '封禁结束时间，0 永久封禁',
   `submit_count` bigint NOT NULL DEFAULT 0 COMMENT '提交视频，图片，文章数',
   `follow_count` bigint NOT NULL DEFAULT 0 COMMENT '关注数',
   `fans_count` bigint NOT NULL DEFAULT 0 COMMENT '粉丝数',
