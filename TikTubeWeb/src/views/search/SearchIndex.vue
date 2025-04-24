@@ -61,7 +61,7 @@
       <v-col> 共找到 {{ totalCount }} 个与 {{ searchKey }} 相关的结果 </v-col>
     </v-row>
     <v-row>
-      <v-col v-for="item in videoList" :key="item.id">
+      <v-col cols="12" sm="6" md="4" xl="3" v-for="item in videoList" :key="item.id">
         <VideoCared :video="item" />
       </v-col>
     </v-row>

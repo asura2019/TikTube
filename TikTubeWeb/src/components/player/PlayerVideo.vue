@@ -32,8 +32,16 @@ export default {
       default: 0,
     },
   },
-  methods: {},
+  methods: {
+        // 调整播放器高度
+    adjustPlayerHeight() {
+      const viewportHeight = window.innerHeight;
+      const playerHeight = viewportHeight * 0.8; // 80%的视口高度
+      this.$refs.artRef.style.height = `${playerHeight}px`;
+    }
+  },
   mounted() {
+    //this.adjustPlayerHeight();
     this.seek = parseInt(this.$route.query.seek)
     if (isNaN(this.seek)) {
       this.seek = 0
@@ -210,6 +218,7 @@ export default {
 
 <style>
 #artRef {
-  height: 500px;
+  height: 80vh; /* 视口高度的80%作为最大高度 */
+  
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <!-- padding-left: 10px; padding-right: 10px; -->
-  <div class="video-card" style="width: 350px">
+  <!-- padding-left: 10px; padding-right: 10px; 100vh style="width: 100vh"-->
+  <div class="video-card rounded-lg">
     <router-link :to="`/video/${videoInfo.id}`">
-      <v-img :src="videoInfo.imgUrl" :aspect-ratio="16 / 9" class="rounded" height="100%">
+      <v-img :alt="videoInfo.title" :src="videoInfo.imgUrl" :aspect-ratio="16 / 9" class="rounded" height="100%">
         <div class="d-flex fill-height align-end">
           <v-chip
             style="background-color: rgba(0, 0, 0, 50%)"
@@ -21,34 +21,35 @@
       </v-img>
       <!-- <span> {{ TimeUtil.timeCover(videoInfo.duration) }} </span> -->
     </router-link>
-    <v-row style="padding-top: 12px; padding-bottom: 12px">
-      <v-col cols="2">
-        <router-link :to="`/user/${videoInfo.userId}`" class="ml-2">
+    <!-- 修改视频信息布局 -->
+    <v-row class="video-info pa-3" no-gutters>
+      <v-col cols="auto" class="mr-3">
+        <router-link :to="`/user/${videoInfo.userId}`">
           <v-avatar size="48">
             <v-img :alt="videoInfo.username" :src="videoInfo.avatarUrl" />
           </v-avatar>
         </router-link>
       </v-col>
-      <v-col cols="10">
-        <p style="font-size: 20px; margin-bottom: 0px; color: black">
-          <router-link :to="`/video/${videoInfo.id}`" style="color: black" class="mr-2">
-            {{ videoInfo.title }}
+      <v-col>
+        <div class="video-title">
+          <router-link :to="`/video/${videoInfo.id}`" class="text-decoration-none">
+            <span class="text-subtitle-1 font-weight-medium text-black">{{ videoInfo.title }}</span>
             <v-chip
               v-if="videoInfo.pixelsNumber >= 2073600"
-              class="ma-2"
+              class="ml-2"
               color="orange"
-              x-small
+              size="x-small"
               text-color="white"
             >
               {{ StringUtils.clarityDisplay(videoInfo.pixelsNumber) }}
             </v-chip>
           </router-link>
-        </p>
-        <p style="font-size: 10px; color: #606060">
-          {{ videoInfo.viewCount }} 观看 <span v-html="`&nbsp;&nbsp;`" />
-          {{ videoInfo.danmakuCount }} 条弹幕 <span v-html="`&nbsp;&nbsp;`" />
-
-          <!-- 分区信息 -->
+        </div>
+        <div class="video-meta text-caption text-medium-emphasis mt-1">
+          {{ videoInfo.viewCount }} 观看
+          <span class="mx-1">•</span>
+          {{ videoInfo.danmakuCount }} 条弹幕
+          <span class="mx-1">•</span>
           <router-link
             v-if="videoInfo.childrenCategory.fatherId !== 0"
             :to="`/v/${videoInfo.fatherCategory.id}`"
@@ -58,13 +59,15 @@
           </router-link>
           /
           <router-link :to="`/v/${videoInfo.childrenCategory.id}`" class="category-link">
-            <span v-text="videoInfo.childrenCategory.name" /> </router-link
-          ><br />
-          <!-- 发布人 -->
-          <router-link :to="`/user/${videoInfo.userId}`"> {{ videoInfo.username }}</router-link>
+            <span v-text="videoInfo.childrenCategory.name" />
+          </router-link>
           <br />
+          <router-link :to="`/user/${videoInfo.userId}`" class="text-decoration-none">
+            {{ videoInfo.username }}
+          </router-link>
+          <span class="mx-1">•</span>
           <span v-text="TimeUtil.timeToNowStrning(videoInfo.createTime)" />
-        </p>
+        </div>
       </v-col>
     </v-row>
   </div>
@@ -96,6 +99,7 @@ export default {
 .video-card {
   transition: all 0.2s ease-in-out;
   cursor: pointer;
+  padding-bottom: 16px;
 }
 
 .video-card:hover {
@@ -119,5 +123,30 @@ export default {
 
 .video-card:hover .play-overlay {
   opacity: 1;
+}
+
+.video-info {
+  min-height: 80px;
+}
+
+.video-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.video-meta {
+  line-height: 1.4;
+}
+
+.category-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.category-link:hover {
+  color: #1867c0;
 }
 </style>

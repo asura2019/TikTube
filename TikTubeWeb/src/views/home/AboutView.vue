@@ -1,5 +1,5 @@
 <template>
-  <v-container class="about-container py-8">
+  <v-container class="py-8">
     <!-- 页面标题区域 -->
     <v-row align="center" class="mb-6">
       <v-col>
@@ -190,10 +190,6 @@ export default {
 </script>
 
 <style scoped>
-.about-container {
-  max-width: 1200px;
-}
-
 .gap-2 {
   gap: 8px;
 }

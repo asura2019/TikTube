@@ -32,8 +32,8 @@
       </v-row>
 
       <!-- 视频列表 -->
-      <v-row v-else no-gutters>
-        <v-col v-for="item in videoList" :key="item.id" cols="12" sm="6" md="4" class="pa-2">
+      <v-row v-else>
+        <v-col v-for="item in videoList" :key="item.id" cols="12" sm="6" md="4" xl="3" class="pa-2">
           <FavoriteCard
             :video="item.articleEntity"
             :favorite="item.favorite"

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="favorite-card" :elevation="0" @click="video ? navigateToVideo() : null">
+  <v-card class="favorite-card rounded-lg" :elevation="0" @click="video ? navigateToVideo() : null">
     <v-row no-gutters>
       <!-- 左侧视频封面区域 -->
       <v-col cols="12">
@@ -26,7 +26,7 @@
       </v-col>
 
       <!-- 右侧视频信息区域 -->
-      <v-col cols="12" sm="7" class="pa-4">
+      <v-col  class="pa-4">
         <div class="d-flex flex-column h-100">
           <template v-if="video">
             <!-- 视频标题 -->

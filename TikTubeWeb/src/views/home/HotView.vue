@@ -13,7 +13,7 @@
 
     <!-- 热点视频 -->
     <v-row v-if="hotList.length > 0">
-      <v-col v-for="(item, index) in hotList" :key="item.id">
+      <v-col cols="12" sm="6" md="4" xl="3" v-for="(item, index) in hotList" :key="item.id">
         <div class="d-flex align-start position-relative">
           <!-- 排名标签 -->
           <div
@@ -26,8 +26,9 @@
             >
           </div>
           <!-- 视频卡片 -->
-          <VideoCard :video="item" />
+          
         </div>
+        <VideoCard :video="item" />
       </v-col>
     </v-row>
 

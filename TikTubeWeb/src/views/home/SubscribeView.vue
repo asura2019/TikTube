@@ -178,7 +178,7 @@
             class="d-flex" -->
         <!-- 订阅视频网格布局 -->
         <v-row v-else>
-          <v-col v-for="video in videoList" :key="video.id">
+          <v-col cols="12" sm="6" md="4" xl="3" v-for="video in videoList" :key="video.id">
             <VideoCard :video="video" />
           </v-col>
         </v-row>

@@ -241,7 +241,7 @@ export default {
       this.httpGet(`/article/video/${this.id}`, (json) => {
         if (json.status === 200 && json.data.isShow) {
           this.videoData = json.data
-          this.playVideoData = this.videoData.video.find(item => item.type === 0);
+          this.playVideoData = this.videoData.video.find((item) => item.type === 0)
           document.title = json.data.title
           // 假设数据中包含点赞和点踩数量，如果没有则使用默认值
           this.likeCount = json.data.likeCount || 0
@@ -402,7 +402,7 @@ export default {
     // 点踩功能
     dislikeVideo() {
       if (this.userInfo.userData == null) {
-        this.showMessage('请先登录后再点赞', 'warning')
+        this.showMessage('请先登录后再点踩', 'warning')
         return
       }
       this.httpPost(`/dislike/toggle?dislikeObjId=${this.id}&type=0`, {}, (json) => {
