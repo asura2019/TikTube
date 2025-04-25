@@ -106,7 +106,7 @@
     <v-main>
       <!--  fluid-->
       <router-view v-slot="{ Component }">
-        <component :is="Component" ref="childRef" />
+        <component :key="$route.fullPath" :is="Component" ref="childRef" />
       </router-view>
     </v-main>
   </div>

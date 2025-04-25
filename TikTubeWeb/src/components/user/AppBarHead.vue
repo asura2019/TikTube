@@ -42,8 +42,8 @@ export default {
   methods: {
     headClick(value) {
       if (value === 0) {
-        // this.$router.push('/user/' + this.userInfo.id)
-        location.replace('/user/' + this.userInfo.userData.id)
+        this.$router.push('/user/' + this.userInfo.userData.id)
+        //location.replace('/user/' + this.userInfo.userData.id)
       } else if (value === 1) {
         if (this.$route.path === '/studio') {
           return
