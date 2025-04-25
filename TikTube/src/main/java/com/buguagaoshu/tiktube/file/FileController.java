@@ -173,6 +173,7 @@ public class FileController {
                     return null;
                 }
             }
+            httpHeaders.add("Cache-Control", "max-age=86400");
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(httpHeaders)

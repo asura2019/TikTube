@@ -51,6 +51,10 @@
 
 密码：test123456test
 
+**另外，由于该 DEMO 套了 Cloudflare 的 CDN，国内访问速度可能较慢速，请耐心等待！如果有条件可以使用 [CloudflareSpeedTest](https://github.com/XIU2/CloudflareSpeedTest) 配置 Cloudflare 优选 IP，提升访问速度！😂😂😂**
+
+PS：使用 CloudflareSpeedTest 修改 HOST，除了要改 tiktube.buguagaoshu.com 的HOST 外，还需要修改 img.buguagaoshu.com 的 HOST，因为线上版本的 TikTube 文件视频文件都存储在 Cloudflare 的 R2 对象存储上
+
 ## 视频演示
 
 
