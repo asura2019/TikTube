@@ -74,6 +74,11 @@ public class User {
     private UserRoleEntity userRoleEntity;
 
 
+    private boolean loginStatus;
+    private Integer otp;
+    private String key;
+
+
     /**
      * 负责携带头像文件或者首页图文件的ID
      * */

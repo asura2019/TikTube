@@ -108,6 +108,14 @@ public class UserEntity {
     private Integer otp;
 
     /**
+     * TOTP 密钥
+     * */
+    private String otpSecret;
+
+
+    private String otpRecovery;
+
+    /**
      * 账号状态 0 正常， 1 被封禁
      */
     @ListValue(value = {0, 1})
@@ -139,5 +147,6 @@ public class UserEntity {
         this.invitationCode = null;
         this.verifyCode = null;
 		this.otp = null;
+        this.otpSecret = null;
     }
 }

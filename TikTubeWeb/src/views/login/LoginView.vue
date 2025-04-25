@@ -46,6 +46,31 @@
           <v-btn color="white" variant="text" @click="showMessage = false"> 关闭 </v-btn>
         </template>
       </v-snackbar>
+
+      <!-- 两步认证弹框 -->
+      <v-dialog v-model="showTotpDialog" persistent max-width="400">
+        <v-card>
+          <v-card-title class="text-h5 font-weight-bold primary--text"> 两步验证 </v-card-title>
+          <v-card-text>
+            <p class="mb-4">请输入您的两步验证码以完成登录</p>
+            <v-otp-input
+              v-model="totpCode"
+              length="6"
+              label="验证码"
+              type="text"
+              variant="outlined"
+              :rules="[(v) => !!v || '验证码不能为空']"
+              maxlength="6"
+              class="mb-2"
+            ></v-otp-input>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="grey" variant="text" @click="cancelTotp"> 取消 </v-btn>
+            <v-btn color="primary" @click="loginTOTP" :disabled="!totpCode"> 确认 </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </v-main>
 </template>
@@ -72,6 +97,9 @@ export default {
       message: '',
       showMessage: false,
       webInfo: {},
+      totpCode: '',
+      totpUserInfo: {},
+      showTotpDialog: false,
     }
   },
   created() {
@@ -82,8 +110,43 @@ export default {
       this.httpPost('/login', value, (json) => {
         if (json.status === 200) {
           const userData = json.data
-          // 保存用户
+          // 检查用户是否开启两步认证
+          if (!userData.loginStatus && userData.otp === 1) {
+            // 弹出两步认证验证码输入弹窗
+            this.totpUserInfo = userData
+            this.showTotpDialog = true
+            this.totpCode = ''
+          } else {
+            // 保存用户
+            this.user.setUserData(userData)
+            // 检查是否有重定向参数
+            const redirect = this.$route.query.redirect
+            // 如果有重定向参数，则跳转到指定页面，否则跳转到首页
+            this.$router.push(redirect || '/')
+          }
+        } else if (json.status === 4002) {
+          this.message = StringUtils.dataErrorMessage(json.data)
+          this.showMessage = true
+        } else if (json.status === 1001) {
+          this.message = json.data
+          this.showMessage = true
+        } else {
+          this.message = json.message
+          this.showMessage = true
+        }
+      })
+    },
+    loginTOTP() {
+      const data = {
+        code: this.totpCode,
+        key: this.totpUserInfo.key,
+      }
+      this.httpPost('/login/totp', data, (json) => {
+        if (json.status === 200) {
+          const userData = json.data
           this.user.setUserData(userData)
+          // 关闭弹窗
+          this.showTotpDialog = false
           // 检查是否有重定向参数
           const redirect = this.$route.query.redirect
           // 如果有重定向参数，则跳转到指定页面，否则跳转到首页
@@ -91,11 +154,20 @@ export default {
         } else if (json.status === 4002) {
           this.message = StringUtils.dataErrorMessage(json.data)
           this.showMessage = true
+        } else if (json.status === 1001) {
+          this.message = json.data
+          this.showMessage = true
         } else {
           this.message = json.message
           this.showMessage = true
         }
       })
+    },
+    cancelTotp() {
+      // 取消两步验证，关闭弹窗
+      this.showTotpDialog = false
+      this.totpCode = ''
+      this.totpUserInfo = {}
     },
     register(value) {
       this.httpPost('/register', value, (json) => {

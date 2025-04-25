@@ -34,7 +34,8 @@ Most core features have been implemented, including:
 - Comments  
 - Likes  
 - Automatic thumbnail generation  
-- Data management  
+- Data management 
+- TOTP 2FA 
 
 Some minor features are still being optimized.  
 

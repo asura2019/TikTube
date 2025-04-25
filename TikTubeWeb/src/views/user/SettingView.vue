@@ -5,6 +5,7 @@
       <v-tab @click="setType(1)">头像设置</v-tab>
       <v-tab @click="setType(2)">首页顶部图</v-tab>
       <v-tab @click="setType(3)">密码邮箱手机设置</v-tab>
+      <v-tab @click="setType(5)">两步验证</v-tab>
       <v-tab @click="setType(4)">登录历史</v-tab>
     </v-tabs>
     <UserBaseSetting v-if="type == 0" />
@@ -12,6 +13,7 @@
     <UserTopImage v-if="type == 2" />
     <UserPasswordSetting v-if="type === 3" />
     <UserLoginLog v-if="type === 4" />
+    <TwoFactorAuthentication v-if="type === 5" />
   </v-container>
 </template>
 
@@ -21,6 +23,7 @@ import UserHeadSetting from '@/components/setting/UserHeadSetting.vue'
 import UserLoginLog from '@/components/setting/UserLoginLog.vue'
 import UserPasswordSetting from '@/components/setting/UserPasswordSetting.vue'
 import UserTopImage from '@/components/setting/UserTopImage.vue'
+import TwoFactorAuthentication from '@/components/setting/TwoFactorAuthentication.vue'
 
 export default {
   name: 'UserSetting',
@@ -30,6 +33,7 @@ export default {
     UserPasswordSetting,
     UserHeadSetting,
     UserTopImage,
+    TwoFactorAuthentication,
   },
   data() {
     return {

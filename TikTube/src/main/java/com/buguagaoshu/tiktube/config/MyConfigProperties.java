@@ -18,7 +18,13 @@ public class MyConfigProperties {
 
     private Boolean isTheProxyConfigured;
 
+    private String appName;
+
     public Boolean getIsTheProxyConfigured() {
         return Objects.requireNonNullElse(this.isTheProxyConfigured, false);
+    }
+
+    public String getAppName() {
+        return Objects.requireNonNullElse(this.appName, "TikTube");
     }
 }

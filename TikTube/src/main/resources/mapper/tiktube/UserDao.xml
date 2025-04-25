@@ -19,6 +19,8 @@
         <result property="introduction" column="introduction"/>
         <result property="lastPublishTime" column="last_publish_time"/>
         <result property="otp" column="otp"/>
+        <result property="otp" column="otp_secret" />
+        <result property="otpRecovery" column="otp_recovery"/>
         <result property="status" column="status"/>
         <result property="blockEndTime" column="block_end_time"/>
     </resultMap>

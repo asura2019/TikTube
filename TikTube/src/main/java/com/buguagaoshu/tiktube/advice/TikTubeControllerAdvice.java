@@ -24,7 +24,7 @@ public class TikTubeControllerAdvice {
     @ExceptionHandler(value = {Exception.class})
     public ResponseDetails handleException(Exception e) {
 
-        return ResponseDetails.ok(0, e.getMessage());
+        return ResponseDetails.ok(-1, e.getMessage());
     }
 
 

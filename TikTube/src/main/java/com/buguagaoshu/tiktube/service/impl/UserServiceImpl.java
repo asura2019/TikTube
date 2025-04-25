@@ -5,15 +5,15 @@ import com.buguagaoshu.tiktube.dto.LoginDetails;
 import com.buguagaoshu.tiktube.dto.PasswordDto;
 import com.buguagaoshu.tiktube.entity.InvitationCodeEntity;
 import com.buguagaoshu.tiktube.entity.UserRoleEntity;
-import com.buguagaoshu.tiktube.enums.FileTypeEnum;
-import com.buguagaoshu.tiktube.enums.NotificationType;
-import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
-import com.buguagaoshu.tiktube.enums.RoleTypeEnum;
+import com.buguagaoshu.tiktube.enums.*;
 import com.buguagaoshu.tiktube.exception.UserNotFoundException;
 import com.buguagaoshu.tiktube.service.*;
 import com.buguagaoshu.tiktube.utils.*;
 import com.buguagaoshu.tiktube.vo.AdminAddUserData;
+import com.buguagaoshu.tiktube.vo.TOTPLoginKey;
+import com.buguagaoshu.tiktube.vo.TwoFactorData;
 import com.buguagaoshu.tiktube.vo.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +34,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import static net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
+
 
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements UserService {
@@ -49,6 +51,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     private static final int COOKIE_EXPIRATION_TIME = 1296000;
 
 
+    private static final long TEN_MINUTES =  600000;
+
+
     private final UserRoleService userRoleService;
 
 
@@ -61,18 +66,25 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
     private final FileTableService fileTableService;
 
+    private final TwoFactorAuthenticationServer twoFactorAuthenticationServer;
+
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Autowired
     public UserServiceImpl(UserRoleService userRoleService,
                            VerifyCodeService verifyCodeService,
                            LoginLogService loginLogService,
                            InvitationCodeService invitationCodeService,
-                           FileTableService fileTableService) {
+                           FileTableService fileTableService,
+                           TwoFactorAuthenticationServer twoFactorAuthenticationServer) {
         this.userRoleService = userRoleService;
         this.verifyCodeService = verifyCodeService;
         this.loginLogService = loginLogService;
         this.invitationCodeService = invitationCodeService;
         this.fileTableService = fileTableService;
+        this.twoFactorAuthenticationServer = twoFactorAuthenticationServer;
     }
 
 
@@ -137,44 +149,100 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         }
 
         if (PasswordUtil.judgePassword(loginDetails.getPassword(), userEntity.getPassword())) {
-            User user = new User();
-            BeanUtils.copyProperties(userEntity, user);
-            long time = System.currentTimeMillis();
-            long expirationTime = EXPIRATION_TIME;
-            int cookExpirationTime = -1;
-            String jwt = "";
-            UserRoleEntity userRoleEntity = userRoleService.findByUserId(userEntity.getId());
-            if (userRoleEntity.getRole().equals(RoleTypeEnum.VIP.getRole())) {
-                if (userRoleEntity.getVipStopTime() < System.currentTimeMillis()) {
-                    userRoleEntity.setRole(RoleTypeEnum.USER.getRole());
-                    userRoleService.updateById(userRoleEntity);
+            // 判断是否开启了两步认证
+            if (userEntity.getOtp().equals(TwoFactorAuthenticationType.COLOS)) {
+                return loginSuccess(userEntity, loginDetails, response, request);
+            } else {
+                // 处理两步认证
+                // 返回 AES KEY 构造临时令牌
+
+                try {
+                    TOTPLoginKey totpLoginKey = new TOTPLoginKey();
+                    totpLoginKey.setUser(userEntity);
+                    totpLoginKey.setLoginDetails(loginDetails);
+                    totpLoginKey.setExpire(System.currentTimeMillis() + TEN_MINUTES);
+                    String json = objectMapper.writeValueAsString(totpLoginKey);
+                    // 加密 json
+                    String encrypt = AesUtil.getInstance().encrypt(json);
+                    User user = new User();
+                    user.setLoginStatus(false);
+                    user.setOtp(1);
+                    user.setKey(encrypt);
+                    return user;
+                } catch (Exception e) {
+                    throw new UserNotFoundException("请检查用户名或密码!");
                 }
             }
-
-            user.setUserRoleEntity(userRoleEntity);
-            if (loginDetails.getRememberMe() != null && loginDetails.getRememberMe()) {
-                expirationTime = COOKIE_EXPIRATION_TIME * 1000 + time;
-                cookExpirationTime = COOKIE_EXPIRATION_TIME;
-            } else {
-                expirationTime += time;
-            }
-
-            user.setExpireTime(expirationTime);
-            user.setPassword("");
-            jwt = JwtUtil.createJwt(userEntity.getMail(), String.valueOf(userEntity.getId()), userRoleEntity.getRole(), expirationTime, userRoleEntity.getVipStopTime());
-            // 传递 token
-            Cookie cookie = new Cookie(WebConstant.COOKIE_TOKEN, jwt);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(cookExpirationTime);
-            response.addCookie(cookie);
-            // 写入登录日志
-            loginLogService.saveLoginLog(userEntity, request);
-            return user;
         } else {
             throw new UserNotFoundException("请检查用户名或密码!");
         }
 
+    }
+
+    @Override
+    public User loginTOTP(TOTPLoginKey userTotpLogin, HttpServletRequest request, HttpServletResponse response) {
+        // 获取 AES 加密临时 KEY,并解密
+        String decrypt = AesUtil.getInstance().decrypt(userTotpLogin.getKey());
+        try {
+            TOTPLoginKey totpLoginKey = objectMapper.readValue(decrypt, TOTPLoginKey.class);
+            // 检查令牌有效期
+            if (totpLoginKey.getExpire() >= System.currentTimeMillis()) {
+                // 检查 CODE
+                UserEntity user1 = totpLoginKey.getUser();
+                boolean code = twoFactorAuthenticationServer.verifyTOTPCode(user1.getId(), user1.getOtpSecret(), userTotpLogin.getCode());
+                if (code) {
+                    return loginSuccess(user1, totpLoginKey.getLoginDetails(), response, request);
+                } else {
+                    throw new UserNotFoundException("验证码错误!");
+                }
+
+            } else {
+                throw new UserNotFoundException("登录信息已过期，请返回重新登录！");
+            }
+        } catch (Exception e) {
+            throw new UserNotFoundException("登录验证码输入错误！");
+        }
+    }
+
+    public User loginSuccess(UserEntity userEntity,
+                             LoginDetails loginDetails,
+                             HttpServletResponse response,
+                             HttpServletRequest request) {
+        User user = new User();
+        BeanUtils.copyProperties(userEntity, user);
+        long time = System.currentTimeMillis();
+        long expirationTime = EXPIRATION_TIME;
+        int cookExpirationTime = -1;
+        String jwt = "";
+        UserRoleEntity userRoleEntity = userRoleService.findByUserId(userEntity.getId());
+        if (userRoleEntity.getRole().equals(RoleTypeEnum.VIP.getRole())) {
+            if (userRoleEntity.getVipStopTime() < System.currentTimeMillis()) {
+                userRoleEntity.setRole(RoleTypeEnum.USER.getRole());
+                userRoleService.updateById(userRoleEntity);
+            }
+        }
+
+        user.setUserRoleEntity(userRoleEntity);
+        if (loginDetails.getRememberMe() != null && loginDetails.getRememberMe()) {
+            expirationTime = COOKIE_EXPIRATION_TIME * 1000 + time;
+            cookExpirationTime = COOKIE_EXPIRATION_TIME;
+        } else {
+            expirationTime += time;
+        }
+
+        user.setExpireTime(expirationTime);
+        user.setPassword("");
+        jwt = JwtUtil.createJwt(userEntity.getMail(), String.valueOf(userEntity.getId()), userRoleEntity.getRole(), expirationTime, userRoleEntity.getVipStopTime());
+        // 传递 token
+        Cookie cookie = new Cookie(WebConstant.COOKIE_TOKEN, jwt);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(cookExpirationTime);
+        response.addCookie(cookie);
+        // 写入登录日志
+        loginLogService.saveLoginLog(userEntity, request);
+        user.setLoginStatus(true);
+        return user;
     }
 
     @Override
@@ -431,6 +499,74 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     @Override
     public void updateLastPublishTime(long time, long userId) {
         this.baseMapper.updateLastPublishTime(time, userId);
+    }
+
+
+    @Override
+    public TwoFactorData openTOTP(Long userId, boolean checkOpen) {
+        UserEntity user = this.getById(userId);
+        if (user == null) {
+            return null;
+        }
+        if (user.getOtp().equals(TwoFactorAuthenticationType.TOTP)) {
+            return null;
+        }
+        return updateTOTP(user);
+    }
+
+    @Override
+    public boolean closeTOTP(TwoFactorData twoFactorData, Long userId) {
+        UserEntity user = this.getById(userId);
+        if (user == null) {
+            return false;
+        }
+        if (!user.getOtp().equals(TwoFactorAuthenticationType.TOTP)) {
+            return false;
+        }
+        boolean code = twoFactorAuthenticationServer.verifyTOTPCode(userId, user.getOtpSecret(), twoFactorData.getCode());
+        if (code) {
+            user.setOtp(TwoFactorAuthenticationType.COLOS);
+            user.setOtpRecovery(null);
+            user.setOtpRecovery(null);
+            this.updateById(user);
+            return true;
+        }
+        return false;
+    }
+
+    public TwoFactorData updateTOTP(UserEntity user) {
+        TwoFactorData totpInfo = twoFactorAuthenticationServer.createTOTPInfo(user.getId(), user.getMail());
+        user.setOtp(TwoFactorAuthenticationType.TOTP);
+        user.setOtpSecret(totpInfo.getSecret());
+        user.setOtpRecovery(PasswordUtil.encode(totpInfo.getRecoveryCode()));
+        this.updateById(user);
+        return totpInfo;
+    }
+
+    @Override
+    public TwoFactorData recoveryTOTP(TwoFactorData twoFactorData, long userId) {
+        // 校验用户恢复码
+        UserEntity user = this.getById(userId);
+        if (PasswordUtil.judgePassword(twoFactorData.getRecoveryCode(), user.getOtpRecovery())) {
+            return updateTOTP(user);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean checkTOTP(TwoFactorData twoFactorData, long userId) {
+        UserEntity user = this.getById(userId);
+        return twoFactorAuthenticationServer.verifyTOTPCode(userId, user.getOtpSecret(), twoFactorData.getCode());
+    }
+
+    @Override
+    public TwoFactorData createNewTOTP(TwoFactorData twoFactorData, long userId) {
+        UserEntity user = this.getById(userId);
+        boolean code = twoFactorAuthenticationServer.verifyTOTPCode(userId, user.getOtpSecret(), twoFactorData.getCode());
+        if (code) {
+            return updateTOTP(user);
+        }
+        return null;
     }
 
 

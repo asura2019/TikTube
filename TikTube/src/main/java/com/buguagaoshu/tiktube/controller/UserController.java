@@ -14,6 +14,7 @@ import com.buguagaoshu.tiktube.utils.MyStringUtils;
 import com.buguagaoshu.tiktube.utils.PageUtils;
 import com.buguagaoshu.tiktube.vo.AdminAddUserData;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
+import com.buguagaoshu.tiktube.vo.TOTPLoginKey;
 import com.buguagaoshu.tiktube.vo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,13 +52,20 @@ public class UserController {
         return ResponseDetails.ok().put("data", userService.login(loginDetails, request, response));
     }
 
+    @PostMapping("/api/login/totp")
+    public ResponseDetails loginTOTP(@RequestBody TOTPLoginKey totpLoginKey,
+                                     HttpServletResponse response,
+                                     HttpServletRequest request) {
+        return ResponseDetails.ok().put("data", userService.loginTOTP(totpLoginKey, request, response));
+    }
+
 
     @PostMapping("/api/register")
     public ResponseDetails register(@Valid @RequestBody UserEntity userEntity, HttpServletRequest request) {
         return ResponseDetails.ok(userService.register(userEntity, request));
     }
 
-    @GetMapping("/api/logout")
+    @PostMapping("/api/logout")
     public ResponseDetails logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = WebUtils.getCookie(request, WebConstant.COOKIE_TOKEN);
         if (cookie == null) {

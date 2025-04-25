@@ -23,11 +23,11 @@
               :items-per-page="size"
               v-model:page="page"
             >
-              <template v-slot:item.loginTime="{ item }">
+              <template #[`item.loginTime`]="{ item }">
                 {{ TimeUtil.renderTime(item.loginTime) }}
               </template>
 
-              <template v-slot:item.ua="{ item }">
+              <template #[`item.ua`]="{ item }">
                 <v-chip color="blue">
                   {{ getUaInfo(item.ua) }}
                 </v-chip>

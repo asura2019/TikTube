@@ -87,7 +87,11 @@ export default {
     },
     getSystemNotice() {
       this.httpGet(`/web/notice`, (json) => {
-        this.systemNotice = json.data
+        if (json.data.show === 'true') {
+          this.systemNotice = json.data
+        } else {
+          this.systemNotice = null
+        }
       })
     },
     setCategory(value) {

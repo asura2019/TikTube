@@ -4,6 +4,7 @@ tiktube:
   is-the-proxy-configured: false
   # IP地址数据库
   ip-db-path: E:\\Spring\\PornTube\\TikTube\\ip2region.xdb
+  app-name: "TikTube"
 
 server:
   port: 8080

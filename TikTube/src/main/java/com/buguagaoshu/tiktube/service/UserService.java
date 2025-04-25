@@ -8,10 +8,13 @@ import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
 import com.buguagaoshu.tiktube.utils.PageUtils;
 import com.buguagaoshu.tiktube.entity.UserEntity;
 import com.buguagaoshu.tiktube.vo.AdminAddUserData;
+import com.buguagaoshu.tiktube.vo.TOTPLoginKey;
+import com.buguagaoshu.tiktube.vo.TwoFactorData;
 import com.buguagaoshu.tiktube.vo.User;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +41,13 @@ public interface UserService extends IService<UserEntity> {
      * @return 用户登录信息
      * */
     User login(LoginDetails loginDetails, HttpServletRequest request, HttpServletResponse response);
+
+
+
+    /**
+     * TOTP 两步认证接口
+     * */
+    User loginTOTP(TOTPLoginKey userTotpLogin, HttpServletRequest request, HttpServletResponse response);
 
     /**
      * 注册接口
@@ -99,5 +109,28 @@ public interface UserService extends IService<UserEntity> {
 
 
     void updateLastPublishTime(long time, long userId);
+
+    /**
+     * 开启 TOTP 两步认证
+     * @param checkOpen 检查是否已经开启了两步认证
+     * */
+    TwoFactorData openTOTP(Long userId, boolean checkOpen);
+
+
+    boolean closeTOTP(TwoFactorData twoFactorData, Long userId);
+
+
+    /**
+     * 重置两步认证密钥
+     * */
+    TwoFactorData recoveryTOTP(TwoFactorData twoFactorData, long userId);
+
+
+    boolean checkTOTP(TwoFactorData twoFactorData, long userId);
+
+    /**
+     * 创建新的两步认证密钥
+     * */
+    TwoFactorData createNewTOTP(TwoFactorData twoFactorData, long userId);
 }
 
