@@ -6,12 +6,15 @@ import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.dto.VideoArticleDto;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.service.ArticleService;
+import com.buguagaoshu.tiktube.vo.ArticleViewData;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,7 +75,11 @@ public class ArticleController {
     @GetMapping("/api/article/video/{id}")
     public ResponseDetails getVideo(@PathVariable(value = "id") Long id,
                                     HttpServletRequest request) {
-        return ResponseDetails.ok().put("data", articleService.getVideo(id, request));
+        ArticleViewData video = articleService.getVideo(id, request);
+        // 获取推荐内容
+        List<ArticleViewData> recommendationsByTags = articleService.getRecommendationsByTags(video.getTag(), video.getId(), 10);
+        video.setSimilar(recommendationsByTags);
+        return ResponseDetails.ok().put("data", video);
     }
 
     @GetMapping("/api/article/edit/{id}")

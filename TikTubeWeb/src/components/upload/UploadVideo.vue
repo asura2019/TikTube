@@ -320,7 +320,7 @@
 <script>
 import FilePondUpdate from '@/components/upload/FilepondUpload.vue'
 import VideoThumbnailCapture from '@/components/upload/VideoThumbnailCapture.vue'
-
+import StringUtils from '@/utils/string-utils.vue'
 export default {
   components: {
     FilePondUpdate,
@@ -519,15 +519,7 @@ export default {
           )
           this.$router.push('/studio')
         } else if(json.status === 4002) {
-          let result = '';
-          if (json.data != null) {
-            for (const key in json.data) {
-              result += json.data[key] + '\n';
-            }
-            this.showErrorMessage(result)
-          } else {
-            this.showErrorMessage('数据校验错误')
-          }
+          this.showErrorMessage(StringUtils.dataErrorMessage(json.data))
         } else {
           this.showErrorMessage(json.message || '提交失败')
         }

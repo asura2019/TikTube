@@ -1,9 +1,6 @@
 package com.buguagaoshu.tiktube.service.impl;
 
-import com.buguagaoshu.tiktube.cache.CategoryCache;
-import com.buguagaoshu.tiktube.cache.CountRecorder;
-import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
-import com.buguagaoshu.tiktube.cache.WebSettingCache;
+import com.buguagaoshu.tiktube.cache.*;
 import com.buguagaoshu.tiktube.config.WebConstant;
 import com.buguagaoshu.tiktube.dto.ExamineDto;
 import com.buguagaoshu.tiktube.dto.VideoArticleDto;
@@ -14,6 +11,7 @@ import com.buguagaoshu.tiktube.service.*;
 import com.buguagaoshu.tiktube.utils.*;
 import com.buguagaoshu.tiktube.vo.ArticleViewData;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -990,6 +989,92 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         this.baseMapper.addCount(col, articleId, count);
     }
 
+    @Override
+    public List<ArticleViewData> getRecommendationsByArticleId(Long articleId, int limit) {
+        if (articleId == null || articleId <= 0) {
+            return Collections.emptyList();
+        }
+        
+        // 获取文章信息
+        ArticleEntity article = this.getById(articleId);
+        if (article == null) {
+            return Collections.emptyList();
+        }
+        
+        // 解析标签
+        List<String> tags = parseTagsFromJson(article.getTag());
+        if (tags.isEmpty()) {
+            // 如果没有标签，返回热门文章作为推荐
+            return hotView(limit);
+        }
+        
+        // 根据标签获取推荐
+        return getRecommendationsByTags(tags, articleId, limit);
+    }
+    
+    @Override
+    public List<ArticleViewData> getRecommendationsByTags(List<String> tags, Long excludeArticleId, int limit) {
+        if (tags == null || tags.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        // 构建标签模糊匹配条件
+        List<String> tagLikePatterns = new ArrayList<>(tags.size());
+        for (String tag : tags) {
+            // 使用模糊匹配查找包含该标签的文章
+            tagLikePatterns.add("%" + tag + "%");
+        }
+        
+        // 查询数据库获取相似文章
+        List<ArticleEntity> similarArticles = baseMapper.findSimilarArticlesByTags(tagLikePatterns, excludeArticleId, limit);
+
+        // 如果没有找到足够的相似文章，补充一些热门文章
+        if (similarArticles.size() < limit) {
+            int remainingCount = limit - similarArticles.size();
+            List<ArticleViewData> hotArticles = HotCache.hotList; // 获取更多热门文章以便过滤
+            
+            // 过滤掉已经在相似文章中的文章
+            Set<Long> existingIds = similarArticles.stream()
+                .map(ArticleEntity::getId)
+                .collect(Collectors.toSet());
+            
+            if (excludeArticleId != null) {
+                existingIds.add(excludeArticleId);
+            }
+            
+            List<ArticleViewData> filteredHotArticles = hotArticles.stream()
+                .filter(article -> !existingIds.contains(article.getId()))
+                .limit(remainingCount)
+                .toList();
+            
+            // 将相似文章转换为ArticleViewData
+            List<ArticleViewData> result = addUserInfo(similarArticles);
+            
+            // 添加热门文章补充
+            result.addAll(filteredHotArticles);
+            
+            return result;
+        }
+        
+        // 将查询结果转换为ArticleViewData并返回
+        return addUserInfo(similarArticles);
+    }
+    
+    /**
+     * 从JSON字符串中解析标签列表
+     */
+    private List<String> parseTagsFromJson(String tagJson) {
+        if (StringUtils.isEmpty(tagJson)) {
+            return Collections.emptyList();
+        }
+        
+        try {
+            return OBJECT_MAPPER.readValue(tagJson, new TypeReference<List<String>>() {});
+        } catch (IOException e) {
+            log.warn("解析标签JSON失败: {}", tagJson, e);
+            return Collections.emptyList();
+        }
+    }
 
     /**
      * 为文章添加分类信息

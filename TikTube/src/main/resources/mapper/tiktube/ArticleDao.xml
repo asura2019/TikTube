@@ -100,4 +100,24 @@
         LIMIT #{limit}
     </select>
 
+    <!-- 根据标签查找相似文章 -->
+    <select id="findSimilarArticlesByTags" resultMap="articleMap">
+        SELECT *
+        FROM article
+        WHERE status = 0
+          AND examine_status = 1
+          <if test="articleId != null">
+              AND id != #{articleId}
+          </if>
+          AND (
+            <foreach collection="tagLikeList" item="tagPattern" separator=" OR ">
+                tag LIKE #{tagPattern}
+            </foreach>
+          )
+        ORDER BY update_time DESC
+        <if test="limit > 0">
+            LIMIT #{limit}
+        </if>
+    </select>
+
 </mapper>

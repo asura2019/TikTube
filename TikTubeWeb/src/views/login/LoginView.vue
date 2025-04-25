@@ -55,7 +55,7 @@ import LoginFrom from '@/components/form/LoginForm.vue'
 import RegisterFrom from '@/components/form/RegisterForm.vue'
 import { useWebInfoStore } from '@/stores/webInfoStore'
 import { useUserStore } from '@/stores/userStore'
-
+import StringUtils from '@/utils/string-utils.vue'
 export default {
   name: 'LoginView',
   components: {
@@ -88,6 +88,9 @@ export default {
           const redirect = this.$route.query.redirect
           // 如果有重定向参数，则跳转到指定页面，否则跳转到首页
           this.$router.push(redirect || '/')
+        } else if (json.status === 4002) {
+          this.message = StringUtils.dataErrorMessage(json.data)
+          this.showMessage = true
         } else {
           this.message = json.message
           this.showMessage = true
@@ -100,6 +103,9 @@ export default {
           this.message = '注册成功，即将为你跳转到登录页面！'
           this.showMessage = true
           this.moveRegister()
+        } else if (json.status === 4002) {
+          this.message = StringUtils.dataErrorMessage(json.data)
+          this.showMessage = true
         } else {
           this.message = json.message
           this.showMessage = true

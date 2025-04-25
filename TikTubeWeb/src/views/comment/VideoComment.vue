@@ -81,6 +81,7 @@
 import Vditor from '@/components/vditor/VditorComponents.vue'
 import CommentCard from '@/components/card/comment/CommentCard.vue'
 import { useUserStore } from '@/stores/userStore'
+import StringUtils from '@/utils/string-utils.vue'
 export default {
   name: 'VideoComment',
   components: {
@@ -168,15 +169,7 @@ export default {
           this.$refs.commentVditor.setTextValue('')
           this.getCommentList()
         } else if (json.status === 4002) {
-          let result = '';
-          if (json.data != null) {
-            for (const key in json.data) {
-              result += json.data[key] + '\n';
-            }
-            this.message = result
-          } else {
-            this.message = json.message
-          }
+          this.message = StringUtils.dataErrorMessage(json.data)
           this.showMessage = true
         } else {
           this.message = json.message

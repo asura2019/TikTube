@@ -162,10 +162,91 @@
 
         <!-- 右侧推荐视频（在宽屏下显示） -->
         <v-col v-if="colsWidth === 8" cols="4">
-          <v-card class="mb-4" variant="elevated">
-            <v-card-title>推荐视频</v-card-title>
+          <v-card class="mb-4">
+            <v-card-title class="d-flex align-center">
+              <v-icon class="mr-2">mdi-playlist-play</v-icon>
+              推荐视频
+            </v-card-title>
             <v-card-text>
-              <p class="text-center text-body-2 text-grey">暂无推荐视频</p>
+              <p
+                class="text-center text-body-2 text-grey mb-3"
+                v-if="videoData.similar && videoData.similar.length === 0"
+              >
+                暂无推荐视频
+              </p>
+              <p
+                class="text-center text-body-2 text-grey mb-3"
+                v-else-if="videoData.similar && allItemsHaveSort"
+              >
+                暂未发现可以推荐的视频，为你推荐热门内容
+              </p>
+              <v-row>
+                <v-col cols="12" v-for="item in videoData.similar" :key="item.id" class="py-2">
+                  <div class="position-relative">
+                    <VideoCared :video="item" />
+                    <v-chip
+                      v-if="item.sort !== null && item.sort !== undefined"
+                      color="red"
+                      size="small"
+                      class="position-absolute top-0 start-0 ma-2 pa-1"
+                      variant="elevated"
+                    >
+                      <v-icon size="x-small" start>mdi-fire</v-icon>
+                      热门
+                    </v-chip>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- 小屏幕下的推荐视频（在评论区后面显示） -->
+      <v-row v-if="colsWidth === 12 && videoData != null">
+        <v-col cols="12">
+          <v-card class="mb-4">
+            <v-card-title class="d-flex align-center">
+              <v-icon class="mr-2">mdi-playlist-play</v-icon>
+              推荐视频
+            </v-card-title>
+            <v-card-text>
+              <p
+                class="text-center text-body-2 text-grey mb-3"
+                v-if="videoData.similar && videoData.similar.length === 0"
+              >
+                暂无推荐视频
+              </p>
+              <p
+                class="text-center text-body-2 text-grey mb-3"
+                v-else-if="videoData.similar && allItemsHaveSort"
+              >
+                暂未发现可以推荐的视频，为你推荐热门内容
+              </p>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                  v-for="item in videoData.similar"
+                  :key="item.id"
+                  class="py-2"
+                >
+                  <div class="position-relative">
+                    <VideoCared :video="item" />
+                    <v-chip
+                      v-if="item.sort !== null && item.sort !== undefined"
+                      color="red"
+                      size="small"
+                      class="position-absolute top-0 start-0 ma-2 pa-1"
+                      variant="elevated"
+                    >
+                      <v-icon size="x-small" start>mdi-fire</v-icon>
+                      热门
+                    </v-chip>
+                  </div>
+                </v-col>
+              </v-row>
             </v-card-text>
           </v-card>
         </v-col>
@@ -185,12 +266,15 @@ import PlayerVideo from '@/components/player/PlayerVideo.vue'
 import Comment from '@/views/comment/VideoComment.vue'
 import { useUserStore } from '@/stores/userStore'
 import ShareCard from '@/components/card/ShareCard.vue'
+import VideoCared from '@/components/card/VideoCard.vue'
+
 export default {
   name: 'VideoView',
   components: {
     PlayerVideo,
     Comment,
     ShareCard,
+    VideoCared,
   },
   data() {
     return {
@@ -213,6 +297,14 @@ export default {
       },
       shareDialog: false,
     }
+  },
+  computed: {
+    allItemsHaveSort() {
+      if (!this.videoData || !this.videoData.similar || this.videoData.similar.length === 0) {
+        return false
+      }
+      return this.videoData.similar.every((item) => item.sort !== null && item.sort !== undefined)
+    },
   },
   created() {
     window.scrollTo({
@@ -431,5 +523,22 @@ export default {
 <style>
 .category-link {
   color: #1867c0;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.position-absolute {
+  position: absolute;
+  z-index: 1;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.start-0 {
+  left: 0;
 }
 </style>

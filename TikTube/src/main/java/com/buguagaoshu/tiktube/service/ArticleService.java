@@ -127,5 +127,22 @@ public interface ArticleService extends IService<ArticleEntity> {
 
 
     void addCount(String col, Long articleId, long count);
+
+    /**
+     * 根据文章ID获取相似推荐内容
+     * @param articleId 文章ID
+     * @param limit 推荐数量限制
+     * @return 推荐的文章列表
+     */
+    List<ArticleViewData> getRecommendationsByArticleId(Long articleId, int limit);
+    
+    /**
+     * 根据标签列表获取推荐内容
+     * @param tags 标签列表
+     * @param excludeArticleId 需要排除的文章ID
+     * @param limit 推荐数量限制
+     * @return 推荐的文章列表
+     */
+    List<ArticleViewData> getRecommendationsByTags(List<String> tags, Long excludeArticleId, int limit);
 }
 

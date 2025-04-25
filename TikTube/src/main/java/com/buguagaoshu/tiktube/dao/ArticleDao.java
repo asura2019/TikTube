@@ -48,4 +48,15 @@ public interface ArticleDao extends BaseMapper<ArticleEntity> {
      * @return 按创建时间排序的最新文章列表
      */
     List<ArticleEntity> findLatestArticlesWithScore(@Param("limit") int limit);
+    
+    /**
+     * 根据标签查找相似文章
+     * @param tagLikeList 标签模糊匹配列表
+     * @param articleId 当前文章ID（排除自身）
+     * @param limit 限制数量
+     * @return 相似文章列表
+     */
+    List<ArticleEntity> findSimilarArticlesByTags(@Param("tagLikeList") List<String> tagLikeList, 
+                                                 @Param("articleId") Long articleId,
+                                                 @Param("limit") int limit);
 }

@@ -130,4 +130,7 @@ public class ArticleViewData {
     private Double sort;
 
     private List<FileTableEntity> video;
+
+
+    private List<ArticleViewData> similar;
 }
