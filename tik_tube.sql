@@ -1,39 +1,22 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : mjm
- Source Server Type    : MySQL
- Source Server Version : 80021
- Source Host           : 192.168.1.107:3306
- Source Schema         : tik_tube
-
- Target Server Type    : MySQL
- Target Server Version : 80021
- File Encoding         : 65001
-
- Date: 10/09/2020 18:18:07
-*/
-
 SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
+SET FOREIGN_KEY_CHECKS = 0
 -- ----------------------------
 -- Table structure for article
 -- ----------------------------
 DROP TABLE IF EXISTS `article`;
 CREATE TABLE `article`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `img_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '图片url',
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '标题',
-  `describes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '简介',
+  `img_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '图片url',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标题',
+  `describes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '简介',
   `view_count` bigint NOT NULL DEFAULT 0 COMMENT '观看次数',
   `like_count` bigint NOT NULL DEFAULT 0 COMMENT '点赞次数',
   `favorite_count` bigint NOT NULL DEFAULT 0 COMMENT '收藏次数',
   `dislike_count` bigint NOT NULL DEFAULT 0 COMMENT '不喜欢次数',
   `examine_status` int NOT NULL COMMENT '审核情况 【0 暂未审核， 1 通过， 2 不通过】向西见枚举类',
-  `examine_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '审核意见',
+  `examine_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '审核意见',
   `category` int NOT NULL COMMENT '分区',
-  `tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '标签',
+  `tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标签',
   `user_id` bigint NOT NULL COMMENT '发帖人ID',
   `type` int NOT NULL COMMENT '类型 【0 视频， 1 图片  2 文章】',
   `create_time` bigint NOT NULL COMMENT '发布时间',
@@ -56,7 +39,7 @@ CREATE TABLE `article`  (
   INDEX `find_video_by_user`(`user_id`) USING BTREE,
   INDEX `find_video_by_type`(`type`) USING BTREE,
   INDEX `find_video_by_tag`(`tag`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '视频，图片，文章 发帖表\r\n\r\nTODO 回复消息可见，加密帖子，视频等' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '视频，图片，文章 发帖表\r\n\r\nTODO 回复消息可见，加密帖子，视频等' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for category
@@ -64,16 +47,16 @@ CREATE TABLE `article`  (
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category`  (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '分区名',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '分区名',
   `type` int NOT NULL COMMENT '分区级别【1 一级分区， 2 二级分区】',
   `father_id` int NULL DEFAULT NULL COMMENT '父级分区',
-  `describes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '介绍',
-  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '图标',
+  `describes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '介绍',
+  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图标',
   `sort` int NOT NULL DEFAULT 0 COMMENT '排序',
   `create_time` bigint NOT NULL,
   `update_time` bigint NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for comment
@@ -83,7 +66,7 @@ CREATE TABLE `comment`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `article_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
-  `comment` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '评论',
+  `comment` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '评论',
   `comment_id` bigint NULL DEFAULT NULL COMMENT '父级评论',
   `parent_comment_id` bigint NULL DEFAULT NULL COMMENT '父级评论',
   `parent_user_id` bigint NULL DEFAULT NULL COMMENT '评论对象',
@@ -102,7 +85,7 @@ CREATE TABLE `comment`  (
   INDEX `find_comment_by_user`(`user_id`) USING BTREE,
   INDEX `find_comment_by_type`(`type`) USING BTREE,
   INDEX `find_comment_by_status`(`status`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for danmaku
@@ -111,8 +94,8 @@ DROP TABLE IF EXISTS `danmaku`;
 CREATE TABLE `danmaku`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `video_id` bigint NOT NULL COMMENT '视频ID',
-  `color` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '弹幕颜色',
-  `text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '弹幕内容',
+  `color` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '弹幕颜色',
+  `text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '弹幕内容',
   `time` double NOT NULL COMMENT '时间',
   `type` int NULL DEFAULT NULL COMMENT '类型',
   `author` bigint NOT NULL COMMENT '作者',
@@ -125,7 +108,7 @@ CREATE TABLE `danmaku`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_danmaku_by_vido_id`(`video_id`) USING BTREE,
   INDEX `find_danmaku_by_userID`(`video_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '弹幕表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '弹幕表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for dislike_table
@@ -140,7 +123,7 @@ CREATE TABLE `dislike_table`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_like_by_user`(`user_id`) USING BTREE,
   INDEX `find_like_bu_artice`(`dislike_obj_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '点踩' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '点踩' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for favorites_table
@@ -155,7 +138,7 @@ CREATE TABLE `favorites_table`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_like_by_user`(`user_id`) USING BTREE,
   INDEX `find_like_bu_artice`(`artice_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '收藏夹' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '收藏夹' ROW_FORMAT = DYNAMIC;
 
 
 -- ----------------------------
@@ -167,9 +150,9 @@ CREATE TABLE `favorites_label`  (
   `name` bigint NOT NULL,
   `user_id` bigint NOT NULL,  
   `create_time` bigint NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `find_favorites_lable_by_user`(`user_id`) USING BTREE,
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '收藏夹' ROW_FORMAT = DYNAMIC;
+  PRIMARY KEY (`id`),
+  INDEX `find_favorites_lable_by_user`(`user_id`),
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '收藏夹' ROW_FORMAT = DYNAMIC;
 
 
 -- ----------------------------
@@ -179,21 +162,21 @@ DROP TABLE IF EXISTS `file_table`;
 CREATE TABLE `file_table`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `article_id` bigint NULL DEFAULT NULL COMMENT '视频，图片，文章ID， 需要后期更新，没有此项的文件后期需要清楚',
-  `file_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '服务器保存的文件地址',
-  `file_original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文件原始名',
-  `file_new_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '新的文件名',
+  `file_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '服务器保存的文件地址',
+  `file_original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件原始名',
+  `file_new_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '新的文件名',
   `size` bigint NOT NULL COMMENT '文件大小',
   `upload_time` bigint NOT NULL COMMENT '上传时间',
   `upload_user_id` bigint NOT NULL COMMENT '上传人',
   `type` int NOT NULL COMMENT '文件类型 【0 视频， 1 图片， 2 其它附件, 3 头像数据， 4 顶部大图数据】',
-  `suffix_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '后缀名',
+  `suffix_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '后缀名',
   `duration` double NULL DEFAULT NULL COMMENT '视频长度',
   `status` int NOT NULL DEFAULT 0 COMMENT '文件存储状态   0  未保存的临时文件，后期删除   1  保存成功并发布的文件',
   `height` int NULL DEFAULT NULL COMMENT '视频高度',
   `width` int NULL DEFAULT NULL COMMENT '视频宽度',
   `pixels_number` bigint NULL DEFAULT NULL COMMENT '像素数',
   `frame_rate` double NULL DEFAULT NULL COMMENT '帧率',
-  `info` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '其他信息',
+  `info` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '其他信息',
   `ua` varchar(999),
   `ip` varchar(255),
   `city` varchar(255),
@@ -202,7 +185,7 @@ CREATE TABLE `file_table`  (
   INDEX `find_file_by_userid`(`upload_user_id`) USING BTREE,
   INDEX `find_file_by_type`(`type`) USING BTREE,
   INDEX `find_file_suffix`(`suffix_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '文件表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for invitation_code
@@ -210,7 +193,7 @@ CREATE TABLE `file_table`  (
 DROP TABLE IF EXISTS `invitation_code`;
 CREATE TABLE `invitation_code`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '邀请码',
+  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '邀请码',
   `create_user` bigint NOT NULL COMMENT '生成邀请码的人',
   `use_user` bigint NULL DEFAULT NULL COMMENT '使用邀请吗的人',
   `use_status` int NOT NULL DEFAULT 0 COMMENT '【1 未被使用， 0 已经被使用】',
@@ -218,7 +201,7 @@ CREATE TABLE `invitation_code`  (
   `use_time` bigint NULL DEFAULT NULL COMMENT '使用时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_code_by_code`(`code`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for like_table
@@ -234,7 +217,7 @@ CREATE TABLE `like_table`  (
   INDEX `find_like_by_user`(`user_id`) USING BTREE,
   INDEX `find_like_bu_artice`(`like_obj_id`) USING BTREE,
   INDEX `find_like_by_type`(`type`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '点赞' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '点赞' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for login_log
@@ -243,13 +226,13 @@ DROP TABLE IF EXISTS `login_log`;
 CREATE TABLE `login_log`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
   `login_time` bigint NOT NULL COMMENT '登录时间',
-  `ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '登录IP',
-  `ua` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '浏览器UA',
+  `ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '登录IP',
+  `ua` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '浏览器UA',
   `userId` bigint NOT NULL COMMENT '登录用户ID',
   `city` varchar(255),
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_user_log_by_id_index`(`userId`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for notification
@@ -259,10 +242,10 @@ CREATE TABLE `notification`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `notifier` bigint NOT NULL COMMENT '通知发送人ID',
   `receiver` bigint NOT NULL COMMENT '通知接收人ID',
-  `title` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '标题',
+  `title` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '标题',
   `outer_id` bigint NOT NULL COMMENT '外部ID，如主帖子ID',
-  `link_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '消息链接',
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '内容',
+  `link_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '消息链接',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '内容',
   `comment_id` bigint NULL DEFAULT -1 COMMENT '评论目标ID',
   `type` int NOT NULL COMMENT '类型 【0 回复帖子， 1 回复评论，2 收到点赞】',
   `article_id` bigint comment '文章ID',
@@ -276,7 +259,7 @@ CREATE TABLE `notification`  (
   INDEX `idx_receiver_create_time` (`receiver`, `create_time`) USING BTREE,
   INDEX `idx_outer_id` (`outer_id`) USING BTREE,
   INDEX `idx_comment_id` (`comment_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '通知表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '通知表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for play_recording
@@ -291,12 +274,12 @@ CREATE TABLE `play_recording`  (
   `create_time` bigint NOT NULL COMMENT '创建时间',
   `update_time` bigint NOT NULL COMMENT '更新时间',
   `video_id` bigint NOT NULL COMMENT '视频ID',
-  `ua` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '浏览器ua',
+  `ua` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '浏览器ua',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_play_by_user_id`(`user_id`) USING BTREE,
   INDEX `find_play_by_artice`(`article_id`) USING BTREE,
   INDEX `find_play_by_vido`(`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '播放记录' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '播放记录' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for temp_file
@@ -305,13 +288,13 @@ DROP TABLE IF EXISTS `temp_file`;
 CREATE TABLE `temp_file`  (
   `ID` bigint NOT NULL,
   `CREATE_TIME` bigint NULL DEFAULT NULL,
-  `DATE` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `FILENAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `PATH` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `DATE` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `FILENAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `PATH` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `SIZE` bigint NULL DEFAULT NULL,
-  `UPLOAD_FILENAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `UPLOAD_FILENAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for user
@@ -319,10 +302,10 @@ CREATE TABLE `temp_file`  (
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
-  `mail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '邮箱',
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '密码',
-  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '手机号',
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
+  `mail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '邮箱',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
+  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '手机号',
   `create_time` bigint NOT NULL COMMENT '创建时间',
   `last_publish_time` bigint NULL COMMENT '上次投稿时间',
   `otp` int DEFAULT 0 COMMENT '是否开启totp二次认证',
@@ -331,13 +314,13 @@ CREATE TABLE `user`  (
   `submit_count` bigint NOT NULL DEFAULT 0 COMMENT '提交视频，图片，文章数',
   `follow_count` bigint NOT NULL DEFAULT 0 COMMENT '关注数',
   `fans_count` bigint NOT NULL DEFAULT 0 COMMENT '粉丝数',
-  `avatar_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '/images/avatar/avatar.png' COMMENT '头像',
-  `top_img_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '/images/top.png' COMMENT '首页大图url',
-  `introduction` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '简介',
+  `avatar_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '/images/avatar/avatar.png' COMMENT '头像',
+  `top_img_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '/images/top.png' COMMENT '首页大图url',
+  `introduction` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '简介',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_user_by_mail_index`(`mail`) USING BTREE COMMENT '使用邮箱查找用户',
   INDEX `find_user_by_phone_index`(`phone`) USING BTREE COMMENT '使用手机号查找用户'
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for user_role
@@ -346,14 +329,14 @@ DROP TABLE IF EXISTS `user_role`;
 CREATE TABLE `user_role`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `userId` bigint NOT NULL,
-  `role` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '角色',
+  `role` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色',
   `create_time` bigint NOT NULL,
   `update_time` bigint NOT NULL,
   `vip_start_time` bigint NULL DEFAULT NULL,
   `vip_stop_time` bigint NULL DEFAULT NULL,
   `modified` bigint NOT NULL COMMENT '修改人',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for follow
@@ -367,7 +350,7 @@ CREATE TABLE `follow`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_follow_user`(`follow_user`) USING BTREE,
   INDEX `find_create_user`(`create_user`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 
 -- ----------------------------
@@ -375,19 +358,19 @@ CREATE TABLE `follow`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `web_setting`;
 CREATE TABLE `web_setting`  (
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '网站名',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '网站名',
   `open_no_vip_limit` int NOT NULL DEFAULT 1 COMMENT '是否开启非vip每日观看次数限制 [0 关闭， 1 开启]',
   `no_vip_view_count` int NOT NULL DEFAULT 5 COMMENT '非vip 每日观看次数',
-  `logo_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '/logo.png' COMMENT '网页logo地址',
+  `logo_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '/logo.png' COMMENT '网页logo地址',
   `open_invitation_register` int NOT NULL DEFAULT 1 COMMENT '是否开启邀请码注册 【0 关闭， 1开启】',
-  `web_describe` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '网页简短的描述',
+  `web_describe` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '网页简短的描述',
   `open_upload_video_add_view_count` int NOT NULL DEFAULT 1 COMMENT '是否开启每日上传视频增加非会员观看次数 【0 关闭， 1开启】',
   `open_examine` int NOT NULL DEFAULT 1 COMMENT '是否开启视频，文章，图片审核 【0 关闭， 1 开启】',
   `id` int NOT NULL AUTO_INCREMENT,
   `create_time` bigint NOT NULL COMMENT '创建时间',
   `home_max_video_count` int NOT NULL DEFAULT 50 COMMENT '首页最大显示数',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -471,3 +454,5 @@ INSERT INTO `category` VALUES (76, '社会', 2, 73, '日常生活的社会事件
 INSERT INTO `category` VALUES (77, '综合', 2, 73, '除上述领域外其它垂直领域的综合资讯', NULL, 0, 0, 0);
 
 INSERT INTO `web_setting` VALUES ('TikTube', 1, 5, '/favicon.jpg', 0, '一个牛逼的视频网站', 1, 1, 1, 0, 50);
+
+
