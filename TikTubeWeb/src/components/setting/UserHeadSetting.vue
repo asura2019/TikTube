@@ -222,7 +222,11 @@ export default {
         this.showMessage = true
         return
       }
-
+      if (this.files[0].size > 2000000) {
+        this.message = '图片大小不能超过2MB！'
+        this.showMessage = true
+        return
+      }
       this.uploading = true
       const formData = new FormData()
       for (let i = 0; i < this.files.length; i++) {

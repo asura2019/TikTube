@@ -85,6 +85,12 @@ public class FileRepositoryInLocalDiskImpl implements FileRepository {
 
     @Override
     public List<FileTableEntity> videoAndPhotoSave(MultipartFile[] files, Integer type, Long userId) throws FileNotFoundException {
+        // 头像和首页大图大图文件大小检查
+        if (FileTypeEnum.AVATAR.getCode() == type || FileTypeEnum.TOP_IMAGE.getCode() == type) {
+            if (files[0].getSize() > 2048000) {
+                return null;
+            }
+        }
         // TODO 格式检查
         List<FileTableEntity> list = new ArrayList<>();
         for (MultipartFile file : files) {

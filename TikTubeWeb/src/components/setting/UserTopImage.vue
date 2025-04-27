@@ -147,7 +147,7 @@ export default {
     return {
       userInfo: null,
       files: [],
-      rules: [(value) => !value || value.size < 2000000 || '图片大小必须在2MB以内！'],
+      //rules: [(value) => !value || value.size < 2000000 || '图片大小必须在2MB以内！'],
       showMessage: false,
       message: '',
       uploading: false,
@@ -225,6 +225,11 @@ export default {
     uploadFile() {
       if (this.files.length === 0) {
         this.message = '请先选择图片，然后上传！'
+        this.showMessage = true
+        return
+      }
+      if (this.files[0].size > 2000000) {
+        this.message = '图片大小不能超过2MB！'
         this.showMessage = true
         return
       }
