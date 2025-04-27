@@ -35,7 +35,7 @@
           <v-tabs v-model="activeTab" color="primary" bg-color="transparent">
             <v-tab value="1" @click="setSort(1)">时间倒序</v-tab>
             <v-tab value="0" @click="setSort(0)">评论时间</v-tab>
-            <v-tab value="2">最多点赞</v-tab>
+            <v-tab value="2" @click="setSort(2)">最多点赞</v-tab>
             <v-tab value="3" @click="setSort(3)">最多评论</v-tab>
           </v-tabs>
         </v-col>

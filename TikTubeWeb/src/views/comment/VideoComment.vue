@@ -28,7 +28,7 @@
         <v-col>
           <v-tabs v-model="activeTab" color="primary" bg-color="transparent">
             <v-tab value="1" @click="setType(1)">时间倒序</v-tab>
-            <v-tab value="2">最多点赞</v-tab>
+            <v-tab value="2" @click="setType(2)">最多点赞</v-tab>
             <v-tab value="3" @click="setType(3)">最多评论</v-tab>
           </v-tabs>
         </v-col>

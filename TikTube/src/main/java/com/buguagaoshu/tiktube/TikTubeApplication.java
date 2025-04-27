@@ -14,6 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties(MyConfigProperties.class)
 public class TikTubeApplication {
 
+    public final static String VERSION = "v1.1.0 2025-04-26";
+
     public static void main(String[] args) {
         SpringApplication.run(TikTubeApplication.class, args);
     }

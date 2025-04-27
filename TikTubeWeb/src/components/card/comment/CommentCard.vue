@@ -184,13 +184,16 @@ export default {
         return
       }
       this.httpPost(`/like/toggle?likeObjId=${this.comment.id}&type=1`, {}, (json) => {
-        if (json.status === 200) {
+        if (json.data.like) {
           // 更新点赞状态
-          this.isLiked = json.data.like
-          this.comment.likeCount += json.data.like ? 1 : -1
-
+          this.isLiked = !this.isLiked
+          this.comment.likeCount += this.isLiked ? 1 : -1
           // 显示消息提示
-          this.message = json.data.info
+          if (this.isLiked) {
+            this.message = '点赞成功'
+          } else {
+            this.message = '取消点赞成功'
+          }
           this.showMessage = true
         } else {
           this.message = json.data.info || '操作失败'
@@ -224,10 +227,10 @@ export default {
         return
       }
       this.httpPost(`/dislike/toggle?dislikeObjId=${this.comment.id}&type=1`, {}, (json) => {
-        if (json.status === 200) {
+        if (json.data.dislike) {
           // 更新点踩状态
-          this.isDisliked = json.data.dislike
-          this.dislikeCount = this.comment.dislikeCount + (json.data.dislike ? 1 : -1)
+          this.isDisliked = !this.isDisliked
+          this.dislikeCount = this.comment.dislikeCount + (this.isDisliked ? 1 : -1)
 
           // 显示消息提示
           this.message = json.data.info

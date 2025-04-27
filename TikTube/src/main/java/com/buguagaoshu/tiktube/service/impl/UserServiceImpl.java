@@ -323,11 +323,14 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
         // 检查头像数据是否需要修改
         if (user.getFileId() != null) {
-            fileTableService.updateFileStatus(userId, user.getFileId(), FileTypeEnum.AVATAR.getCode(), user.getAvatarUrl());
+            boolean result = fileTableService.updateFileStatus(userId, user.getFileId(), FileTypeEnum.AVATAR.getCode(), user.getAvatarUrl());
+            if (result) {
+                userEntity.setAvatarUrl(user.getAvatarUrl());
+                this.updateById(userEntity);
+                return ReturnCodeEnum.SUCCESS;
+            }
         }
-        userEntity.setAvatarUrl(user.getAvatarUrl());
-        this.updateById(userEntity);
-        return ReturnCodeEnum.SUCCESS;
+        return ReturnCodeEnum.DATA_VALID_EXCEPTION;
     }
 
     @Override
@@ -339,11 +342,14 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         userEntity.setId(userId);
         // 检查首页大图数据是否需要修改
         if (user.getFileId() != null) {
-            fileTableService.updateFileStatus(userId, user.getFileId(), FileTypeEnum.TOP_IMAGE.getCode(), user.getTopImgUrl());
+            boolean result = fileTableService.updateFileStatus(userId, user.getFileId(), FileTypeEnum.TOP_IMAGE.getCode(), user.getTopImgUrl());
+            if (result) {
+                userEntity.setTopImgUrl(user.getTopImgUrl());
+                this.updateById(userEntity);
+                return ReturnCodeEnum.SUCCESS;
+            }
         }
-        userEntity.setTopImgUrl(user.getTopImgUrl());
-        this.updateById(userEntity);
-        return ReturnCodeEnum.SUCCESS;
+        return ReturnCodeEnum.DATA_VALID_EXCEPTION;
     }
 
     @Override

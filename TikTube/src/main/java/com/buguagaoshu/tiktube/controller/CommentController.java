@@ -29,7 +29,7 @@ public class CommentController {
                                        HttpServletRequest request) {
         CommentEntity comment = commentService.saveComment(commentVo, request);
         if (comment == null) {
-            return ResponseDetails.ok(0, "所评论的帖子可能被删除被锁定或没有评论权限！");
+            return ResponseDetails.ok(1006, "所评论的帖子可能被删除被锁定或没有评论权限！");
         }
         return ResponseDetails.ok().put("data", comment);
     }

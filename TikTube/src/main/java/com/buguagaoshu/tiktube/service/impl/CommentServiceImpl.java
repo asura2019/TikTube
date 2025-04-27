@@ -195,6 +195,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
                 wrapper.orderByDesc("create_time");
             } else if (sort == SortType.TOP_COMMENT) {
                 wrapper.orderByDesc("comment_count");
+            } else if (sort == SortType.TOP_START) {
+                wrapper.orderByDesc("like_count");
             }
         }
         IPage<CommentEntity> page = this.page(

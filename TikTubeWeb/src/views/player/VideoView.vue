@@ -358,11 +358,17 @@ export default {
       this.httpPost(`/like/toggle?likeObjId=${this.id}&type=0`, {}, (json) => {
         if (json.status === 200) {
           // 更新点赞状态
-          this.isLiked = json.data.like
-          // 更新点赞数量
-          this.videoData.likeCount += json.data.like ? 1 : -1
-          // 显示消息提示
-          this.showMessage(json.data.info, 'success')
+          if (json.data.like) {
+            this.isLiked = !this.isLiked
+            // 更新点赞数量
+            this.videoData.likeCount += this.isLiked ? 1 : -1
+            // 显示消息提示
+            if (this.isLiked) {
+              this.showMessage('点赞成功', 'success')
+            } else {
+              this.showMessage('取消点赞成功', 'info')
+            }
+          }
         } else {
           this.showMessage(json.data.info || '操作失败', 'error')
         }
@@ -500,11 +506,13 @@ export default {
       this.httpPost(`/dislike/toggle?dislikeObjId=${this.id}&type=0`, {}, (json) => {
         if (json.status === 200) {
           // 更新点赞状态
-          this.isDisliked = json.data.dislike
-          // 更新点赞数量
-          this.videoData.dislikeCount += json.data.dislike ? 1 : -1
-          // 显示消息提示
-          this.showMessage(json.data.info, 'success')
+          if (json.data.dislike) {
+            this.isDisliked = !this.isDisliked
+            // 更新点赞数量
+            this.videoData.dislikeCount += this.isDisliked ? 1 : -1
+            // 显示消息提示
+            this.showMessage(json.data.info, 'success')
+          }
         } else {
           this.showMessage(json.data.info || '操作失败', 'error')
         }

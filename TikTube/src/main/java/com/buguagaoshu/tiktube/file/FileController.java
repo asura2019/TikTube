@@ -123,6 +123,7 @@ public class FileController {
             String contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(HttpHeaders.CONTENT_TYPE, contentType);
+            httpHeaders.add("Cache-Control", "max-age=86400");
             // TODO 优化在使用安卓版 Edge 在播放视频时，多次循环请求接口，导致多次查询数据库的的问题
             // TODO 优化判断逻辑
             // TODO 拆分函数
@@ -173,7 +174,7 @@ public class FileController {
                     return null;
                 }
             }
-            httpHeaders.add("Cache-Control", "max-age=86400");
+
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(httpHeaders)

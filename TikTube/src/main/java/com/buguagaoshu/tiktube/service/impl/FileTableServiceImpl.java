@@ -74,8 +74,24 @@ public class FileTableServiceImpl extends ServiceImpl<FileTableDao, FileTableEnt
             return true;
         }
         file.setStatus(FileStatusEnum.USED.getCode());
+        // 查询以往使用的文件，将其设置为临时文件
+        List<FileTableEntity> userFileList = findUserFileList(userId, fileType);
+        userFileList.parallelStream().forEach(userFile -> {
+            userFile.setStatus(FileStatusEnum.NOT_USE_FILE.getCode());
+        });
+        // 将之前的已使用文件设置为未使用
+        this.updateBatchById(userFileList);
+
         updateById(file);
         return true;
+    }
+
+    public List<FileTableEntity> findUserFileList(Long userId, int type) {
+        QueryWrapper<FileTableEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("upload_user_id", userId);
+        wrapper.eq("type", type);
+        wrapper.eq("status", FileStatusEnum.USED.getCode());
+        return this.list(wrapper);
     }
 
     @Override

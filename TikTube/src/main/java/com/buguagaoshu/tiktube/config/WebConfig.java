@@ -75,6 +75,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns(
+                    "/api/version",
                     "/api/login",
                     "/api/login/totp",
                     "/api/register",
@@ -111,7 +112,8 @@ public class WebConfig implements WebMvcConfigurer {
 //                        "/api/upload/video",
 //                        "/api/upload/photo",
 //                        "/api/upload/avatar",
-//                        "/api/upload/top"
+//                        "/api/upload/top",
+//                        "/totp/create"
 //                );
     }
 

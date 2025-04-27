@@ -39,7 +39,7 @@
                 label="首页顶部大图"
                 variant="outlined"
                 density="comfortable"
-                @update:model-value="setFile"
+                @update:model-value="onFileSelected"
                 show-size
                 counter
                 bg-color="surface"
@@ -84,6 +84,45 @@
       </v-card>
     </v-col>
 
+    <!-- 图片剪裁对话框 -->
+    <v-dialog v-model="showCropper" persistent max-width="800px">
+      <v-card>
+        <v-card-title class="text-h5 d-flex align-center">
+          <v-icon icon="mdi-crop" class="mr-2" color="primary" />
+          剪裁顶部大图
+        </v-card-title>
+        <v-card-text>
+          <div class="cropper-container">
+            <vue-cropper
+              ref="cropper"
+              :img="cropImg"
+              :outputSize="0.9"
+              :outputType="'jpg'"
+              :info="true"
+              :full="true"
+              :canMove="true"
+              :canMoveBox="true"
+              :original="false"
+              :autoCrop="true"
+              :autoCropWidth="598"
+              :autoCropHeight="100"
+              :fixedBox="true"
+              :fixedNumber="[5.98, 1]"
+              :centerBox="true"
+              :high="true"
+              :infoTrue="true"
+              @realTime="realTime"
+            />
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="error" variant="text" @click="cancelCrop"> 取消 </v-btn>
+          <v-btn color="primary" variant="elevated" @click="confirmCrop"> 确认剪裁 </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-snackbar v-model="showMessage" location="top" :timeout="3000" color="info">
       {{ message }}
 
@@ -96,8 +135,14 @@
   
 <script>
 import { useUserStore } from '@/stores/userStore'
+import { VueCropper } from 'vue-cropper'
+import 'vue-cropper/dist/index.css'
+
 export default {
   name: 'UserTopSetting',
+  components: {
+    VueCropper,
+  },
   data() {
     return {
       userInfo: null,
@@ -106,18 +151,77 @@ export default {
       showMessage: false,
       message: '',
       uploading: false,
+      // 剪裁相关数据
+      showCropper: false,
+      cropImg: '',
+      cropBlob: null,
+      cropInfo: {},
+      originalFile: null,
     }
   },
   created() {
     this.userInfo = useUserStore()
   },
   methods: {
-    setFile(value) {
-      this.files = []
-      if (value) {
-        this.files.push(value)
+    // 文件选择处理
+    onFileSelected(value) {
+      if (!value) {
+        this.files = []
+        return
       }
+
+      this.originalFile = value
+
+      // 读取文件并显示剪裁对话框
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        this.cropImg = e.target.result
+        this.showCropper = true
+      }
+      reader.readAsDataURL(value)
     },
+
+    // 剪裁实时数据
+    realTime(data) {
+      this.cropInfo = data
+    },
+
+    // 取消剪裁
+    cancelCrop() {
+      this.showCropper = false
+      this.cropImg = ''
+      this.files = []
+    },
+
+    // 确认剪裁
+    confirmCrop() {
+      const cropper = this.$refs.cropper
+      const options = {
+        maxWidth: 2000,
+        maxHeight: 334, // 保持5.98:1的比例
+        fillColor: '#fff',
+      }
+
+      cropper.getCropBlob((blob) => {
+        this.cropBlob = blob
+
+        // 创建一个新的File对象
+        const fileName = this.originalFile.name
+        const fileType = this.originalFile.type
+        const croppedFile = new File([blob], fileName, { type: fileType })
+
+        this.files = [croppedFile]
+        this.showCropper = false
+
+        // 预览剪裁后的图片
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.userInfo.userData.topImgUrl = e.target.result
+        }
+        reader.readAsDataURL(blob)
+      }, options)
+    },
+
     uploadFile() {
       if (this.files.length === 0) {
         this.message = '请先选择图片，然后上传！'
@@ -163,6 +267,13 @@ export default {
 <style>
 .v-card-title {
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.cropper-container {
+  height: 60vh;
+  width: 100%;
+  background-color: #f5f5f5;
+  overflow: hidden;
 }
 </style>
   
