@@ -1,6 +1,8 @@
 package com.buguagaoshu.tiktube.vo;
 
 import com.buguagaoshu.tiktube.entity.UserRoleEntity;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -14,6 +16,7 @@ public class User {
     /**
      * 用户名
      */
+    @Size(min = 3, max = 50, message = "用户名长度必须在 3 到 50 个字符之间")
     private String username;
 
     /**
@@ -55,16 +58,19 @@ public class User {
     /**
      * 简介
      * */
+    @Size(max = 100, message = "个性签名不能超过100字！")
     private String introduction;
 
     /**
      * 头像
      */
+    @Size(max = 500, message = "头像 URL 过长")
     private String avatarUrl;
 
     /**
      * 首页大图url
      */
+    @Size(max = 500, message = "首页顶部大图 URL 过长！")
     private String topImgUrl;
 
 

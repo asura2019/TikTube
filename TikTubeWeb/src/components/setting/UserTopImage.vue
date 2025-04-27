@@ -254,6 +254,11 @@ export default {
       })
     },
     save() {
+      if (this.userInfo.userData.topImgUrl.startsWith('data:image/png;base64')) {
+        this.message = '请先上传图片，然后保存！'
+        this.showMessage = true
+        return
+      }
       this.httpPost('/user/update/top', this.userInfo.userData, (json) => {
         if (json.status === 200) {
           this.userInfo.setUserData(this.userInfo.userData)

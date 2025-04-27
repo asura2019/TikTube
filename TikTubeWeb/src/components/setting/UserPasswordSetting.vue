@@ -161,6 +161,11 @@ export default {
       const { valid } = await this.$refs.passwordForm.validate()
       if (!valid) return
 
+      if (this.password.newPassword.length > 50) {
+        this.message = '密码长度不能超过50个字符！'
+        this.showMessage = true
+        return
+      }
       this.httpPost('/user/update/password', this.password, (json) => {
         if (json.status === 200) {
           this.message = '修改成功，即将跳转，请重新登录！'

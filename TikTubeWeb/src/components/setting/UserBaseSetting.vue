@@ -116,6 +116,16 @@ export default {
   },
   methods: {
     save() {
+      if (this.userInfo.name.length > 50) {
+        this.message = '用户名字数不能超过50字'
+        this.showMessage = true
+        return
+      }
+      if (this.userInfo.introduction.length > 100) {
+        this.message = '简介字数不能超过100字'
+        this.showMessage = true
+        return
+      }
       this.httpPost('/user/update/info', this.userInfo, (json) => {
         if (json.status === 200) {
           // 更新 Pinia store 中的数据

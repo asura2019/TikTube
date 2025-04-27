@@ -85,19 +85,19 @@ public class UserController {
     }
 
     @PostMapping("/api/user/update/avatar")
-    public ResponseDetails updateUserAvatar(@RequestBody User user,
+    public ResponseDetails updateUserAvatar(@Valid @RequestBody User user,
                                             HttpServletRequest request) {
         return ResponseDetails.ok(userService.updateAvatar(user, request));
     }
 
     @PostMapping("/api/user/update/top")
-    public ResponseDetails updateTopImage(@RequestBody User user,
+    public ResponseDetails updateTopImage(@Valid @RequestBody User user,
                                           HttpServletRequest request) {
         return ResponseDetails.ok(userService.updateTopImage(user, request));
     }
 
     @PostMapping("/api/user/update/password")
-    public ResponseDetails updatePassword(@RequestBody PasswordDto passwordDto,
+    public ResponseDetails updatePassword(@Valid @RequestBody PasswordDto passwordDto,
                                           HttpServletRequest request,
                                           HttpServletResponse response) {
         return ResponseDetails.ok(userService.updatePassword(passwordDto, request, response));
@@ -105,7 +105,7 @@ public class UserController {
 
 
     @PostMapping("/api/user/update/info")
-    public ResponseDetails updateInfo(@RequestBody User user,
+    public ResponseDetails updateInfo(@Valid @RequestBody User user,
                                       HttpServletRequest request) {
         return ResponseDetails.ok(userService.updateInfo(user, request));
     }
