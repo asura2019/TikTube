@@ -79,12 +79,22 @@ public enum FileTypeEnum {
     }
 
 
-    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 
     public final static String ROOT = "file";
 
+    public final static String OSS = "oss";
+
     public static String filePath() {
         return ROOT + "/" + DATE_FORMAT.format(new Date());
+    }
+
+    public static String ossFilePath() {
+        return DATE_FORMAT.format(new Date());
+    }
+
+    public static String ossFileURL(int saveLocation, String path, String fileName) {
+        return  "/api/upload/" + saveLocation + "/oss/" + path + "/" + fileName;
     }
 
     public static String newFilename(String suffix) {

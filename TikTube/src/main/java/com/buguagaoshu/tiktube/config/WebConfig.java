@@ -2,8 +2,11 @@ package com.buguagaoshu.tiktube.config;
 
 import com.buguagaoshu.tiktube.cache.CategoryCache;
 import com.buguagaoshu.tiktube.cache.WebSettingCache;
+import com.buguagaoshu.tiktube.entity.OSSConfigEntity;
+import com.buguagaoshu.tiktube.repository.impl.FileRepositoryInOSS;
 import com.buguagaoshu.tiktube.service.CategoryService;
 import com.buguagaoshu.tiktube.service.WebSettingService;
+import com.buguagaoshu.tiktube.service.impl.OssConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -34,6 +37,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final VipInterceptor vipInterceptor;
 
+    /**
+     * 默认文件保存位置 0 为 本地
+     * 其它数字依照数据库中 OSS 配置文件判断
+     * */
+    public static int FILE_SAVE_LOCATION = 0;
+
 
     @Autowired
     public WebConfig(LoginInterceptor loginInterceptor,
@@ -48,7 +57,8 @@ public class WebConfig implements WebMvcConfigurer {
     public CommandLineRunner dataLoader(WebSettingService webSettingService,
                                         WebSettingCache webSettingCache,
                                         CategoryService categoryService,
-                                        CategoryCache categoryCache) {
+                                        CategoryCache categoryCache,
+                                        OssConfigService ossConfigService) {
         return new CommandLineRunner() {
             @Override
             public void run(String... args) throws Exception {
@@ -60,6 +70,7 @@ public class WebConfig implements WebMvcConfigurer {
                 categoryCache.setCategoryEntityMap(categoryService.categoryEntityMap());
                 categoryCache.setCategoryMapWithChildren(categoryService.categoryEntityMapWithChildren(categoryCache.getCategoryEntities()));
                 log.info("分类信息缓存完成！");
+
             }
         };
     }
@@ -88,6 +99,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "/api/category/**",
                     "/api/danmaku/**",
                     "/api/upload/file/**",
+                    "/api/upload/**/oss/**",
                     "/api/comment/**"
                 );
 

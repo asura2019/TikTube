@@ -1,5 +1,4 @@
 <template>
-  <v-main class="login-view">
     <v-container fill-height>
       <v-row justify="center" align="center">
         <v-col cols="12" sm="8" md="6" lg="5">
@@ -72,7 +71,6 @@
         </v-card>
       </v-dialog>
     </v-container>
-  </v-main>
 </template>
 
 <script>
@@ -205,7 +203,5 @@ export default {
 </script>
 
 <style>
-.login-view {
-  background-color: rgb(249, 249, 249);
-}
+
 </style>

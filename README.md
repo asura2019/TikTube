@@ -25,7 +25,8 @@ Backend: Spring Boot, MySQL
 
 Frontend: Vue, Vuetifyjs  
 
-Most core features have been implemented, including:  
+Most core features have been implemented, including: 
+
 - Video upload  
 - Danmaku (commenting overlay)  
 - Video playback  
@@ -36,6 +37,7 @@ Most core features have been implemented, including:
 - Automatic thumbnail generation  
 - Data management 
 - TOTP 2FA 
+- Configure multiple repositories, supporting S3 API-compatible object storage. Tested with: MinIO, Cloudflare R2.
 
 Some minor features are still being optimized.  
 

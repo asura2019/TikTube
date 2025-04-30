@@ -1,5 +1,6 @@
 package com.buguagaoshu.tiktube.utils;
 
+import com.buguagaoshu.tiktube.config.WebConfig;
 import com.buguagaoshu.tiktube.config.WebConstant;
 import com.buguagaoshu.tiktube.entity.FileTableEntity;
 import com.buguagaoshu.tiktube.enums.FileTypeEnum;
@@ -12,9 +13,12 @@ import org.bytedeco.javacv.Java2DFrameConverter;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.*;
+
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author Pu Zhiwei {@literal puzhiweipuzhiwei@foxmail.com}
@@ -67,6 +71,51 @@ public class FFmpegUtils {
             }
         }
     }
+    
+    /**
+     * 直接从 MultipartFile 获取视频文件信息，无需保存到本地
+     * @param file MultipartFile 视频文件
+     * @return 视频信息对象
+     */
+    public static VideoInfo getVideoInfoFromMultipartFile(MultipartFile file) {
+        VideoInfo videoInfo = new VideoInfo();
+        FFmpegFrameGrabber grabber = null;
+        try {
+            // 从 MultipartFile 获取输入流
+            InputStream inputStream = file.getInputStream();
+            grabber = new FFmpegFrameGrabber(inputStream);
+            
+            // 设置输入格式（可选，通常 FFmpeg 可以自动检测）
+            // grabber.setFormat("mp4"); // 或其他格式
+            
+            grabber.start();
+
+            videoInfo.setLengthInFrames(grabber.getLengthInVideoFrames());
+            videoInfo.setFrameRate(grabber.getVideoFrameRate());
+            videoInfo.setDuration(grabber.getLengthInTime() / 1000000.00);
+            videoInfo.setWidth(grabber.getImageWidth());
+            videoInfo.setHeight(grabber.getImageHeight());
+            videoInfo.setAudioChannel(grabber.getAudioChannels());
+            videoInfo.setVideoCode(grabber.getVideoCodecName());
+            videoInfo.setAudioCode(grabber.getAudioCodecName());
+            videoInfo.setSampleRate(grabber.getSampleRate());
+            
+            return videoInfo;
+        } catch (Exception e) {
+            log.error("从 MultipartFile 获取视频信息失败: {}", e.getMessage());
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (grabber != null) {
+                    grabber.stop();
+                    grabber.release();
+                }
+            } catch (FFmpegFrameGrabber.Exception e) {
+                log.error("getVideoInfoFromMultipartFile grabber.release failed 获取文件信息失败：{}", e.getMessage());
+            }
+        }
+    }
 
     /**
      * 随机获取视频截图
@@ -104,7 +153,7 @@ public class FFmpegUtils {
                 String imageName = FileTypeEnum.newFilename(SUFFIX);
                 File out = Paths.get(path, imageName).toFile();
                 ImageIO.write(bi, "jpg", out);
-                FileTableEntity fileTable = FileUtils.createFileTableEntity(imageName, SUFFIX, path, f.image.length, WebConstant.SYSTEM_CREATE_SCREENSHOT, userId, FileTypeEnum.VIDEO_PHOTO.getCode());
+                FileTableEntity fileTable = FileUtils.createFileTableEntity(imageName, SUFFIX, path, f.image.length, WebConstant.SYSTEM_CREATE_SCREENSHOT, userId, FileTypeEnum.VIDEO_PHOTO.getCode(), WebConfig.FILE_SAVE_LOCATION);
                 images.add(fileTable);
             }
             return images;

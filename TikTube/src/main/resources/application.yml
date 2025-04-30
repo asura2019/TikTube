@@ -5,6 +5,11 @@ tiktube:
   # IP地址数据库
   ip-db-path: E:\\Spring\\PornTube\\TikTube\\ip2region.xdb
   app-name: "TikTube"
+  oss-endpoint: http://192.168.0.100:9000
+  oss-access-key: 8FQcQ0fOtuP6Ja9ib6bc
+  oss-secret-key: ah8KyTynK9LFXyY53wYRDKi6pUUXMpYyshVzOsJO
+  oss-bucket-name: tiktube
+  file-save-location: 0
 
 server:
   port: 8080

@@ -66,4 +66,9 @@ public class WebConstant {
 
 
     public final static int HOT_NUM = 100;
+
+    /**
+     * OSS 对象存储访问链接有效期
+     * */
+    public final static int OSS_DAY_TIME = 1;
 }

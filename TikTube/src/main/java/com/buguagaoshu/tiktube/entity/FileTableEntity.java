@@ -118,4 +118,8 @@ public class FileTableEntity {
 
     private String city;
 
+    /**
+     * 文件存储位置 默认 0 本地存储
+     * */
+    private Integer saveLocation;
 }

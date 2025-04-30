@@ -25,6 +25,7 @@
         <result property="ua" column="ua"/>
         <result property="ip" column="ip"/>
         <result property="city" column="city"/>
+        <result property="saveLocation" column="save_location"/>
     </resultMap>
 
 

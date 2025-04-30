@@ -4,6 +4,7 @@ import com.buguagaoshu.tiktube.entity.FileTableEntity;
 import com.buguagaoshu.tiktube.enums.FileTypeEnum;
 import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
 import com.buguagaoshu.tiktube.repository.FileRepository;
+import com.buguagaoshu.tiktube.repository.impl.FileRepositoryInOSS;
 import com.buguagaoshu.tiktube.service.ArticleService;
 import com.buguagaoshu.tiktube.service.FileTableService;
 import com.buguagaoshu.tiktube.utils.AesUtil;
@@ -49,13 +50,16 @@ public class FileController {
 
     private final ResourceLoader resourceLoader;
 
+    private final FileRepositoryInOSS fileRepositoryInOSS;
+
 
     @Autowired
-    public FileController(FileRepository fileRepository, ArticleService articleService, FileTableService fileTableService, ResourceLoader resourceLoader) {
+    public FileController(FileRepository fileRepository, ArticleService articleService, FileTableService fileTableService, ResourceLoader resourceLoader, FileRepositoryInOSS fileRepositoryInOSS) {
         this.fileRepository = fileRepository;
         this.articleService = articleService;
         this.fileTableService = fileTableService;
         this.resourceLoader = resourceLoader;
+        this.fileRepositoryInOSS = fileRepositoryInOSS;
     }
 
     //@PostMapping("/api/upload/article")
@@ -111,12 +115,88 @@ public class FileController {
                         fileRepository.videoAndPhotoSave(files, FileTypeEnum.TOP_IMAGE.getCode(),  userId));
     }
 
+    @GetMapping("/api/upload/{code}/oss/{year}/{month}/{day}/{filename:.+}")
+    public ResponseEntity<Void> getOSS(@PathVariable(value = "code") Integer code,
+                                       @PathVariable(value = "year") String year,
+                                       @PathVariable(value = "month") String month,
+                                       @PathVariable(value = "day") String day,
+                                       @PathVariable(value = "filename") String filename,
+                                       @RequestParam(value = "key", required = false) String key,
+                                       HttpServletRequest request) {
+        // 创建HttpHeaders对象
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "max-age=86400");
+        String date = year + "/" + month + "/" + day;
+        if (FileTypeEnum.getFileType(FileTypeEnum.getFileSuffix(filename)).equals(FileTypeEnum.VIDEO)) {
+            FileTableEntity fileTableEntity = fileTableService.findFileByFilename(filename);
+            if (fileTableEntity == null) {
+                return null;
+            }
+            // 非视频区投稿视频直接放行
+            if (fileTableEntity.getArticleId() == null) {
+                headers.add(HttpHeaders.LOCATION, fileRepositoryInOSS.getFileUrl(date + "/" + filename, code));
+                return new ResponseEntity<>(headers, HttpStatus.FOUND);
+            }
+            // 视频文件 key 错误直接返回 null
+            if (key == null) {
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            String originalText = AesUtil.getInstance().decrypt(key);
+            if (originalText == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            // 第一个值是用户ID，如果访问时没有登录，则这个值是 -1
+            // 第二个值是文件ID，进行文件查找
+            // 第三个值是过期时间
+            // 第四个是文件名
+            String[] msg = originalText.split("#");
+            Long userId = Long.parseLong(msg[0]);
+            Long fileId = Long.parseLong(msg[1]);
+            Long expire = Long.parseLong(msg[2]);
+            // 先进行过期时间的判断
+            if (System.currentTimeMillis() >expire) {
+                log.warn("用户 {} 访问文件id为 {} 的的文件时，使用的 key {} 已过期!", msg[0], msg[1], key);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            // 解析出的文件ID不同，则返回null
+            if (!fileTableEntity.getId().equals(fileId)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            if (articleService.hasThisVideoPlayPower(fileTableEntity, userId, request)) {
+                headers.add(HttpHeaders.LOCATION, fileRepositoryInOSS.getFileUrl(date + "/" + filename, code));
+                return new ResponseEntity<>(headers, HttpStatus.FOUND);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } else {
+            headers.add(HttpHeaders.LOCATION, fileRepositoryInOSS.getFileUrl(date + "/" + filename, code));
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        }
+    }
+
+    @GetMapping("/api/upload/file/{year}/{month}/{day}/{filename:.+}")
+    public ResponseEntity get(@PathVariable(value = "year") String year,
+                              @PathVariable(value = "month") String month,
+                              @PathVariable(value = "day") String day,
+                              @PathVariable(value = "filename") String filename,
+                              @RequestParam(value = "key", required = false) String key,
+                              HttpServletRequest request) {
+        String date = year + "/" + month + "/" + day;
+        return getFile(date, filename, key, request);
+    }
+
 
     @GetMapping("/api/upload/file/{date}/{filename:.+}")
     public ResponseEntity get(@PathVariable(value = "date") String date,
                                       @PathVariable(value = "filename") String filename,
                                       @RequestParam(value = "key", required = false) String key,
                                       HttpServletRequest request) {
+        return getFile(date, filename, key, request);
+
+    }
+
+    public ResponseEntity getFile(String date, String filename, String key, HttpServletRequest request) {
         try {
             Path path = fileRepository.load(date + "/" + filename);
             Resource resource = new UrlResource(path.toUri());

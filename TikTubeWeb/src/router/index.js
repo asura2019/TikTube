@@ -220,6 +220,16 @@ const router = createRouter({
           }
         },
         {
+          path: '/admin/oss',
+          name: 'OSSView',
+          component: () => import('@/views/admin/OssView.vue'),
+          meta: {
+            title: '对象存储管理',
+            requireAuth: true,
+            requireAdmin: true
+          }
+        },
+        {
           path: '/admin/userlist',
           name: 'UserList',
           component: () => import('@/views/admin/UserList.vue'),

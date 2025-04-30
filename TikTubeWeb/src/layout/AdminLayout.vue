@@ -120,6 +120,7 @@ export default {
       { icon: 'mdi-video', text: '待审核', link: '/admin/examine' },
       { icon: 'mdi-filmstrip-box-multiple', text: '投稿列表', link: '/admin/article/list' },
       { icon: 'mdi-file', text: '文件列表', link: '/admin/file/list' },
+      { icon: 'mdi-database', text: '存储管理', link: '/admin/oss' },
       { icon: 'mdi-account-multiple', text: '用户列表', link: '/admin/userlist' },
       { icon: 'mdi-comment', text: '评论管理', link: '/admin/comment' },
       { icon: 'mdi-airplane', text: '弹幕管理', link: '/admin/danmuku' },

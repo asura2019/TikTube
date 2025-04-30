@@ -247,13 +247,14 @@ export default {
       })
     },
     save() {
-      if (this.userInfo.userData.avatarUrl.startsWith('data:image/png;base64')) {
+      if (this.userInfo.avatarUrl.startsWith('data:image/png;base64')) {
         this.message = '请先上传图片，然后保存！'
         this.showMessage = true
         return
       }
       this.httpPost('/user/update/avatar', this.userInfo, (json) => {
         if (json.status === 200) {
+          
           this.user.setUserData(this.userInfo)
           this.message = '保存成功！'
           this.showMessage = true

@@ -60,6 +60,9 @@ public class SystemController {
     }
 
 
+    /**
+     * 手动删除临时文件
+     * */
     @PostMapping("/admin/system/file/delete")
     public ResponseDetails deleteTempFile() {
         return ResponseDetails.ok().put("data", deleteTempFileTasks.handMovementDeleteFile());
