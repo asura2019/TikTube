@@ -1,5 +1,17 @@
 # 更新日志
 
+## 2025-05-01 v1.1.0 beta
+
+file_table 表增加 save_location 字段，用来区分存储位置
+
+增加 oss_config 表，用来保存对象存储配置
+
+user 表增加 `otp`、`status` 、`block_end_time` 、`otp_secret` 、`otp_recovery` 用于实现 TOTP 两步认证，账户封禁功能
+
+其它已知 BUG 修复
+
+细节参见代码提交 commit
+
 ## 2025-04-20 V1.0.0 beta
 
 发布 V1.0.0 beta 版本
