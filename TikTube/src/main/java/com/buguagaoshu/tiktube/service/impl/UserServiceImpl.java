@@ -149,7 +149,26 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         }
 
         if (PasswordUtil.judgePassword(loginDetails.getPassword(), userEntity.getPassword())) {
+            // 如果处于被锁定状态
+            if (userEntity.getStatus().equals(TypeCode.USER_LOCK)) {
+                // 永久锁定
+                if (userEntity.getBlockEndTime().equals(0L)) {
+                    throw new UserNotFoundException("账号因违反社区规定，已被永久封禁，如有疑问请联系社区管理员！");
+                } else if (userEntity.getBlockEndTime() > System.currentTimeMillis()) {
+                    throw new UserNotFoundException("账号因违反社区规定，暂时无法登录，请在：" + MyStringUtils.formatTime(userEntity.getBlockEndTime()) + " 后登录！");
+                } else {
+                    // 解锁
+                    userEntity.setStatus(TypeCode.USER_NOT_LOCK);
+                    userEntity.setBlockEndTime(null);
+                    this.updateById(userEntity);
+                }
+            }
+
             // 判断是否开启了两步认证
+            if (userEntity.getOtp() == null) {
+                return loginSuccess(userEntity, loginDetails, response, request);
+            }
+
             if (userEntity.getOtp().equals(TwoFactorAuthenticationType.COLOS)) {
                 return loginSuccess(userEntity, loginDetails, response, request);
             } else {
@@ -573,6 +592,18 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             return updateTOTP(user);
         }
         return null;
+    }
+
+    @Override
+    public boolean lockUser(UserEntity userEntity, long adminUserId) {
+        UserEntity u = this.getById(userEntity.getId());
+        if (u == null) {
+            return false;
+        }
+        u.setStatus(userEntity.getStatus());
+        u.setBlockEndTime(userEntity.getBlockEndTime());
+        this.updateById(u);
+        return true;
     }
 
 

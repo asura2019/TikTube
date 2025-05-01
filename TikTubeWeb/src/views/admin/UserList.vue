@@ -116,20 +116,28 @@
             </div>
           </template>
 
+          <template #[`item.status`]="{ item }">
+            <div >
+              <v-chip size="small" color="green" v-if="item.status == 0">正常</v-chip>
+              <v-chip size="small" color="red" v-if="item.status == 1">封禁</v-chip>
+              <span v-if="item.status == 1">{{ formatDate(item.blockEndTime) }}</span>
+            </div>
+          </template>
+
           <template #[`item.actions`]="{ item }">
             <div class="d-flex">
-              <v-tooltip location="top" text="设置角色">
+              <v-tooltip location="top" text="封禁用户">
                 <template #activator="{ props }">
                   <v-btn
                     v-bind="props"
                     icon
                     size="small"
-                    color="primary"
+                    color="error"
                     variant="text"
-                    @click="openRoleDialog(item)"
+                    @click="openBlockUserDialog(item)"
                     class="mr-2"
                   >
-                    <v-icon>mdi-shield-account</v-icon>
+                    <v-icon>mdi-account-lock</v-icon>
                   </v-btn>
                 </template>
               </v-tooltip>
@@ -446,6 +454,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    
 
     <!-- 新增用户弹窗 -->
     <v-dialog v-model="addUserDialog" max-width="600" transition="dialog-bottom-transition">
@@ -643,6 +652,134 @@
       </v-card>
     </v-dialog>
 
+        <!-- 封禁用户弹窗 -->
+    <v-dialog v-model="blockUserDialog" max-width="500" transition="dialog-bottom-transition">
+      <v-card elevation="4" rounded="lg">
+        <v-toolbar :color="selectedUser && selectedUser.status === 1 ? 'success' : 'error'" density="comfortable">
+          <v-toolbar-title class="text-h6 text-white d-flex align-center">
+            <v-icon class="mr-2">{{ selectedUser && selectedUser.status === 1 ? 'mdi-account-check' : 'mdi-account-lock' }}</v-icon>
+            {{ selectedUser && selectedUser.status === 1 ? '解除封禁' : '封禁用户' }}
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="blockUserDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+
+        <v-card-text class="pt-6">
+          <div class="d-flex align-center mb-6">
+            <v-avatar size="60" class="mr-4 elevation-2">
+              <v-img :src="selectedUser ? selectedUser.avatarUrl : ''" alt="用户头像"></v-img>
+            </v-avatar>
+            <div>
+              <div class="text-h6 font-weight-bold">
+                {{ selectedUser ? selectedUser.username : '' }}
+              </div>
+              <div class="text-caption text-medium-emphasis">
+                ID: {{ selectedUser ? selectedUser.id : '' }}
+              </div>
+              <div class="d-flex align-center mt-1">
+                <v-icon size="small" color="primary" class="mr-1">mdi-email-outline</v-icon>
+                <span class="text-caption">{{ selectedUser ? selectedUser.mail : '' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <v-divider class="mb-4"></v-divider>
+
+          <v-alert
+            :color="selectedUser && selectedUser.status === 1 ? 'success' : 'warning'"
+            :icon="selectedUser && selectedUser.status === 1 ? 'mdi-information' : 'mdi-alert'"
+            border="start"
+            elevation="1"
+            class="mb-4"
+          >
+            <span v-if="selectedUser && selectedUser.status === 1">
+              该用户当前已被封禁
+              <span v-if="selectedUser.blockEndTime > 0">
+                至 {{ formatDate(selectedUser.blockEndTime) }}
+              </span>
+              <span v-else>（永久封禁）</span>
+            </span>
+            <span v-else>
+              您确定要封禁此用户吗？封禁后该用户将无法登录系统。
+            </span>
+          </v-alert>
+
+          <v-expand-transition>
+            <div v-if="selectedUser && selectedUser.status === 0">
+              <div class="font-weight-medium mb-3">选择封禁类型</div>
+              <v-radio-group v-model="blockType" class="mb-4">
+                <v-radio value="temporary">
+                  <template #label>
+                    <div class="d-flex align-center">
+                      <v-icon color="orange" class="mr-1">mdi-clock-outline</v-icon>
+                      <span>临时封禁</span>
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="permanent">
+                  <template #label>
+                    <div class="d-flex align-center">
+                      <v-icon color="red" class="mr-1">mdi-block-helper</v-icon>
+                      <span>永久封禁</span>
+                    </div>
+                  </template>
+                </v-radio>
+              </v-radio-group>
+
+              <v-expand-transition>
+                <div v-if="blockType === 'temporary'">
+                  <div class="font-weight-medium mb-3">
+                    <v-icon color="primary" class="mr-1">mdi-calendar-clock</v-icon>
+                    设置封禁结束时间
+                  </div>
+                  <v-menu
+                    v-model="blockEndDateMenu"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    min-width="auto"
+                  >
+                    <template #activator="{ props }">
+                      <v-text-field
+                        v-model="blockEndDate"
+                        label="封禁结束日期"
+                        readonly
+                        v-bind="props"
+                        prepend-inner-icon="mdi-calendar-end"
+                        variant="outlined"
+                        density="comfortable"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="blockEndDate"
+                      @update:model-value="blockEndDateMenu = false"
+                      color="primary"
+                    ></v-date-picker>
+                  </v-menu>
+                </div>
+              </v-expand-transition>
+            </div>
+          </v-expand-transition>
+        </v-card-text>
+
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn color="grey" variant="text" @click="blockUserDialog = false" class="mr-2"> 取消 </v-btn>
+          <v-btn
+            :color="selectedUser && selectedUser.status === 1 ? 'success' : 'error'"
+            variant="elevated"
+            @click="updateUserBlockStatus"
+            :loading="blockUserLoading"
+            rounded="lg"
+            :prepend-icon="selectedUser && selectedUser.status === 1 ? 'mdi-account-check' : 'mdi-account-lock'"
+          >
+            {{ selectedUser && selectedUser.status === 1 ? '解除封禁' : '确认封禁' }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- 提示消息 -->
     <v-snackbar
       v-model="snackbar"
@@ -690,6 +827,7 @@ export default {
         { title: '投稿数量', key: 'submitCount', align: 'center', sortable: true, width: '100px' },
         { title: '粉丝数量', key: 'fansCount', align: 'center', sortable: true, width: '100px' },
         { title: '用户角色', key: 'userRoleEntity.role', align: 'center', sortable: true },
+        { title: '用户状态', key: 'status', align: 'center', width: '100px' },
         { title: 'VIP期限', key: 'vipTime', align: 'center' },
         { title: '操作', key: 'actions', align: 'center', sortable: false, width: '100px' },
       ],
@@ -708,6 +846,13 @@ export default {
       resetPasswordDialog: false,
       newPassword: '',
       resetLoading: false,
+
+      // 封禁用户相关
+      blockUserDialog: false,
+      blockType: 'temporary',
+      blockEndDate: null,
+      blockEndDateMenu: false,
+      blockUserLoading: false,
 
       // 新增用户相关
       addUserDialog: false,
@@ -884,6 +1029,73 @@ export default {
       this.selectedUser = user
       this.newPassword = ''
       this.resetPasswordDialog = true
+    },
+    openBlockUserDialog(item) {
+      this.selectedUser = item
+      this.blockType = 'temporary'
+      
+      // 设置默认封禁结束时间为一周后
+      const oneWeekLater = new Date()
+      oneWeekLater.setDate(oneWeekLater.getDate() + 7)
+      this.blockEndDate = this.formatDateForPicker(oneWeekLater)
+      
+      this.blockUserDialog = true
+    },
+    updateUserBlockStatus() {
+      if (!this.selectedUser) return
+      
+      this.blockUserLoading = true
+      
+      try {
+        let blockEndTime = 0
+        
+        // 如果是解除封禁
+        if (this.selectedUser.status === 1) {
+          blockEndTime = 0
+        } else {
+          // 如果是封禁用户
+          if (this.blockType === 'permanent') {
+            blockEndTime = 0 // 永久封禁
+          } else {
+            // 临时封禁，将日期转换为时间戳
+            const endDate = new Date(this.blockEndDate)
+            endDate.setHours(23, 59, 59, 999) // 设置为当天的最后一毫秒
+            blockEndTime = endDate.getTime()
+          }
+        }
+        
+        // 修改为使用httpPost方法
+        this.httpPost('/admin/user/lock', {
+          id: this.selectedUser.id,
+          status: this.selectedUser.status === 1 ? 0 : 1, // 切换状态
+          blockEndTime: blockEndTime
+        }, (json) => {
+          if (json.data === true) {
+            // 操作成功
+            this.showSnackbar(
+              this.selectedUser.status === 1 ? '用户已解除封禁' : '用户已被封禁',
+              'success'
+            )
+            
+            // 更新用户状态
+            this.selectedUser.status = this.selectedUser.status === 1 ? 0 : 1
+            this.selectedUser.blockEndTime = blockEndTime
+            
+            // 刷新用户列表
+            this.fetchUsers()
+            
+            // 关闭弹窗
+            this.blockUserDialog = false
+          } else {
+            this.showSnackbar('操作失败，请重试', 'error')
+          }
+          this.blockUserLoading = false
+        })
+      } catch (error) {
+        console.error('封禁用户出错:', error)
+        this.showSnackbar('操作失败: ' + (error.response?.data?.message || '未知错误'), 'error')
+        this.blockUserLoading = false
+      }
     },
     resetPassword() {
       if (!this.selectedUser) return

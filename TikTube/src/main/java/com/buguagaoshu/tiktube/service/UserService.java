@@ -132,5 +132,10 @@ public interface UserService extends IService<UserEntity> {
      * 创建新的两步认证密钥
      * */
     TwoFactorData createNewTOTP(TwoFactorData twoFactorData, long userId);
+
+    /**
+     * 封禁用户
+     * */
+    boolean lockUser(UserEntity userEntity, long adminUserId);
 }
 

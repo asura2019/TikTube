@@ -4,7 +4,7 @@
     <v-row>
       <v-col>
         <v-card-title class="d-flex align-center justify-space-between">
-          <span>对象存储配置管理</span>
+          <span>对象存储配置管理 <span v-if="nowSaveLocation === 0">当前存储位置：本地存储</span></span>
           <v-btn
             color="primary"
             prepend-icon="mdi-plus"
@@ -18,6 +18,7 @@
     <v-row>
       <v-col>
         说明：同时只能启用一个配置，不建议删除曾经使用过的配置，如果删除可能导致部分使用该配置的文件无法正常访问。
+        禁用不表示配置不启用，只表示当前存储位置不是他，不代表之前的存储位置不是
       </v-col>
     </v-row>
     <!-- 配置列表 -->
@@ -285,10 +286,12 @@ export default {
       show: false,
       text: '',
       color: 'success'
-    }
+    },
+    nowSaveLocation: 0,
   }),
 
   created() {
+    this.getNowSaveLocation()
     this.initialize()
   },
 
@@ -302,6 +305,13 @@ export default {
         }
         this.loading = false
       })
+    },
+    getNowSaveLocation() {
+        this.httpGet('/admin/oss/location', (json) => {
+          if (json.status === 200) {
+            this.nowSaveLocation = json.data
+          }
+        })
     },
 
     // 打开编辑对话框

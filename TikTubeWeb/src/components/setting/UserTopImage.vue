@@ -31,8 +31,9 @@
 
           <v-row justify="center">
             <v-col cols="12" md="9">
+              <!-- :rules="rules" -->
               <v-file-input
-                :rules="rules"
+                
                 accept="image/png, image/jpeg, image/bmp"
                 placeholder="选择图片"
                 prepend-icon="mdi-camera"

@@ -31,6 +31,12 @@ const router = createRouter({
           meta: { title: '分区' }
         },
         {
+          path: '/vip',
+          name: 'VipView',
+          component: () => import('@/views/home/VipView.vue'),
+          meta: { title: 'VIP' }
+        },
+        {
           path: '/notification',
           name: 'Notification',
           component: () => import('@/views/notification/NotificationView.vue'),

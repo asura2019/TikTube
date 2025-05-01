@@ -26,8 +26,9 @@
 
           <v-row justify="center">
             <v-col cols="12" md="9">
+              <!-- :rules="rules" -->
               <v-file-input
-                :rules="rules"
+                
                 accept="image/png, image/jpeg, image/bmp"
                 placeholder="选择头像"
                 prepend-icon="mdi-camera"
@@ -145,7 +146,7 @@ export default {
         avatarUrl: '',
       },
       files: [],
-      rules: [(value) => !value || value.size < 2000000 || '头像大小必须在2MB以内！'],
+      //rules: [(value) => !value || value.size < 2000000 || '头像大小必须在2MB以内！'],
       showMessage: false,
       message: '',
       user: null,

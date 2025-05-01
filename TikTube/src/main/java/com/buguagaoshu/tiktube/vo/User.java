@@ -1,6 +1,7 @@
 package com.buguagaoshu.tiktube.vo;
 
 import com.buguagaoshu.tiktube.entity.UserRoleEntity;
+import com.buguagaoshu.tiktube.valid.ListValue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -83,6 +84,15 @@ public class User {
     private boolean loginStatus;
     private Integer otp;
     private String key;
+
+    @ListValue(value = {0, 1})
+    private Integer status;
+
+    /**
+     * 封禁截至日期
+     * 0 为永久封禁
+     */
+    private Long blockEndTime;
 
 
     /**

@@ -122,8 +122,8 @@ public class WebSettingController {
     }
 
     @GetMapping("/api/admin/oss/location")
-    public Integer getSaveLocation() {
-        return WebConfig.FILE_SAVE_LOCATION;
+    public ResponseDetails getSaveLocation() {
+        return ResponseDetails.ok().put("data", WebConfig.FILE_SAVE_LOCATION);
     }
 
     /**

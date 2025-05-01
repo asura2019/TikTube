@@ -164,4 +164,13 @@ public class UserController {
                                         HttpServletRequest request) {
         return ResponseDetails.ok(userService.addUser(adminAddUserData, request));
     }
+
+
+    /**
+     * 封禁用户
+     * */
+    @PostMapping("/api/admin/user/lock")
+    public ResponseDetails lockUser(@RequestBody UserEntity userEntity, HttpServletRequest request) {
+        return ResponseDetails.ok().put("data", userService.lockUser(userEntity, JwtUtil.getUserId(request)));
+    }
 }
