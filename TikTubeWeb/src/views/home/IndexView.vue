@@ -1,5 +1,6 @@
 <template>
   <v-container fluid>
+
     <v-banner class="my-4" color="warning" icon="$warning" lines="one" v-if="systemNotice != null">
       <v-banner-text>
         {{ systemNotice.content }}

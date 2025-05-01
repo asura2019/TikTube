@@ -97,6 +97,7 @@
 import { useWebInfoStore } from '@/stores/webInfoStore'
 import { useUserStore } from '@/stores/userStore'
 import AppBarHead from '@/components/user/AppBarHead.vue'
+
 export default {
   components: {
     AppBarHead,

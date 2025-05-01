@@ -7,9 +7,17 @@
         <v-img cover :src="userInfo.topImgUrl" :aspect-ratio="5.98" />
       </v-col>
     </v-row>
-    <v-container>
+    <v-container v-if="userInfo != null">
+      <!-- 用户状态信息 -->
+      <v-banner class="my-4" color="warning" icon="$warning" lines="one" v-if="userInfo.status == 1">
+        <v-banner-text>
+          该用户因违反社区规定，账号已被
+          <span v-if="userInfo.blockEndTime == 0">永久封禁</span>
+          <span v-else>封禁至： {{ TimeUtil.renderTime(userInfo.blockEndTime) }}</span>
+        </v-banner-text>
+      </v-banner>
       <!-- 用户ID -->
-      <v-row v-if="userInfo != null" justify="center" class="py-4">
+      <v-row  justify="center" class="py-4">
         <v-col cols="12" md="8">
           <v-card flat class="pa-4">
             <div class="d-flex flex-column flex-sm-row align-start align-sm-center">
