@@ -149,4 +149,11 @@ public class UserEntity {
 		this.otp = null;
         this.otpSecret = null;
     }
+
+    public Integer getOtp() {
+        if (this.otp == null) {
+            return 0;
+        }
+        return this.otp;
+    }
 }

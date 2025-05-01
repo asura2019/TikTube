@@ -56,6 +56,19 @@
 
 PS：使用 CloudflareSpeedTest 修改 HOST，除了要改 tiktube.buguagaoshu.com 的HOST 外，还需要修改 img.buguagaoshu.com 的 HOST，因为线上版本的 TikTube 文件视频文件都存储在 Cloudflare 的 R2 对象存储上
 
+两步认证测试账号：test2@test.com
+
+密码：test123456test
+
+TOTP密钥：JL2ZZV7W6OGXG4JYLCVXZRMDUV4XA3DDLPC3Q72IO6XB4K4EJKW4VW4IHXOMA2DCYU6WWRMNAMKXCVO7PGUIK2PCJG7TXMDSTA2JP76XV3BGAGSJAW66LFFQQYOG2KYB
+
+
+你可以使用：如Google Authenticator、Microsoft Authenticator 或来生成验证码。
+
+
+<img src="/img/otp.png" title="otp" alt="otp">
+
+
 ## 视频演示
 
 

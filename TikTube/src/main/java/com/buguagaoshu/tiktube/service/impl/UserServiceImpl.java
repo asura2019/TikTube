@@ -165,10 +165,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             }
 
             // 判断是否开启了两步认证
-            if (userEntity.getOtp() == null) {
-                return loginSuccess(userEntity, loginDetails, response, request);
-            }
-
             if (userEntity.getOtp().equals(TwoFactorAuthenticationType.COLOS)) {
                 return loginSuccess(userEntity, loginDetails, response, request);
             } else {

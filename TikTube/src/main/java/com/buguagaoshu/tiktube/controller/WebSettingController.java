@@ -52,7 +52,7 @@ public class WebSettingController {
         Map<String, String> map = new HashMap<>();
         map.put("title", "系统消息");
         map.put("content", "该版本仅为展示系统，故管理员关闭了普通用户的投稿，评论功能，如需要体验这两功能，请自行部署体验！");
-        //map.put("show", "true");
+        // map.put("show", "true");
         return ResponseDetails.ok().put("data", map);
     }
 

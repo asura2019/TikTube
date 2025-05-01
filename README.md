@@ -55,6 +55,21 @@ Email: test@test.com
 
 Password: test123456test
 
+
+TOTP TEST Test account:
+
+Email: test2@test.com
+
+Password: test123456test
+
+TOTP secret：JL2ZZV7W6OGXG4JYLCVXZRMDUV4XA3DDLPC3Q72IO6XB4K4EJKW4VW4IHXOMA2DCYU6WWRMNAMKXCVO7PGUIK2PCJG7TXMDSTA2JP76XV3BGAGSJAW66LFFQQYOG2KYB
+
+you can use ：如Google Authenticator、Microsoft Authenticator
+
+
+<img src="/img/otp.png" title="otp" alt="otp">
+
+
 ## Video demo
 
 YouTube：<a href="https://youtu.be/HX3812cRtYA" target="_blank">https://youtu.be/HX3812cRtYA</a>
