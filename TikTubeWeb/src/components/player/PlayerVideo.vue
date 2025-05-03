@@ -39,7 +39,7 @@ export default {
     adsInfo: {
       type: Object,
       default: () => {},
-    }
+    },
   },
   methods: {
     // 调整播放器高度
@@ -51,7 +51,6 @@ export default {
   },
   mounted() {
     //this.adjustPlayerHeight();
-    console.log(this.adsInfo)
     this.seek = parseInt(this.$route.query.seek)
     if (isNaN(this.seek)) {
       this.seek = 0
@@ -189,16 +188,34 @@ export default {
             playDuration: 5,
 
             // 广告总时长，单位为秒
-            totalDuration: 30,
+            totalDuration: 10,
             // 多语言支持
             i18n: {
-                close: '关闭广告',
-                countdown: '%s秒',
-                detail: '查看详情',
-                canBeClosed: '%s秒后可关闭广告',
+              close: '关闭广告',
+              countdown: '%s秒',
+              detail: '查看详情',
+              canBeClosed: '%s秒后可关闭广告',
             },
-        }),
+          }),
         ],
+      })
+
+      this.instance.on('artplayerPluginAds:click', (ads) => {
+        this.httpPost(`/web/notice/click/${adsInfo.id}`, {}, (json) => {
+          // console.log(json)
+        })
+      })
+
+      this.instance.on('artplayerPluginAds:skip', (ads) => {
+        console.log('跳过广告')
+        if (this.$refs.artRef == null) {
+          setTimeout(() => {
+            console.log('暂停播放销毁视频！')
+            this.instance.pause();
+            this.instance.destroy(false)
+          }, 10);
+          
+        }
       })
     } else {
       this.instance = new Artplayer({
@@ -323,7 +340,6 @@ export default {
 
     this.instance.on('play', () => {
       console.info('play')
-
       // 记录播放量
       this.httpPost(`/article/playrecording/view/${this.video.articleId}`, {}, (json) => {})
       const userId = userInfo.userData.id
@@ -364,7 +380,8 @@ export default {
   },
   beforeUnmount() {
     if (this.instance && this.instance.destroy) {
-      this.instance.destroy(false)
+      console.log('销毁播放器')
+      this.instance.destroy()
     }
   },
 }

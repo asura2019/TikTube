@@ -25,7 +25,7 @@
         density="comfortable"
         class="ma-4"
       >
-        首页公告与首页弹窗广告仅支持一条，如有多条只显示第一条内容，只建议在视频贴片广告中加入视频，别的地方不建议。新闻轮播因为目前没有找到一个合适的投放位置，所以暂不生效。
+        首页公告与首页弹窗广告仅支持一条，如有多条只显示第一条内容，只建议在视频贴片广告中加入视频，别的地方不建议。新闻轮播因为目前没有找到一个合适的投放位置，所以暂不生效。访问量统计目前仅支持贴片广告和弹窗广告！
       </v-alert>
 
       <!-- 筛选区域 -->
@@ -490,6 +490,7 @@ export default {
         { title: '标题', key: 'title', sortable: false, width: '200px' },
         {title: '内容', key: 'content', sortable: false, width: '300px'},
         { title: '类型', key: 'type', sortable: false, width: '120px' },
+        { title: '访问量', key: 'viewCount', sortable: false, width: '120px' },
         { title: '状态', key: 'status', sortable: false, width: '100px' },
         { title: '操作', key: 'actions', sortable: false, width: '120px', align: 'center' }
       ],

@@ -7,11 +7,15 @@
     persistent
     content-class="ads-dialog"
   >
-    <v-card 
-      v-if="notice" 
+    <v-card
+      v-if="notice"
       class="ads-card"
-      :class="{'has-image': notice.imageUrl}"
-      :style="notice.imageUrl ? `background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${notice.imageUrl}); background-size: cover; background-position: center;` : ''"
+      :class="{ 'has-image': notice.imageUrl }"
+      :style="
+        notice.imageUrl
+          ? `background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${notice.imageUrl}); background-size: cover; background-position: center;`
+          : ''
+      "
     >
       <!-- 关闭按钮 -->
       <v-btn
@@ -27,7 +31,7 @@
         <v-row>
           <!-- 标题区域 -->
           <v-col cols="12" class="pb-0">
-            <h2 class="text-h4 font-weight-bold mb-2" :class="{'text-white': notice.imageUrl}">
+            <h2 class="text-h4 font-weight-bold mb-2" :class="{ 'text-white': notice.imageUrl }">
               {{ notice.title }}
             </h2>
           </v-col>
@@ -35,13 +39,8 @@
           <!-- 视频区域 -->
           <v-col v-if="notice.videoUrl" cols="12" class="py-2">
             <v-sheet rounded elevation="2" class="overflow-hidden">
-              <video
-                controls
-                width="100%"
-                height="auto"
-                class="video-player"
-              >
-                <source :src="notice.videoUrl" type="video/mp4">
+              <video controls width="100%" height="auto" class="video-player">
+                <source :src="notice.videoUrl" type="video/mp4" />
                 您的浏览器不支持视频播放
               </video>
             </v-sheet>
@@ -49,9 +48,14 @@
 
           <!-- 内容区域 -->
           <v-col cols="12" class="pt-2">
-            <v-card-text class="pa-0" :class="{'text-white': notice.imageUrl}">
+            <v-card-text class="pa-0" :class="{ 'text-white': notice.imageUrl }">
               <div v-if="notice.url" class="content-text">
-                <a :href="notice.url" target="_blank" class="text-decoration-none text-h6" :class="{'white--text': notice.imageUrl}">
+                <a
+                  :href="notice.url"
+                  target="_blank"
+                  class="text-decoration-none text-h6"
+                  :class="{ 'white--text': notice.imageUrl }"
+                >
                   {{ notice.content }}
                   <v-icon icon="mdi-open-in-new" size="small" class="ms-1"></v-icon>
                 </a>
@@ -88,17 +92,17 @@ export default {
     // 使用 modelValue 作为 v-model 的绑定值
     modelValue: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // 公告信息对象
     notice: {
       type: Object,
-      default: null
+      default: null,
     },
     closedPopupId: {
       type: String,
-      default: 'closedPopupId'
-    }
+      default: 'closedPopupId',
+    },
   },
   emits: ['update:modelValue'],
   methods: {
@@ -107,13 +111,16 @@ export default {
       // 如果有公告信息，则保存到 localStorage
       if (this.notice && this.notice.id) {
         // 保存已关闭的弹窗ID到本地存储
-        localStorage.setItem(this.closedPopupId, this.notice.id.toString());
+        localStorage.setItem(this.closedPopupId, this.notice.id.toString())
       }
-      
+      this.httpPost(`/web/notice/click/${this.notice.id}`, {}, (json) => {
+        // console.log(json)
+      })
+
       // 通知父组件更新状态
-      this.$emit('update:modelValue', false);
-    }
-  }
+      this.$emit('update:modelValue', false)
+    },
+  },
 }
 </script>
 
