@@ -21,5 +21,14 @@
         <result property="viewCount" column="view_count"/>
         <result property="position" column="position"/>
     </resultMap>
+    
+    <!-- 批量更新广告浏览量 -->
+    <update id="batchUpdateViewCount" parameterType="java.util.Map">
+        <foreach collection="viewCountMap" item="increment" index="id" separator=";" open="" close="">
+            UPDATE advertisement
+            SET view_count = view_count + #{increment}
+            WHERE id = #{id}
+        </foreach>
+    </update>
 
 </mapper>

@@ -95,6 +95,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "/api/verifyImage", 
                     "/api/web/info",
                     "/api/web/notice",
+                    "/api/web/notice/**",
                     "/api/article/**", 
                     "/api/category/**",
                     "/api/danmaku/**",
@@ -124,6 +125,8 @@ public class WebConfig implements WebMvcConfigurer {
 //                        "/api/upload/video",
 //                        "/api/upload/photo",
 //                        "/api/upload/avatar",
+//                        "/api/2fa/totp/create",
+//                        "/api/2fa/totp/close",
 //                        "/api/upload/top",
 //                        "/totp/create"
 //                );

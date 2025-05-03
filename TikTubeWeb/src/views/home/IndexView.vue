@@ -101,7 +101,7 @@ export default {
     },
     getSystemNotice() {
       this.httpGet(`/web/notice?type=0`, (json) => {
-        if (json.data.length != 0) {
+        if (json.data != null && json.data.length != 0) {
           this.systemNotice = json.data[0]
         } else {
           this.systemNotice = null

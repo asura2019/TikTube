@@ -3,12 +3,14 @@ package com.buguagaoshu.tiktube.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.buguagaoshu.tiktube.cache.AdsCountRecorder;
 import com.buguagaoshu.tiktube.cache.AdvertisementCache;
 import com.buguagaoshu.tiktube.dao.AdvertisementDao;
 import com.buguagaoshu.tiktube.entity.AdvertisementEntity;
 import com.buguagaoshu.tiktube.utils.PageUtils;
 import com.buguagaoshu.tiktube.utils.Query;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +25,13 @@ import java.util.Map;
 @Service
 @Slf4j
 public class AdvertisementService extends ServiceImpl<AdvertisementDao, AdvertisementEntity> {
+
+    private final AdsCountRecorder adsCountRecorder;
+
+    @Autowired
+    public AdvertisementService(AdsCountRecorder adsCountRecorder) {
+        this.adsCountRecorder = adsCountRecorder;
+    }
 
     public AdvertisementEntity save(AdvertisementEntity advertisement, long userId) {
         long time = System.currentTimeMillis();
@@ -59,7 +68,15 @@ public class AdvertisementService extends ServiceImpl<AdvertisementDao, Advertis
                 new Query<AdvertisementEntity>().getPage(params),
                 wrapper
         );
+        // 同步访问量
+        page.getRecords().forEach(advertisementEntity -> {
+            advertisementEntity.setViewCount(advertisementEntity.getViewCount() + adsCountRecorder.getAdsCount(advertisementEntity.getId()));
+        });
         return new PageUtils(page);
+    }
+
+    public void syncCount() {
+        this.baseMapper.batchUpdateViewCount(adsCountRecorder.getAdsMap());
     }
 
 

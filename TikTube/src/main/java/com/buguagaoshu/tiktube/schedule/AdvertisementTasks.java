@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 public class AdvertisementTasks {
     private final AdvertisementService advertisementService;
 
-
     @Autowired
     public AdvertisementTasks(AdvertisementService advertisementService) {
         this.advertisementService = advertisementService;
