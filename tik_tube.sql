@@ -378,6 +378,43 @@ CREATE TABLE `web_setting`  (
 
 
 -- ----------------------------
+-- Table structure for web_config
+-- ----------------------------
+DROP TABLE IF EXISTS `web_config`;
+CREATE TABLE `web_config`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `json_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '配置json文件',
+  `create_user` bigint NULL DEFAULT NULL COMMENT '创建用户',
+  `create_time` bigint NOT NULL COMMENT '创建时间',
+  `ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'ip',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT=1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '配置设置表' ROW_FORMAT = Dynamic;
+
+
+-- ----------------------------
+-- Table structure for advertisement_table
+-- ----------------------------
+DROP TABLE IF EXISTS `advertisement_table`;
+CREATE TABLE `advertisement_table`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '标题',
+  `url` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '链接地址',
+  `image_url` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图片',
+  `content` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '细节描述',
+  `video_url` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '视频广告地址',
+  `create_time` bigint NULL DEFAULT NULL,
+  `update_time` bigint NULL DEFAULT NULL,
+  `create_user` bigint NULL DEFAULT NULL,
+  `status` int NULL DEFAULT NULL,
+  `type` int NULL DEFAULT NULL COMMENT '类型',
+  `start_time` bigint NULL DEFAULT NULL COMMENT '开始时间',
+  `end_time` bigint NULL DEFAULT NULL COMMENT '结束时间',
+  `view_count` bigint NULL DEFAULT NULL COMMENT '点击次数',
+  `position` int NULL DEFAULT NULL COMMENT '投放位置',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '广告以及系统公告' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
 -- 对象存储配置
 -- ----------------------------
 DROP TABLE IF EXISTS `oss_config`;

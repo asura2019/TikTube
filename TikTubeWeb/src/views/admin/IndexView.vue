@@ -13,6 +13,9 @@
       <v-col>
         <v-btn @click="syscData">立即同步缓存</v-btn>
       </v-col>
+      <v-col>
+        <v-btn @click="syscAds">立即同步广告数据</v-btn>
+      </v-col>
     </v-row>
     <v-row> </v-row>
   </v-container>
@@ -41,6 +44,9 @@ export default {
     syscData() {
       this.httpPost('/admin/system/data/sync', {}, (json) => {})
     },
+    syscAds() {
+      this.httpPost('/admin/system/ads/sync', {}, (json) => {})
+    }
   },
 }
 </script>

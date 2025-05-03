@@ -9,7 +9,7 @@
     </v-row>
     <v-container v-if="userInfo != null">
       <!-- 用户状态信息 -->
-      <v-banner class="my-4" color="warning" icon="$warning" lines="one" v-if="userInfo.status == 1">
+      <v-banner class="my-4" color="warning" icon="$warning" lines="one" v-if="showLockBanner()">
         <v-banner-text>
           该用户因违反社区规定，账号已被
           <span v-if="userInfo.blockEndTime == 0">永久封禁</span>
@@ -214,6 +214,19 @@ export default {
         this.userInfo = json.data
         document.title = useWebInfoStore().webInfo.name + ' - ' + json.data.username
       })
+    },
+    showLockBanner() {
+      if(this.userInfo.status == 0){
+        return false
+      } else {
+        if (this.userInfo.blockEndTime == 0) {
+          return true        
+        }
+        if (new Date().getTime() > this.userInfo.blockEndTime) {
+          return false
+        }
+        return true
+      }
     },
     geVideoList() {
       this.httpGet(

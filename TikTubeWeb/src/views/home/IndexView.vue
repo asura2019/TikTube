@@ -50,15 +50,24 @@
       </v-row>
     </v-container>
     <v-col> &nbsp; </v-col>
+
+    <!-- 引入弹窗广告组件 -->
+    <AdsDialogCard 
+      v-model="popupDialog" 
+      :notice="popupNotice"
+      :closed-popup-id="'closedHomePopupId'"
+    />
   </v-container>
 </template>
 
 <script>
 import VideoCared from '@/components/card/VideoCard.vue'
+import AdsDialogCard from '@/components/card/AdsDialogCard.vue'
 
 export default {
   components: {
     VideoCared,
+    AdsDialogCard
   },
   data() {
     return {
@@ -68,6 +77,9 @@ export default {
       length: 0,
       categoryList: [],
       systemNotice: {},
+      // 弹窗相关数据
+      popupDialog: false,
+      popupNotice: null,
     }
   },
   created() {
@@ -79,6 +91,7 @@ export default {
     this.getCategory()
     this.getVideoList()
     this.getSystemNotice()
+    this.getPopupNotice()
   },
   methods: {
     getCategory() {
@@ -87,11 +100,29 @@ export default {
       })
     },
     getSystemNotice() {
-      this.httpGet(`/web/notice`, (json) => {
-        if (json.data.show === 'true') {
-          this.systemNotice = json.data
+      this.httpGet(`/web/notice?type=0`, (json) => {
+        if (json.data.length != 0) {
+          this.systemNotice = json.data[0]
         } else {
           this.systemNotice = null
+        }
+      })
+    },
+    // 获取弹窗公告
+    getPopupNotice() {
+      this.httpGet(`/web/notice?type=1`, (json) => {
+        if (json.data != null && json.data.length > 0) {
+          const notice = json.data[0];
+          
+          // 从 localStorage 获取已关闭的弹窗ID
+          const closedPopupId = localStorage.getItem('closedHomePopupId');
+          
+          // 判断是否需要显示弹窗
+          // 1. 如果没有关闭过弹窗，或者关闭的弹窗ID与当前弹窗ID不同，则显示弹窗
+          if (!closedPopupId || parseInt(closedPopupId) !== notice.id) {
+            this.popupNotice = notice;
+            this.popupDialog = true;
+          }
         }
       })
     },

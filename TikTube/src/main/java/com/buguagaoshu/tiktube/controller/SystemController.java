@@ -4,6 +4,7 @@ import com.buguagaoshu.tiktube.cache.HotCache;
 import com.buguagaoshu.tiktube.config.WebConstant;
 import com.buguagaoshu.tiktube.schedule.CountTasks;
 import com.buguagaoshu.tiktube.schedule.DeleteTempFileTasks;
+import com.buguagaoshu.tiktube.service.AdvertisementService;
 import com.buguagaoshu.tiktube.service.ArticleService;
 import com.buguagaoshu.tiktube.utils.JwtUtil;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
@@ -30,13 +31,17 @@ public class SystemController {
 
     private final CountTasks countTasks;
 
+    private final AdvertisementService advertisementService;
+
     @Autowired
     public SystemController(ArticleService articleService,
                             DeleteTempFileTasks deleteTempFileTasks,
-                            CountTasks countTasks) {
+                            CountTasks countTasks,
+                            AdvertisementService advertisementService) {
         this.articleService = articleService;
         this.deleteTempFileTasks = deleteTempFileTasks;
         this.countTasks = countTasks;
+        this.advertisementService = advertisementService;
     }
 
 
@@ -56,6 +61,15 @@ public class SystemController {
         Claims user = JwtUtil.getUser(request);
         log.info("管理员：id:{} name: {} 手动同步缓存数据", user.getId(), user.getSubject());
         countTasks.saveCount();
+        return ResponseDetails.ok();
+    }
+
+
+    @PostMapping("/admin/system/ads/sync")
+    public ResponseDetails syncAds(HttpServletRequest request) {
+        Claims user = JwtUtil.getUser(request);
+        log.info("管理员：id:{} name: {} 手动同步广告缓存数据", user.getId(), user.getSubject());
+        advertisementService.getNowAdvertisement();
         return ResponseDetails.ok();
     }
 

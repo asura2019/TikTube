@@ -236,6 +236,16 @@ const router = createRouter({
           }
         },
         {
+          path: '/admin/ads',
+          name: 'ADSView',
+          component: () => import('@/views/admin/AdvertisementView.vue'),
+          meta: {
+            title: '广告公告管理',
+            requireAuth: true,
+            requireAdmin: true
+          }
+        },
+        {
           path: '/admin/userlist',
           name: 'UserList',
           component: () => import('@/views/admin/UserList.vue'),

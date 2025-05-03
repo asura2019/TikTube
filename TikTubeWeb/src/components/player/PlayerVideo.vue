@@ -6,6 +6,7 @@
 <script>
 import Artplayer from 'artplayer'
 import artplayerPluginDanmuku from 'artplayer-plugin-danmuku'
+import artplayerPluginAds from 'artplayer-plugin-ads'
 import { useUserStore } from '@/stores/userStore'
 
 export default {
@@ -31,17 +32,26 @@ export default {
       type: Number,
       default: 0,
     },
+    openAds: {
+      type: Boolean,
+      default: false,
+    },
+    adsInfo: {
+      type: Object,
+      default: () => {},
+    }
   },
   methods: {
-        // 调整播放器高度
+    // 调整播放器高度
     adjustPlayerHeight() {
-      const viewportHeight = window.innerHeight;
-      const playerHeight = viewportHeight * 0.8; // 80%的视口高度
-      this.$refs.artRef.style.height = `${playerHeight}px`;
-    }
+      const viewportHeight = window.innerHeight
+      const playerHeight = viewportHeight * 0.8 // 80%的视口高度
+      this.$refs.artRef.style.height = `${playerHeight}px`
+    },
   },
   mounted() {
     //this.adjustPlayerHeight();
+    console.log(this.adsInfo)
     this.seek = parseInt(this.$route.query.seek)
     if (isNaN(this.seek)) {
       this.seek = 0
@@ -49,118 +59,262 @@ export default {
     const videoId = this.video.id
     const API = this.SERVER_API_URL
     const userInfo = useUserStore()
-    this.instance = new Artplayer({
-      // 容器
-      container: this.$refs.artRef,
-      // 视频地址
-      url: this.video.fileUrl + '?key=' + encodeURIComponent(this.video.key),
-      // 视频封面
-      poster: this.picurl,
-      // 自动启用迷你窗口
-      // autoMini: true,
-      // 显示视频反转按钮
-      flip: true,
-      // 显示视频播放速度
-      playbackRate: true,
-      // 显示视频长宽比
-      aspectRatio: true,
-      // 显示视频截图功能
-      screenshot: true,
-      setting: true,
-      hotkey: true,
-      // 画中画
-      pip: true,
-      fullscreen: true,
-      fullscreenWeb: true,
-      // 移动端长按快进
-      fastForward: true,
-      // 移动端自动旋转播放器
-      autoOrientation: true,
-      // 自定义右键菜单
-      contextmenu: [
-        {
-          html: '不挂高数出品',
-          click: function (...args) {
-            window.open('https://www.buguagaoshu.com/')
+    const adsInfo = this.adsInfo
+    if (this.openAds) {
+      //
+      this.instance = new Artplayer({
+        // 容器
+        container: this.$refs.artRef,
+        // 视频地址
+        url: this.video.fileUrl + '?key=' + encodeURIComponent(this.video.key),
+        // 视频封面
+        poster: this.picurl,
+        // 自动启用迷你窗口
+        // autoMini: true,
+        // 显示视频反转按钮
+        flip: true,
+        // 显示视频播放速度
+        playbackRate: true,
+        // 显示视频长宽比
+        aspectRatio: true,
+        // 显示视频截图功能
+        screenshot: true,
+        setting: true,
+        hotkey: true,
+        // 画中画
+        pip: true,
+        fullscreen: true,
+        fullscreenWeb: true,
+        // 移动端长按快进
+        fastForward: true,
+        // 移动端自动旋转播放器
+        autoOrientation: true,
+        // 自定义右键菜单
+        contextmenu: [
+          {
+            html: '不挂高数出品',
+            click: function (...args) {
+              window.open('https://www.buguagaoshu.com/')
+            },
           },
-        },
-      ],
-      plugins: [
-        artplayerPluginDanmuku({
-          danmuku: function () {
-            return new Promise((resolve) => {
-              let dList = []
-              fetch(`${API}/danmaku/v1?id=${videoId}`, {
+        ],
+        plugins: [
+          artplayerPluginDanmuku({
+            danmuku: function () {
+              return new Promise((resolve) => {
+                let dList = []
+                fetch(`${API}/danmaku/v1?id=${videoId}`, {
+                  headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                  },
+                  method: 'GET',
+                  credentials: 'include',
+                })
+                  .then((response) => response.json())
+                  .then((json) => {
+                    if (json.status === 200) {
+                      for (let d of json.data) {
+                        let a = {
+                          text: d.text,
+                          time: d.time,
+                          mode: d.type,
+                          color: d.color,
+                        }
+                        dList.push(a)
+                      }
+                    }
+                    resolve(dList)
+                  })
+                  .catch((error) => {
+                    console.error('HTTP Post Error:', error)
+                    resolve([])
+                  })
+              })
+            },
+            // 这是用户在输入框输入弹幕文本，然后点击发送按钮后触发的函数
+            // 你可以对弹幕做合法校验，或者做存库处理
+            // 当返回true后才表示把弹幕加入到弹幕队列
+            async beforeEmit(danmu) {
+              if (userInfo.userData == null) {
+                alert('请先登录')
+                console.log('请先登录')
+                return false
+              }
+              // 构造提交后端的数据
+              const danmuData = {
+                text: danmu.text,
+                time: danmu.time,
+                type: danmu.mode,
+                color: danmu.color,
+                id: videoId,
+              }
+              fetch(`${API}/danmaku/v1`, {
                 headers: {
                   'Content-Type': 'application/json; charset=UTF-8',
+                  //'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
                 },
-                method: 'GET',
+                method: 'POST',
                 credentials: 'include',
+                body: JSON.stringify(danmuData),
               })
                 .then((response) => response.json())
                 .then((json) => {
-                  if (json.status === 200) {
-                    for (let d of json.data) {
-                      let a = {
-                        text: d.text,
-                        time: d.time,
-                        mode: d.type,
-                        color: d.color,
-                      }
-                      dList.push(a)
-                    }
+                  if (json.code == 0) {
+                    return true
+                  } else {
+                    return false
                   }
-                  resolve(dList)
                 })
                 .catch((error) => {
                   console.error('HTTP Post Error:', error)
-                  resolve([])
+                  return null
                 })
-            })
-          },
-          // 这是用户在输入框输入弹幕文本，然后点击发送按钮后触发的函数
-          // 你可以对弹幕做合法校验，或者做存库处理
-          // 当返回true后才表示把弹幕加入到弹幕队列
-          async beforeEmit(danmu) {
-            if (userInfo.userData == null) {
-              alert('请先登录')
-              console.log('请先登录')
-              return false
-            }
-            // 构造提交后端的数据
-            const danmuData = {
-              text: danmu.text,
-              time: danmu.time,
-              type: danmu.mode,
-              color: danmu.color,
-              id: videoId,
-            }
-            fetch(`${API}/danmaku/v1`, {
-              headers: {
-                'Content-Type': 'application/json; charset=UTF-8',
-                //'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
-              },
-              method: 'POST',
-              credentials: 'include',
-              body: JSON.stringify(danmuData),
-            })
-              .then((response) => response.json())
-              .then((json) => {
-                if (json.code == 0) {
-                  return true
-                } else {
-                  return false
-                }
-              })
-              .catch((error) => {
-                console.error('HTTP Post Error:', error)
-                return null
-              })
-            return true
-          },
+              return true
+            },
+          }),
+          // 如果 openAds 为 true 则开启广告
+          artplayerPluginAds({
+            // html广告，假如是视频广告则忽略该值
+            html: `<img src="${adsInfo.imageUrl}">`,
+
+            // 视频广告的地址
+            video: adsInfo.videoUrl,
+
+            // 广告跳转网址，为空则不跳转
+            url: adsInfo.url,
+
+            // 必须观看的时长，期间不能被跳过，单位为秒
+            // 当该值大于或等于totalDuration时，不能提前关闭广告
+            // 当该值等于或小于0时，则随时都可以关闭广告
+            playDuration: 5,
+
+            // 广告总时长，单位为秒
+            totalDuration: 30,
+            // 多语言支持
+            i18n: {
+                close: '关闭广告',
+                countdown: '%s秒',
+                detail: '查看详情',
+                canBeClosed: '%s秒后可关闭广告',
+            },
         }),
-      ],
-    })
+        ],
+      })
+    } else {
+      this.instance = new Artplayer({
+        // 容器
+        container: this.$refs.artRef,
+        // 视频地址
+        url: this.video.fileUrl + '?key=' + encodeURIComponent(this.video.key),
+        // 视频封面
+        poster: this.picurl,
+        // 自动启用迷你窗口
+        // autoMini: true,
+        // 显示视频反转按钮
+        flip: true,
+        // 显示视频播放速度
+        playbackRate: true,
+        // 显示视频长宽比
+        aspectRatio: true,
+        // 显示视频截图功能
+        screenshot: true,
+        setting: true,
+        hotkey: true,
+        // 画中画
+        pip: true,
+        fullscreen: true,
+        fullscreenWeb: true,
+        // 移动端长按快进
+        fastForward: true,
+        // 移动端自动旋转播放器
+        autoOrientation: true,
+        // 自定义右键菜单
+        contextmenu: [
+          {
+            html: '不挂高数出品',
+            click: function (...args) {
+              window.open('https://www.buguagaoshu.com/')
+            },
+          },
+        ],
+        plugins: [
+          artplayerPluginDanmuku({
+            danmuku: function () {
+              return new Promise((resolve) => {
+                let dList = []
+                fetch(`${API}/danmaku/v1?id=${videoId}`, {
+                  headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                  },
+                  method: 'GET',
+                  credentials: 'include',
+                })
+                  .then((response) => response.json())
+                  .then((json) => {
+                    if (json.status === 200) {
+                      for (let d of json.data) {
+                        let a = {
+                          text: d.text,
+                          time: d.time,
+                          mode: d.type,
+                          color: d.color,
+                        }
+                        dList.push(a)
+                      }
+                    }
+                    resolve(dList)
+                  })
+                  .catch((error) => {
+                    console.error('HTTP Post Error:', error)
+                    resolve([])
+                  })
+              })
+            },
+            // 这是用户在输入框输入弹幕文本，然后点击发送按钮后触发的函数
+            // 你可以对弹幕做合法校验，或者做存库处理
+            // 当返回true后才表示把弹幕加入到弹幕队列
+            async beforeEmit(danmu) {
+              if (userInfo.userData == null) {
+                alert('请先登录')
+                console.log('请先登录')
+                return false
+              }
+              // 构造提交后端的数据
+              const danmuData = {
+                text: danmu.text,
+                time: danmu.time,
+                type: danmu.mode,
+                color: danmu.color,
+                id: videoId,
+              }
+              fetch(`${API}/danmaku/v1`, {
+                headers: {
+                  'Content-Type': 'application/json; charset=UTF-8',
+                  //'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
+                },
+                method: 'POST',
+                credentials: 'include',
+                body: JSON.stringify(danmuData),
+              })
+                .then((response) => response.json())
+                .then((json) => {
+                  if (json.code == 0) {
+                    return true
+                  } else {
+                    return false
+                  }
+                })
+                .catch((error) => {
+                  console.error('HTTP Post Error:', error)
+                  return null
+                })
+              return true
+            },
+          }),
+          // 如果 openAds 为 true 则开启广告
+        ],
+      })
+    }
 
     this.instance.on('ready', () => {
       console.log('播放器准备完成')
@@ -219,6 +373,5 @@ export default {
 <style>
 #artRef {
   height: 80vh; /* 视口高度的80%作为最大高度 */
-  
 }
 </style>

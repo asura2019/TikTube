@@ -124,6 +124,7 @@ export default {
       { icon: 'mdi-account-multiple', text: '用户列表', link: '/admin/userlist' },
       { icon: 'mdi-comment', text: '评论管理', link: '/admin/comment' },
       { icon: 'mdi-airplane', text: '弹幕管理', link: '/admin/danmuku' },
+      { icon: 'mdi-advertisements', text: '广告公告管理', link: '/admin/ads' },
       { icon: 'mdi-square-edit-outline', text: '网页设置', link: '/admin/websetting' },
       { icon: 'mdi-playlist-edit', text: '分类管理', link: '/admin/category' },
     ],

@@ -9,10 +9,12 @@
       <v-row style="padding-top: 12px; padding-bottom: 12px">
         <v-col style="padding-bottom: 0px">
           <PlayerVideo
-            v-if="playVideoData != null"
+            v-if="playVideoData != null && adsInfoStatus"
             :article="parseInt(id)"
             :video="playVideoData"
             :picurl="videoData.imgUrl"
+            :open-ads="openAds"
+            :ads-info="adsInfo"
           />
         </v-col>
       </v-row>
@@ -267,7 +269,7 @@ import Comment from '@/views/comment/VideoComment.vue'
 import { useUserStore } from '@/stores/userStore'
 import ShareCard from '@/components/card/ShareCard.vue'
 import VideoCared from '@/components/card/VideoCard.vue'
-
+import Power from '@/utils/check-power.vue'
 export default {
   name: 'VideoView',
   components: {
@@ -290,12 +292,15 @@ export default {
       isFavorited: false,
       isFollowed: false,
       userInfo: useUserStore(),
+      adsInfo: null,
       snackbar: {
         show: false,
         text: '',
         color: 'success',
       },
+      adsInfoStatus: false,
       shareDialog: false,
+      openAds: false,
     }
   },
   computed: {
@@ -312,7 +317,7 @@ export default {
       behavior: 'smooth',
     })
     this.id = parseInt(this.$route.params.id)
-    this.videoInfo()
+    this.getAllVideoInfo()
     this.onResize()
     window.addEventListener('resize', this.onResize)
   },
@@ -347,6 +352,41 @@ export default {
           this.$router.push('/')
         }
       })
+    },
+    getAdsInfo() {
+      this.httpGet('/web/notice?type=2', (json) => {
+        if (json.data != null && json.data.length > 0) {
+          this.adsInfo = json.data[this.getRandomInt(0, json.data.length - 1)]
+          this.openAds = true
+        } else {
+          this.openAds = false
+        }
+        this.adsInfoStatus = true
+      })
+    },
+    getAllVideoInfo() {
+      // 未登录
+      if (this.userInfo.userData == null) {
+        this.getAdsInfo()
+        this.videoInfo()
+      } else {
+        if (Power.checkPower(this.userInfo.userData) === 'user') {
+          this.getAdsInfo()
+          this.videoInfo()
+        } else {
+          this.openAds = false
+          this.adsInfoStatus = true
+          this.videoInfo()
+        }
+      }
+    },
+    getRandomInt(min, max) {
+      if (min == max) {
+        return min
+      }
+      min = Math.ceil(min)
+      max = Math.floor(max)
+      return Math.floor(Math.random() * (max - min + 1)) + min
     },
     // 点赞功能
     likeVideo() {
