@@ -1,5 +1,15 @@
 # 更新日志
 
+## 2025-05-03 
+
+新增 advertisement_table 表，用来保存广告与公告数据
+
+完成公告、广告、贴片广告功能
+
+新增 web_config 表，为重构网站设置功能做准备
+
+修复前端已知 BUG
+
 ## 2025-05-01 v1.1.0 beta
 
 file_table 表增加 save_location 字段，用来区分存储位置
