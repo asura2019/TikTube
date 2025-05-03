@@ -7,6 +7,7 @@ import com.buguagaoshu.tiktube.entity.UserEntity;
 import com.buguagaoshu.tiktube.entity.UserRoleEntity;
 import com.buguagaoshu.tiktube.enums.NotificationType;
 import com.buguagaoshu.tiktube.enums.RoleTypeEnum;
+import com.buguagaoshu.tiktube.enums.TypeCode;
 import com.buguagaoshu.tiktube.service.NotificationService;
 import com.buguagaoshu.tiktube.service.UserService;
 import com.buguagaoshu.tiktube.utils.JwtUtil;
@@ -171,6 +172,32 @@ public class UserController {
      * */
     @PostMapping("/api/admin/user/lock")
     public ResponseDetails lockUser(@RequestBody UserEntity userEntity, HttpServletRequest request) {
-        return ResponseDetails.ok().put("data", userService.lockUser(userEntity, JwtUtil.getUserId(request)));
+        long adminUserId = JwtUtil.getUserId(request);
+        boolean b = userService.lockUser(userEntity, adminUserId);
+        String title = "账号已被管理员解封！";
+        String content = "由于您近期表现良好，管理员已提前解封您的账号！";
+        if (userEntity.getStatus().equals(TypeCode.USER_LOCK)) {
+            title = "账号被封禁！";
+            if (userEntity.getBlockEndTime().equals(0L)) {
+                content = "由于您近期多次违反社区规定，账号已被永久封禁！";
+            } else {
+                content = "由于您近期多次违反社区规定，账号已被封禁到：" + MyStringUtils.formatTime(userEntity.getBlockEndTime());
+            }
+        }
+        if (b) {
+            notificationService.sendNotification(
+                    adminUserId,
+                    userEntity.getId(),
+                    -1,
+                    -1,
+                    -1,
+                    title,
+                    "",
+                    content,
+                    NotificationType.SYSTEM
+            );
+        }
+
+        return ResponseDetails.ok().put("data", b);
     }
 }

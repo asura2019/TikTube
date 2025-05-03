@@ -34,7 +34,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import static net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
 
 
 @Service("userService")
@@ -70,6 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
 
 
     @Autowired
@@ -591,14 +591,19 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean lockUser(UserEntity userEntity, long adminUserId) {
         UserEntity u = this.getById(userEntity.getId());
         if (u == null) {
             return false;
         }
+        if (adminUserId == u.getId()) {
+            return false;
+        }
         u.setStatus(userEntity.getStatus());
         u.setBlockEndTime(userEntity.getBlockEndTime());
         this.updateById(u);
+
         return true;
     }
 

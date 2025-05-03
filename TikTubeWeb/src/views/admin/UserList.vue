@@ -815,7 +815,7 @@ export default {
       loading: false,
       search: '',
       page: 1,
-      pageSize: 10,
+      pageSize: 20,
       totalPage: 1,
       totalCount: 0,
       headers: [
