@@ -24,6 +24,14 @@ public class FileTableServiceImpl extends ServiceImpl<FileTableDao, FileTableEnt
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<FileTableEntity> wrapper = new QueryWrapper<>();
         wrapper.orderByDesc("upload_time");
+        String type = (String) params.get("type");
+        if (type != null) {
+            wrapper.eq("type", type);
+        }
+        String status = (String) params.get("status");
+        if (status != null) {
+            wrapper.eq("status", status);
+        }
         IPage<FileTableEntity> page = this.page(
                 new Query<FileTableEntity>().getPage(params),
                 wrapper

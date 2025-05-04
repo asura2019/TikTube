@@ -1,33 +1,38 @@
 <template>
-  <v-container>
-    <!-- 顶部操作栏 -->
-    <v-row>
-      <v-col>
-        <v-card-title class="d-flex align-center justify-space-between">
-          <span>对象存储配置管理 <span v-if="nowSaveLocation === 0">当前存储位置：本地存储</span></span>
-          <v-btn
-            color="primary"
-            prepend-icon="mdi-plus"
-            @click="openDialog(null)"
-          >
-            新增配置
-          </v-btn>
-        </v-card-title>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        说明：同时只能启用一个配置，不建议删除曾经使用过的配置，如果删除可能导致部分使用该配置的文件无法正常访问。
-        禁用不表示配置不启用，只表示当前存储位置不是他，不代表之前的存储位置不是
-      </v-col>
-    </v-row>
-    <!-- 配置列表 -->
-    <v-row>
-      <v-col>
+  <v-container fluid>
+    <v-card class="mx-auto w-100" elevation="2" rounded="lg">
+      <v-toolbar color="blue">
+        <v-toolbar-title class="text-h5 font-weight-medium">
+          <v-icon icon="mdi-server" class="mr-2"></v-icon>
+          对象存储配置管理
+          <v-chip v-if="nowSaveLocation === 0" color="info" size="small" class="ml-2">
+            当前存储位置：本地存储
+          </v-chip>
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn
+          prepend-icon="mdi-plus"
+          color="white"
+          variant="tonal"
+          @click="openDialog(null)"
+          class="mr-2"
+        >
+          新增配置
+        </v-btn>
+      </v-toolbar>
+
+      <v-alert type="info" variant="tonal" border="start" density="comfortable" class="ma-4">
+        同时只能启用一个配置，不建议删除曾经使用过的配置，如果删除可能导致部分使用该配置的文件无法正常访问。
+        禁用不表示配置不启用，只表示当前存储位置不是他，不代表之前的存储位置不是。
+      </v-alert>
+
+      <!-- 配置列表 -->
+      <v-card-text>
         <v-data-table
           :headers="headers"
           :items="ossList"
           :loading="loading"
+          hover
           class="elevation-1"
         >
           <!-- 配置名称列 -->
@@ -51,6 +56,7 @@
             <v-chip
               :color="item.status === 1 ? 'success' : 'grey'"
               size="small"
+              text-color="white"
             >
               {{ item.status === 1 ? '启用' : '禁用' }}
             </v-chip>
@@ -58,7 +64,7 @@
 
           <!-- 操作列 -->
           <template #[`item.actions`]="{ item }">
-            <div class="d-flex">
+            <div class="d-flex justify-center">
               <v-tooltip location="top" text="编辑">
                 <template #activator="{ props }">
                   <v-btn
@@ -107,18 +113,34 @@
               </v-tooltip>
             </div>
           </template>
+
+          <template #no-data>
+            <div class="d-flex flex-column align-center pa-4">
+              <v-icon size="large" color="grey-lighten-1" class="mb-2">mdi-emoticon-sad</v-icon>
+              <span class="text-body-1 text-grey">暂无配置数据</span>
+              <v-btn color="primary" class="mt-4" @click="initialize">刷新数据</v-btn>
+            </div>
+          </template>
         </v-data-table>
-      </v-col>
-    </v-row>
+      </v-card-text>
+    </v-card>
 
     <!-- 编辑对话框 -->
     <v-dialog v-model="dialog" max-width="800px">
       <v-card>
-        <v-card-title class="text-h5">
+        <v-card-title class="text-h5 bg-primary text-white">
+          <v-icon class="mr-2">{{ editedItem.id ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
           {{ editedItem.id ? '编辑配置' : '新增配置' }}
+          <v-spacer></v-spacer>
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            color="white"
+            @click="dialog = false"
+          ></v-btn>
         </v-card-title>
 
-        <v-card-text>
+        <v-card-text class="pt-4">
           <v-form ref="form" v-model="valid">
             <v-container>
               <v-row>
@@ -128,6 +150,9 @@
                     label="配置名称"
                     :rules="[v => !!v || '配置名称不能为空']"
                     required
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-tag"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -136,6 +161,9 @@
                     label="存储桶名称"
                     :rules="[v => !!v || '存储桶名称不能为空']"
                     required
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-folder"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
@@ -144,6 +172,9 @@
                     label="端点地址"
                     :rules="[v => !!v || '端点地址不能为空']"
                     required
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-web"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -152,6 +183,9 @@
                     label="访问密钥ID"
                     :rules="[v => !!v || '访问密钥ID不能为空']"
                     required
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-key"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -161,18 +195,27 @@
                     :rules="[v => !!v || '访问密钥密码不能为空']"
                     type="password"
                     required
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-key-variant"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
                     v-model="editedItem.region"
                     label="地区"
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-map-marker"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
                     v-model="editedItem.urlPrefix"
                     label="自定义域名"
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-earth"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -184,6 +227,9 @@
                     ]"
                     label="访问风格"
                     required
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-format-list-bulleted"
                   ></v-select>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -195,6 +241,9 @@
                     ]"
                     label="状态"
                     required
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-toggle-switch"
                   ></v-select>
                 </v-col>
                 <v-col cols="12">
@@ -202,6 +251,9 @@
                     v-model="editedItem.other"
                     label="其它参数配置"
                     rows="3"
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-cog"
                   ></v-textarea>
                 </v-col>
               </v-row>
@@ -209,21 +261,23 @@
           </v-form>
         </v-card-text>
 
-        <v-card-actions>
+        <v-card-actions class="pa-4 bg-grey-lighten-5">
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            variant="text"
-            @click="saveConfig"
-          >
-            保存
-          </v-btn>
           <v-btn
             color="error"
             variant="text"
             @click="dialog = false"
+            prepend-icon="mdi-close"
           >
             取消
+          </v-btn>
+          <v-btn
+            color="primary"
+            variant="text"
+            @click="saveConfig"
+            prepend-icon="mdi-content-save"
+          >
+            保存
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -371,6 +425,12 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.preview-media {
+  max-width: 100%;
+  max-height: 400px;
+  margin: 0 auto;
+  display: block;
+  border-radius: 4px;
+}
 </style>

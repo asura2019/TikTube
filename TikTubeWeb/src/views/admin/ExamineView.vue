@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-card class="mx-auto w-100" elevation="2" rounded="lg">
-      <v-toolbar color="red">
+      <v-toolbar color="purple">
         <v-toolbar-title class="text-h5 font-weight-medium">内容审核管理</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn class="mr-2" prepend-icon="mdi-refresh" color="white" variant="tonal" @click="init">

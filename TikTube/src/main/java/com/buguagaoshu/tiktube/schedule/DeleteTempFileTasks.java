@@ -53,17 +53,24 @@ public class DeleteTempFileTasks {
             if (fileTableEntities.isEmpty()) {
                 break;
             }
-            List<FileTableEntity> tempImg = new ArrayList<>();
+            List<FileTableEntity> tempFiles = new ArrayList<>();
             for (FileTableEntity file : fileTableEntities) {
-                repository.deleteFile(file);
-                file.setStatus(FileStatusEnum.DELETE.getCode());
+                boolean res = repository.deleteFile(file);
+                if (res) {
+                    // 在文件系统内删除的直接从数据库删除
+                    tempFiles.add(file);
+                } else {
+                    // 删除失败的进行标记
+                    file.setStatus(FileStatusEnum.DELETE.getCode());
+                }
+
                 if (WebConstant.SYSTEM_CREATE_SCREENSHOT.equals(file.getFileOriginalName())) {
-                    tempImg.add(file);
+                    tempFiles.add(file);
                 }
                 num += 1;
             }
             fileTableService.updateBatchById(fileTableEntities);
-            fileTableService.removeBatchByIds(tempImg);
+            fileTableService.removeBatchByIds(tempFiles);
         }
 
         log.info(" {} 之前的过期文件删除完成", SIMPLE_DATE_FORMAT.format(endTime));
@@ -81,17 +88,24 @@ public class DeleteTempFileTasks {
             if (fileTableEntities.isEmpty()) {
                 break;
             }
-            List<FileTableEntity> tempImg = new ArrayList<>();
+            List<FileTableEntity> tempFiles = new ArrayList<>();
             for (FileTableEntity file : fileTableEntities) {
-                repository.deleteFile(file);
+                boolean res = repository.deleteFile(file);
+                if (res) {
+                    // 在文件系统内删除的直接从数据库删除
+                    tempFiles.add(file);
+                } else {
+                    // 删除失败的进行标记
+                    file.setStatus(FileStatusEnum.DELETE.getCode());
+                }
                 file.setStatus(FileStatusEnum.DELETE.getCode());
                 if (WebConstant.SYSTEM_CREATE_SCREENSHOT.equals(file.getFileOriginalName())) {
-                    tempImg.add(file);
+                    tempFiles.add(file);
                 }
                 num += 1;
             }
             fileTableService.updateBatchById(fileTableEntities);
-            fileTableService.removeBatchByIds(tempImg);
+            fileTableService.removeBatchByIds(tempFiles);
         }
 
         log.info(" {} 之前的过期文件删除完成", SIMPLE_DATE_FORMAT.format(time));

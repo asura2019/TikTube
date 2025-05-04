@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="pa-6">
     <v-card elevation="2" rounded="lg" class="mb-6">
-      <v-toolbar color="primary" density="comfortable">
+      <v-toolbar color="green" density="comfortable">
         <v-toolbar-title class="text-h5 font-weight-bold text-white">
           <v-icon class="mr-2">mdi-account-group</v-icon>
           用户列表

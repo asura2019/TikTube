@@ -167,8 +167,10 @@ public class FileRepositoryImpl implements FileRepository {
                     );
                     
                     // 直接从 MultipartFile 处理视频文件，提取信息
-                    processVideoFile(file, fileTableEntity);
-                    
+                    boolean info = processVideoFile(file, fileTableEntity);
+                    if(!info) {
+                        throw new Exception("文件格式错误，系统无法读取，请检查后重新上传！");
+                    }
                     // 根据存储位置配置决定存储方式
                     if (WebConfig.FILE_SAVE_LOCATION == 0) {
                         // 本地存储
@@ -307,11 +309,18 @@ public class FileRepositoryImpl implements FileRepository {
         if (file == null || file.getArticleId() != null) {
             return false;
         }
-        
+
         boolean fileDeleted = deleteFile(file);
         if (fileDeleted) {
             fileTableService.removeById(file.getId());
             return true;
+        } else {
+            // TODO 优化返回消息提醒
+            if (file.getStatus().equals(FileStatusEnum.DELETE.getCode())) {
+                log.info("文件无法在文件系统中删除，只会在数据库中删除！: {}", fileTableEntity.getFileUrl());
+                fileTableService.removeById(file.getId());
+                return true;
+            }
         }
         return false;
     }

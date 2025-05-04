@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.Data;
 
+import java.util.Objects;
+
 /**
  * 文件表
  *
@@ -122,4 +124,9 @@ public class FileTableEntity {
      * 文件存储位置 默认 0 本地存储
      * */
     private Integer saveLocation;
+
+
+    public Integer getSaveLocation() {
+        return Objects.requireNonNullElse(this.saveLocation, 0);
+    }
 }

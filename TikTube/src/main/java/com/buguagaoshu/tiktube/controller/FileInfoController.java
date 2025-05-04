@@ -34,4 +34,7 @@ public class FileInfoController {
     public ResponseDetails delete(@RequestBody FileTableEntity fileTableEntity) {
         return ResponseDetails.ok().put("data", fileRepository.deleteFileWithDatabase(fileTableEntity));
     }
+
+    // TODO 文件数据更新
+    
 }
