@@ -665,7 +665,8 @@ export default {
       
       const updateData = {
         id: item.id,
-        status: newStatus
+        status: newStatus,
+        type: item.type
       }
       
       this.httpPost('/admin/ads/update', updateData, (json) => {

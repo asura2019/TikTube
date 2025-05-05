@@ -7,6 +7,7 @@ import com.buguagaoshu.tiktube.service.GenerateImageService;
 import com.buguagaoshu.tiktube.service.SendMessageService;
 import com.buguagaoshu.tiktube.service.VerifyCodeService;
 import com.buguagaoshu.tiktube.utils.VerifyCodeUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -19,6 +20,7 @@ import java.util.Objects;
  * create          2019-11-26 17:07
  * 验证码服务
  */
+@Slf4j
 @Service
 public class DigitsVerifyCodeServiceImpl implements VerifyCodeService {
     private final VerifyCodeRepository verifyCodeRepository;
@@ -33,7 +35,10 @@ public class DigitsVerifyCodeServiceImpl implements VerifyCodeService {
 
     public static final long SEND_VERIFY_CODE_EXPIRE_TIMEOUT = 15L;
 
-    public DigitsVerifyCodeServiceImpl(VerifyCodeRepository verifyCodeRepository, GenerateImageService generateImageService, SendMessageService sendMessageService, VerifyCodeUtil verifyCodeUtil) {
+    public DigitsVerifyCodeServiceImpl(VerifyCodeRepository verifyCodeRepository,
+                                       GenerateImageService generateImageService,
+                                       SendMessageService sendMessageService,
+                                       VerifyCodeUtil verifyCodeUtil) {
         this.verifyCodeRepository = verifyCodeRepository;
         this.generateImageService = generateImageService;
         this.sendMessageService = sendMessageService;
@@ -61,7 +66,8 @@ public class DigitsVerifyCodeServiceImpl implements VerifyCodeService {
 
     @Override
     public void send(String key) {
-        String verifyCode = randomDigitString(verifyCodeUtil.getLen());
+        // 加长 S 类型验证码
+        String verifyCode = randomDigitString(verifyCodeUtil.getLen() + 4);
         String verifyCodeWithTimestamp = appendTimestamp(verifyCode, "S");
 
         verifyCodeRepository.save(key, verifyCodeWithTimestamp, SEND_VERIFY_CODE_EXPIRE_TIMEOUT);
@@ -75,6 +81,7 @@ public class DigitsVerifyCodeServiceImpl implements VerifyCodeService {
         if (lastVerifyCodeWithTimestamp == null) {
             lastVerifyCodeWithTimestamp = appendTimestamp(randomDigitString(verifyCodeUtil.getLen()), "W");
         }
+
         String[] lastVerifyCodeAndTimestamp = lastVerifyCodeWithTimestamp.split("#");
         String lastVerifyCode = lastVerifyCodeAndTimestamp[0];
         long timestamp = Long.parseLong(lastVerifyCodeAndTimestamp[1]);
@@ -85,7 +92,9 @@ public class DigitsVerifyCodeServiceImpl implements VerifyCodeService {
         if (timestamp + expTime < System.currentTimeMillis()) {
             throw new VerifyFailedException("验证码已过期！");
         } else if (!Objects.equals(code, lastVerifyCode)) {
-            throw new VerifyFailedException("验证码错误！");
+            log.info("验证码错误 key: {}, system code: {}", key, lastVerifyCodeWithTimestamp);
+            log.info("验证码错误 key: {}, user input code: {}", key, code);
+            throw new VerifyFailedException("验证码错误!");
         }
         verifyCodeRepository.remove(key);
     }

@@ -58,7 +58,7 @@ public class InvitationCodeServiceImpl extends ServiceImpl<InvitationCodeDao, In
     @Override
     public InvitationCodeEntity check(String invitationCode) {
         // 开启邀请码注册的情况下需要校验邀请码
-        if (webSettingCache.getWebSettingEntity().getOpenInvitationRegister() == 1) {
+        if (webSettingCache.getWebConfigData().getOpenInvitationRegister().equals(1)) {
             InvitationCodeEntity code
                     = this.getOne(new QueryWrapper<InvitationCodeEntity>().eq("code", invitationCode));
             if (code == null || code.getUseStatus() == 0) {

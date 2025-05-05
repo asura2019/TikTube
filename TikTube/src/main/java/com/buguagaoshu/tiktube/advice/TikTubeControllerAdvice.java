@@ -2,6 +2,7 @@ package com.buguagaoshu.tiktube.advice;
 
 import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
 import com.buguagaoshu.tiktube.exception.InvitationCodeException;
+import com.buguagaoshu.tiktube.exception.NeedToCheckEmailException;
 import com.buguagaoshu.tiktube.exception.UserNotFoundException;
 import com.buguagaoshu.tiktube.exception.VerifyFailedException;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
@@ -28,7 +29,6 @@ public class TikTubeControllerAdvice {
     }
 
 
-
     @ExceptionHandler(value = {UserNotFoundException.class})
     public ResponseDetails handleUserException(UserNotFoundException e) {
         return ResponseDetails.ok(ReturnCodeEnum.USER_NOT_FIND).put("data", e.getMessage());
@@ -42,5 +42,10 @@ public class TikTubeControllerAdvice {
     @ExceptionHandler(value = {InvitationCodeException.class})
     public ResponseDetails handleInvitationCodeException(InvitationCodeException e) {
         return ResponseDetails.ok(ReturnCodeEnum.INVITATION_ERROR).put("data", e.getMessage());
+    }
+
+    @ExceptionHandler(value = {NeedToCheckEmailException.class})
+    public ResponseDetails handleInvitationCodeException(NeedToCheckEmailException e) {
+        return ResponseDetails.ok(ReturnCodeEnum.CHECK_EMAIL).put("data", e.getMessage());
     }
 }

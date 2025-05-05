@@ -5,9 +5,21 @@ package com.buguagaoshu.tiktube.enums;
  * @create 2025-05-01
  */
 public class TypeCode {
+    /**
+     * 账号被锁定
+     * */
     public final static int USER_LOCK = 1;
 
+
+    /**
+     * 正常账号
+     * */
     public final static int USER_NOT_LOCK = 0;
+
+    /**
+     * 账号邮箱验证未通过
+     * */
+    public final static int USER_EMAIL_NOT_CHECK = -1;
 
     /**
      * 首页公告

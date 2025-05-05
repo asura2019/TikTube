@@ -479,7 +479,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         }
         
         // 设置审核状态
-        if (webSettingCache.getWebSettingEntity().getOpenExamine() == 1) {
+        if (webSettingCache.getWebConfigData().getOpenExamine().equals(1)) {
             article.setExamineStatus(ExamineTypeEnum.PENDING_REVIEW.getCode());
         } else {
             article.setExamineStatus(ExamineTypeEnum.SUCCESS.getCode());
@@ -1064,7 +1064,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
      * 从JSON字符串中解析标签列表
      */
     private List<String> parseTagsFromJson(String tagJson) {
-        if (StringUtils.isEmpty(tagJson)) {
+        if (!StringUtils.hasLength(tagJson)) {
             return Collections.emptyList();
         }
         

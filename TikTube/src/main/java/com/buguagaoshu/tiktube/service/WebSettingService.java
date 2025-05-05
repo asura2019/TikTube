@@ -13,7 +13,9 @@ import java.util.Map;
  * @author Pu Zhiwei
  * @email puzhiweipuzhiwei@foxmail.com
  * @date 2020-09-05 15:03:54
+ * @deprecated 已经迁移至 WebConfigService 实现
  */
+@Deprecated
 public interface WebSettingService extends IService<WebSettingEntity> {
 
     PageUtils queryPage(Map<String, Object> params);

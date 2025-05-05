@@ -137,5 +137,11 @@ public interface UserService extends IService<UserEntity> {
      * 封禁用户
      * */
     boolean lockUser(UserEntity userEntity, long adminUserId);
+
+
+    /**
+     * 忘记密码
+     * */
+    boolean forgotPassword(UserEntity user, String sessionId);
 }
 

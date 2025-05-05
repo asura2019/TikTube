@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
 
-    <v-banner class="my-4" color="warning" icon="$warning" lines="one" v-if="systemNotice != null">
+    <v-banner @click="clickBanner()" class="my-4" color="warning" icon="$warning" lines="one" v-if="systemNotice != null">
       <v-banner-text>
         {{ systemNotice.content }}
       </v-banner-text>
@@ -52,7 +52,7 @@
     <v-col> &nbsp; </v-col>
 
     <!-- 引入弹窗广告组件 -->
-    <AdsDialogCard 
+    <NoticeDialogCard
       v-model="popupDialog" 
       :notice="popupNotice"
       :closed-popup-id="'closedHomePopupId'"
@@ -62,12 +62,12 @@
 
 <script>
 import VideoCared from '@/components/card/VideoCard.vue'
-import AdsDialogCard from '@/components/card/AdsDialogCard.vue'
+import NoticeDialogCard from '@/components/card/NoticeDialogCard.vue'
 
 export default {
   components: {
     VideoCared,
-    AdsDialogCard
+    NoticeDialogCard
   },
   data() {
     return {
@@ -80,6 +80,7 @@ export default {
       // 弹窗相关数据
       popupDialog: false,
       popupNotice: null,
+      notice: null,
     }
   },
   created() {
@@ -112,19 +113,26 @@ export default {
     getPopupNotice() {
       this.httpGet(`/web/notice?type=1`, (json) => {
         if (json.data != null && json.data.length > 0) {
-          const notice = json.data[0];
+
+          this.notice = json.data[0];
           
           // 从 localStorage 获取已关闭的弹窗ID
           const closedPopupId = localStorage.getItem('closedHomePopupId');
           
           // 判断是否需要显示弹窗
           // 1. 如果没有关闭过弹窗，或者关闭的弹窗ID与当前弹窗ID不同，则显示弹窗
-          if (!closedPopupId || parseInt(closedPopupId) !== notice.id) {
-            this.popupNotice = notice;
+          if (!closedPopupId || parseInt(closedPopupId) !== this.notice.id) {
+            this.popupNotice = this.notice;
             this.popupDialog = true;
           }
         }
       })
+    },
+    clickBanner() {
+      if (this.notice != null) {
+        this.popupNotice = this.notice;
+        this.popupDialog = true;
+      }
     },
     setCategory(value) {
       this.$router.push(`/v/${value.id}`)

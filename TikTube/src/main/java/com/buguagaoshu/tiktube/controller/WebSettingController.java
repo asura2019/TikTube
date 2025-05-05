@@ -3,14 +3,18 @@ package com.buguagaoshu.tiktube.controller;
 import com.buguagaoshu.tiktube.TikTubeApplication;
 import com.buguagaoshu.tiktube.cache.WebSettingCache;
 import com.buguagaoshu.tiktube.config.WebConfig;
+import com.buguagaoshu.tiktube.config.WebConfigData;
 import com.buguagaoshu.tiktube.entity.OSSConfigEntity;
 import com.buguagaoshu.tiktube.entity.WebSettingEntity;
 import com.buguagaoshu.tiktube.repository.impl.FileRepositoryInOSS;
+import com.buguagaoshu.tiktube.service.WebConfigService;
 import com.buguagaoshu.tiktube.service.WebSettingService;
 import com.buguagaoshu.tiktube.service.impl.OssConfigService;
+import com.buguagaoshu.tiktube.utils.IpUtil;
 import com.buguagaoshu.tiktube.utils.JwtUtil;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,21 +29,25 @@ import java.util.Map;
 public class WebSettingController {
     private final WebSettingCache webSettingCache;
 
-    private final WebSettingService webSettingService;
+    private final WebConfigService webConfigService;
 
     private final OssConfigService ossConfigService;
 
     private final FileRepositoryInOSS repositoryInOSS;
 
+    private final IpUtil ipUtil;
+
     @Autowired
     public WebSettingController(WebSettingCache webSettingCache,
-                                WebSettingService webSettingService,
+                                WebConfigService webConfigService,
                                 OssConfigService ossConfigService,
-                                FileRepositoryInOSS repositoryInOSS) {
+                                FileRepositoryInOSS repositoryInOSS,
+                                IpUtil ipUtil) {
         this.webSettingCache = webSettingCache;
-        this.webSettingService = webSettingService;
+        this.webConfigService = webConfigService;
         this.ossConfigService = ossConfigService;
         this.repositoryInOSS = repositoryInOSS;
+        this.ipUtil = ipUtil;
     }
 
 
@@ -50,13 +58,22 @@ public class WebSettingController {
 
     @GetMapping("/api/web/info")
     public ResponseDetails webInfo() {
-        return ResponseDetails.ok().put("data", webSettingCache.getWebSettingEntity());
+        return ResponseDetails.ok().put("data", webSettingCache.getUserWebConfigData());
     }
 
 
+
+
     @PostMapping("/api/admin/setting/save")
-    public ResponseDetails updateWebSetting(@RequestBody WebSettingEntity WebSettingEntity) {
-        return ResponseDetails.ok(webSettingService.saveSetting(WebSettingEntity));
+    public ResponseDetails updateWebSetting(@Valid @RequestBody WebConfigData webConfigData,
+                                            HttpServletRequest request) {
+        WebConfigData data = webConfigService.saveWebConfig(webConfigData, JwtUtil.getUserId(request), ipUtil.getIpAddr(request));
+        return ResponseDetails.ok().put("data", data);
+    }
+
+    @GetMapping("/api/admin/setting/info")
+    public ResponseDetails webInfoForAdmin() {
+        return ResponseDetails.ok().put("data", webSettingCache.getWebConfigData());
     }
 
     

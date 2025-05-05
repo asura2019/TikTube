@@ -132,6 +132,9 @@ public class UserEntity {
     @TableField(exist = false)
     private String verifyCode;
 
+    @TableField(exist = false)
+    private String emailCode;
+
 
     @TableField(exist = false)
     private String invitationCode;
@@ -148,6 +151,7 @@ public class UserEntity {
         this.verifyCode = null;
 		this.otp = null;
         this.otpSecret = null;
+        this.emailCode = null;
     }
 
     public Integer getOtp() {

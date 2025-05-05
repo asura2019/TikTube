@@ -91,11 +91,18 @@ export default {
   },
   methods: {
     setPlaceholderTxte(value) {
-      this.contentEditor.placeholder = value // = value
-      console.log(this.contentEditor.placeholder)
+      if (this.editorReady && this.contentEditor) {
+        this.contentEditor.placeholder = value
+        console.log(this.contentEditor.placeholder)
+      }
     },
     setTextValue(value) {
-      this.contentEditor.setValue(value)
+      if (this.editorReady && this.contentEditor) {
+        this.contentEditor.setValue(value)
+      } else {
+        // 如果编辑器未就绪，保存待设置的值
+        this.pendingValue = value
+      }
     },
     newVditor() {
       this.contentEditor = new Vditor(this.idName, {
@@ -144,12 +151,22 @@ export default {
         blur: (input) => {
           this.$emit('vditor-input', this.contentEditor.getValue())
         },
+        after: () => {
+          // 编辑器初始化完成后的回调
+          this.editorReady = true
+          
+          // 如果有待设置的值，设置它
+          if (this.pendingValue !== null && this.pendingValue !== undefined) {
+            this.contentEditor.setValue(this.pendingValue)
+            this.pendingValue = null
+          }
+        }
       })
     },
   },
 }
 </script>
   
-  <style>
+<style>
 </style>
   

@@ -5,6 +5,8 @@ import com.buguagaoshu.tiktube.cache.WebSettingCache;
 import com.buguagaoshu.tiktube.entity.OSSConfigEntity;
 import com.buguagaoshu.tiktube.repository.impl.FileRepositoryInOSS;
 import com.buguagaoshu.tiktube.service.CategoryService;
+import com.buguagaoshu.tiktube.service.MailService;
+import com.buguagaoshu.tiktube.service.WebConfigService;
 import com.buguagaoshu.tiktube.service.WebSettingService;
 import com.buguagaoshu.tiktube.service.impl.OssConfigService;
 import lombok.extern.slf4j.Slf4j;
@@ -54,23 +56,27 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public CommandLineRunner dataLoader(WebSettingService webSettingService,
-                                        WebSettingCache webSettingCache,
+    public CommandLineRunner dataLoader(WebSettingCache webSettingCache,
+                                        WebConfigService webConfigService,
                                         CategoryService categoryService,
                                         CategoryCache categoryCache,
-                                        OssConfigService ossConfigService) {
+                                        MailService mailService) {
         return new CommandLineRunner() {
             @Override
             public void run(String... args) throws Exception {
-                log.info("开始获取最新的 Web 设置");
-                webSettingCache.setWebSettingEntity(webSettingService.getNewSetting());
-                log.info("设置获取完成！");
                 log.info("开始缓存分类信息");
                 categoryCache.setCategoryEntities(categoryService.listWithTree());
                 categoryCache.setCategoryEntityMap(categoryService.categoryEntityMap());
                 categoryCache.setCategoryMapWithChildren(categoryService.categoryEntityMapWithChildren(categoryCache.getCategoryEntities()));
                 log.info("分类信息缓存完成！");
-
+                log.info("开始获取最新的 Web 设置");
+                WebConfigData webConfigData = webConfigService.initConfig();
+                webSettingCache.update(webConfigData);
+                log.info("设置获取完成！");
+                // 如果开启了邮箱服务，初始化邮件信息
+                if (webConfigData.getOpenEmail().equals(1)) {
+                    mailService.initMainConfig();
+                }
             }
         };
     }
@@ -92,7 +98,9 @@ public class WebConfig implements WebMvcConfigurer {
                     "/api/register",
                     "/api/user/info/**",
                     "/api/user/list/search",
-                    "/api/verifyImage", 
+                    "/api/verifyImage",
+                    "/api/verify/send",
+                    "/api/user/forgot/password",
                     "/api/web/info",
                     "/api/web/notice",
                     "/api/web/notice/**",

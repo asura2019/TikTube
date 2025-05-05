@@ -1,19 +1,19 @@
 package com.buguagaoshu.tiktube.service.impl;
 
+import com.buguagaoshu.tiktube.cache.WebSettingCache;
 import com.buguagaoshu.tiktube.config.WebConstant;
 import com.buguagaoshu.tiktube.dto.LoginDetails;
 import com.buguagaoshu.tiktube.dto.PasswordDto;
 import com.buguagaoshu.tiktube.entity.InvitationCodeEntity;
 import com.buguagaoshu.tiktube.entity.UserRoleEntity;
 import com.buguagaoshu.tiktube.enums.*;
+import com.buguagaoshu.tiktube.exception.NeedToCheckEmailException;
 import com.buguagaoshu.tiktube.exception.UserNotFoundException;
 import com.buguagaoshu.tiktube.service.*;
 import com.buguagaoshu.tiktube.utils.*;
-import com.buguagaoshu.tiktube.vo.AdminAddUserData;
-import com.buguagaoshu.tiktube.vo.TOTPLoginKey;
-import com.buguagaoshu.tiktube.vo.TwoFactorData;
-import com.buguagaoshu.tiktube.vo.User;
+import com.buguagaoshu.tiktube.vo.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 
-
+@Slf4j
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements UserService {
 
@@ -67,6 +67,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
     private final TwoFactorAuthenticationServer twoFactorAuthenticationServer;
 
+    private final WebSettingCache webSettingCache;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -78,13 +80,15 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
                            LoginLogService loginLogService,
                            InvitationCodeService invitationCodeService,
                            FileTableService fileTableService,
-                           TwoFactorAuthenticationServer twoFactorAuthenticationServer) {
+                           TwoFactorAuthenticationServer twoFactorAuthenticationServer,
+                           WebSettingCache webSettingCache) {
         this.userRoleService = userRoleService;
         this.verifyCodeService = verifyCodeService;
         this.loginLogService = loginLogService;
         this.invitationCodeService = invitationCodeService;
         this.fileTableService = fileTableService;
         this.twoFactorAuthenticationServer = twoFactorAuthenticationServer;
+        this.webSettingCache = webSettingCache;
     }
 
 
@@ -294,14 +298,19 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         } else {
             // 邀请码校验
             InvitationCodeEntity check = invitationCodeService.check(userEntity.getInvitationCode());
-            UserEntity user = createRegisterUser(userEntity);
-            save(user);
+            if (webSettingCache.getWebConfigData().getOpenEmail().equals(1)) {
+                verifyCodeService.verify(userEntity.getMail(), userEntity.getEmailCode());
+            }
 
+            UserEntity user = createRegisterUser(userEntity);
+            // 保存信息
+            save(user);
             userRoleService.saveUserRole(user, RoleTypeEnum.USER.getRole(), 0);
             if (check.getId() != -1L) {
                 check.setUseUser(user.getId());
                 invitationCodeService.updateById(check);
             }
+
         }
         return ReturnCodeEnum.SUCCESS;
     }
@@ -604,6 +613,16 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         u.setBlockEndTime(userEntity.getBlockEndTime());
         this.updateById(u);
 
+        return true;
+    }
+
+    @Override
+    public boolean forgotPassword(UserEntity user, String sessionId) {
+        verifyCodeService.verify(sessionId, user.getVerifyCode());
+        verifyCodeService.verify(user.getMail(), user.getEmailCode());
+        UserEntity userEntity = findUserByEmail(user.getMail());
+        userEntity.setPassword(PasswordUtil.encode(user.getPassword()));
+        this.updateById(userEntity);
         return true;
     }
 

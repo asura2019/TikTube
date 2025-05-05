@@ -12,6 +12,8 @@ import lombok.Data;
  * @author Pu Zhiwei
  * @email puzhiweipuzhiwei@foxmail.com
  * @date 2020-09-05 15:03:54
+ *
+ * 已弃用
  */
 @Data
 @TableName("web_setting")

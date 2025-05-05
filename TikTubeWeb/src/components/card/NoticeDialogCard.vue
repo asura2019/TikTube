@@ -1,15 +1,15 @@
 <template>
-  <!-- 弹窗公告 -->
+  <!-- 弹窗公告  persistent-->
   <v-dialog
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
     max-width="600"
     persistent
-    content-class="ads-dialog"
+    content-class="notice-dialog"
   >
     <v-card
       v-if="notice"
-      class="ads-card"
+      class="notice-card"
       :class="{ 'has-image': notice.imageUrl }"
       :style="
         notice.imageUrl
@@ -87,7 +87,7 @@
 
 <script>
 export default {
-  name: 'AdsDialogCard',
+  name: 'NoticeDialogCard',
   props: {
     // 使用 modelValue 作为 v-model 的绑定值
     modelValue: {
@@ -125,17 +125,17 @@ export default {
 </script>
 
 <style scoped>
-.ads-dialog {
+.notice-dialog {
   backdrop-filter: blur(8px);
 }
 
-.ads-card {
+.notice-card {
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
-.ads-card.has-image {
+.notice-card.has-image {
   color: white;
 }
 

@@ -1,6 +1,7 @@
 package com.buguagaoshu.tiktube.cache;
 
-import com.buguagaoshu.tiktube.entity.WebSettingEntity;
+import com.buguagaoshu.tiktube.config.WebConfigData;
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,14 +9,25 @@ import org.springframework.stereotype.Component;
  * create          2020-09-05 17:52
  */
 @Component
+@Data
 public class WebSettingCache {
-    private WebSettingEntity webSettingEntity;
+    /**
+     * 原始配置数据
+     * */
+    private WebConfigData webConfigData;
 
-    public WebSettingEntity getWebSettingEntity() {
-        return webSettingEntity;
-    }
+    /**
+     * 脱敏后的用户数据
+     * */
+    private WebConfigData userWebConfigData;
 
-    public void setWebSettingEntity(WebSettingEntity webSettingEntity) {
-        this.webSettingEntity = webSettingEntity;
+
+    public static int listMaxCount = 50;
+
+
+    public void update(WebConfigData webConfigData) {
+        this.webConfigData = webConfigData;
+        this.userWebConfigData = webConfigData.copy().clean();
+        listMaxCount = webConfigData.getHomeMaxVideoCount();
     }
 }

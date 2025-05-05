@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.buguagaoshu.tiktube.cache.WebSettingCache;
 
 import java.util.Map;
 
@@ -37,6 +38,9 @@ public class Query<T> {
         if (params.get(Constant.LIMIT) != null) {
             try {
                 limit = Long.parseLong((String) params.get(Constant.LIMIT));
+                if (limit > WebSettingCache.listMaxCount) {
+                    limit = WebSettingCache.listMaxCount;
+                }
             } catch (Exception ignored) {
             }
 

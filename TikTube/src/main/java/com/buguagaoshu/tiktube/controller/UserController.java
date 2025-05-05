@@ -85,6 +85,11 @@ public class UserController {
         return ResponseDetails.ok().put("data", userService.userInfo(userId));
     }
 
+    @PostMapping("/api/user/forgot/password")
+    public ResponseDetails forgotPassword(@RequestBody UserEntity user, HttpServletRequest request) {
+        return ResponseDetails.ok().put("data", userService.forgotPassword(user, request.getSession().getId()));
+    }
+
     @PostMapping("/api/user/update/avatar")
     public ResponseDetails updateUserAvatar(@Valid @RequestBody User user,
                                             HttpServletRequest request) {
