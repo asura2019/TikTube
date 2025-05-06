@@ -77,6 +77,7 @@ public class AdvertisementService extends ServiceImpl<AdvertisementDao, Advertis
 
     public void syncCount() {
         this.baseMapper.batchUpdateViewCount(adsCountRecorder.getAdsMap());
+        adsCountRecorder.clean();
     }
 
 

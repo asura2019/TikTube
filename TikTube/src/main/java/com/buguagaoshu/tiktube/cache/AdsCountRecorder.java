@@ -14,9 +14,9 @@ import java.util.concurrent.ConcurrentMap;
  */
 @Component
 public class AdsCountRecorder {
-    // 使用 ConcurrentHashMap 存储每个视频 ID 对应的播放量，支持并发操作
+
     private final ConcurrentMap<Integer, Long> adsCounts;
-    // 使用 ConcurrentHashMap 存储每个视频 ID 对应的已记录 IP 地址集合，支持并发操作
+
     private final ConcurrentMap<Integer, Set<String>> recordedIPs;
 
     public AdsCountRecorder() {

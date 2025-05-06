@@ -1,10 +1,12 @@
 package com.buguagaoshu.tiktube.schedule;
 
+import com.buguagaoshu.tiktube.cache.AdsCountRecorder;
 import com.buguagaoshu.tiktube.cache.CountRecorder;
 import com.buguagaoshu.tiktube.cache.MailCountLimit;
 import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.dao.ArticleDao;
 import com.buguagaoshu.tiktube.dao.CommentDao;
+import com.buguagaoshu.tiktube.service.AdvertisementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,15 +31,23 @@ public class CountTasks {
 
     private final CommentDao commentDao;
 
+    private final AdsCountRecorder adsCountRecorder;
+
+    private final AdvertisementService advertisementService;
+
     @Autowired
     public CountTasks(MailCountLimit mailCountLimit, PlayCountRecorder playCountRecorder,
                       CountRecorder countRecorder, ArticleDao articleDao,
-                      CommentDao commentDao) {
+                      CommentDao commentDao,
+                      AdsCountRecorder adsCountRecorder,
+                      AdvertisementService advertisementService) {
         this.mailCountLimit = mailCountLimit;
         this.playCountRecorder = playCountRecorder;
         this.countRecorder = countRecorder;
         this.articleDao = articleDao;
         this.commentDao = commentDao;
+        this.adsCountRecorder = adsCountRecorder;
+        this.advertisementService = advertisementService;
     }
 
     /**
@@ -83,6 +93,12 @@ public class CountTasks {
         if (!countRecorder.getCommentDislikeCount().isEmpty()) {
             commentDao.batchUpdateCount("dislike_count", countRecorder.getCommentDislikeCount());
         }
+
+        if (adsCountRecorder.getSize() > 0) {
+            log.info("开始同步广告访问数据！");
+            advertisementService.syncCount();
+        }
+
         log.info("数据同步完成！");
 
         playCountRecorder.clean();
