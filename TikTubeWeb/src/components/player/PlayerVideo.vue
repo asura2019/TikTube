@@ -160,6 +160,9 @@ export default {
                 .then((json) => {
                   if (json.code == 0) {
                     return true
+                  } else if (json.code == -1) {
+                    alert('弹幕发送成功，待管理员审核通过后其他观众即可看见你的弹幕！')
+                    return true
                   } else {
                     return false
                   }
@@ -211,10 +214,9 @@ export default {
         if (this.$refs.artRef == null) {
           setTimeout(() => {
             console.log('暂停播放销毁视频！')
-            this.instance.pause();
+            this.instance.pause()
             this.instance.destroy(false)
-          }, 10);
-          
+          }, 10)
         }
       })
     } else {
@@ -317,6 +319,9 @@ export default {
                 .then((json) => {
                   if (json.code == 0) {
                     return true
+                  } else if (json.code == -1) {
+                    alert('弹幕发送成功，待管理员审核通过后其他观众即可看见你的弹幕！')
+                    return true
                   } else {
                     return false
                   }
@@ -366,6 +371,11 @@ export default {
 
     this.instance.on('pause', () => {
       console.info('pause')
+      clearInterval(this.playLogTask)
+    })
+
+    this.instance.on('video:ended', () =>{
+      console.info('video:ended')
       clearInterval(this.playLogTask)
     })
 

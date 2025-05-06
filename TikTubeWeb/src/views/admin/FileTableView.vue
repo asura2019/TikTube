@@ -306,24 +306,71 @@
     </v-dialog>
 
     <!-- 修改URL对话框 -->
-    <v-dialog v-model="editDialog" max-width="500px">
+    <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title class="text-h5 bg-primary text-white">
-          <v-icon class="mr-2">mdi-pencil</v-icon>
-          修改文件URL
+          <v-row class="mt-2 mb-2">
+            
+            <v-icon class="mr-2">mdi-pencil</v-icon>
+          修改文件信息
           <v-spacer></v-spacer>
           <v-btn icon="mdi-close" variant="text" color="white" @click="editDialog = false"></v-btn>
+           
+          </v-row>
         </v-card-title>
         <v-card-text class="pt-4">
+          <v-row>
+            <v-col>
+              谨慎使用，误修改可能造成系统数据异常，部分稿件无法正常访问等问题
+            </v-col>
+          </v-row>
           <v-form ref="form">
-            <v-text-field
-              v-model="editedFileUrl"
-              label="文件URL"
-              required
-              variant="outlined"
-              density="comfortable"
-              prepend-inner-icon="mdi-link"
-            ></v-text-field>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="editedFile.fileOriginalName"
+                  label="文件名"
+                  required
+                  variant="outlined"
+                  density="comfortable"
+                  prepend-inner-icon="mdi-file-document"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="editedFile.fileUrl"
+                  label="文件URL"
+                  required
+                  variant="outlined"
+                  density="comfortable"
+                  prepend-inner-icon="mdi-link"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-select
+                  v-model="editedFile.status"
+                  :items="statusOptions.filter(item => item.value !== null)"
+                  label="文件状态"
+                  variant="outlined"
+                  density="comfortable"
+                  prepend-inner-icon="mdi-check-circle-outline"
+                  item-title="title"
+                  item-value="value"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="editedFile.articleId"
+                  label="关联稿件ID"
+                  variant="outlined"
+                  density="comfortable"
+                  prepend-inner-icon="mdi-file-link"
+                  hint="可选，关联到特定稿件"
+                  persistent-hint
+                  type="number"
+                ></v-text-field>
+              </v-col>
+            </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions class="pa-4 bg-grey-lighten-5">
@@ -334,7 +381,7 @@
           <v-btn
             color="primary"
             variant="text"
-            @click="updateFileUrl"
+            @click="updateFileInfo"
             prepend-icon="mdi-content-save"
           >
             保存
@@ -445,6 +492,13 @@ export default {
       // 选中的文件和编辑数据
       selectedFile: null,
       editedFileUrl: '',
+      editedFile: {
+        id: null,
+        fileOriginalName: '',
+        fileUrl: '',
+        status: 0,
+        articleId: null
+      },
 
       // 通知提示
       snackbar: false,
@@ -486,6 +540,7 @@ export default {
     resetFilters() {
       this.fileTypeFilter = null
       this.statusFilter = null
+      this.page = 1
       this.loadItems()
     },
 
@@ -555,39 +610,39 @@ export default {
     editFileUrl(item) {
       this.selectedFile = item
       this.editedFileUrl = item.fileUrl
+      // 初始化编辑对象
+      this.editedFile = {
+        id: item.id,
+        fileOriginalName: item.fileOriginalName,
+        fileUrl: item.fileUrl,
+        status: item.status,
+        articleId: item.articleId || null
+      }
       this.editDialog = true
     },
 
-    // 更新文件URL
-    updateFileUrl() {
-      // 这里可以添加实际的API调用来更新文件URL
-      // 示例代码:
-      /*
-      this.httpPost('/admin/files/update', {
-        id: this.selectedFile.id,
-        fileUrl: this.editedFileUrl
-      }, (json) => {
-        if (json.status === 200) {
+    // 更新文件信息
+    updateFileInfo() {
+      // 构建更新对象
+      const updateData = {
+        id: this.editedFile.id,
+        fileOriginalName: this.editedFile.fileOriginalName,
+        fileUrl: this.editedFile.fileUrl,
+        status: this.editedFile.status,
+        articleId: this.editedFile.articleId
+      }
+
+      this.httpPost('/admin/files/update', updateData, (json) => {
+        if (json.data == true) {
           // 更新本地数据
-          const index = this.items.findIndex(item => item.id === this.selectedFile.id)
-          if (index !== -1) {
-            this.items[index].fileUrl = this.editedFileUrl
-          }
-          this.showSnackbar('文件URL已更新', 'success')
+          this.loadItems()
+          
+          this.showSnackbar('文件信息已更新', 'success')
         } else {
-          this.showSnackbar('更新文件URL失败', 'error')
+          this.showSnackbar('更新文件信息失败', 'error')
         }
         this.editDialog = false
       })
-      */
-
-      // 模拟更新成功
-      const index = this.items.findIndex((item) => item.id === this.selectedFile.id)
-      if (index !== -1) {
-        this.items[index].fileUrl = this.editedFileUrl
-      }
-      this.showSnackbar('文件URL已更新', 'success')
-      this.editDialog = false
     },
 
     // 确认删除

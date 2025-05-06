@@ -16,6 +16,23 @@ public class TypeCode {
      * */
     public final static int USER_NOT_LOCK = 0;
 
+
+    /**
+     * 正常
+     * */
+    public final static int NORMAL = 0;
+
+
+    /**
+     * 删除
+     * */
+    public final static int DELETE = 1;
+
+    /**
+     * 待审核
+     * */
+    public final static int EXAM = -1;
+
     /**
      * 账号邮箱验证未通过
      * */

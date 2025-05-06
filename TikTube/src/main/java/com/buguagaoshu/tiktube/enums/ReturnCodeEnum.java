@@ -37,6 +37,7 @@ public enum ReturnCodeEnum {
     TITLE_TO_LONG(1017, "标题过长"),
     REVIEWED(1018, "已被其他人审核"),
     CHECK_EMAIL(1019, "需要检查邮箱"),
+    NEED_EXAM(1020, "内容需要审核"),
 
     LACK_ID(4000, "缺少ID"),
     NOT_RUN(4001, "没有在运行"),

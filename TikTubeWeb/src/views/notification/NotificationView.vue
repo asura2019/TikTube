@@ -326,7 +326,7 @@ export default {
       currPage: 1,
       loading: false,
       selectedType: 'all',
-      statusTab: 'all',
+      statusTab: '0',
       showMessage: false,
       message: '',
       messageColor: 'primary',
@@ -369,12 +369,6 @@ export default {
     // 从URL获取页码和状态
     if (this.$route.query.page) {
       this.currPage = parseInt(this.$route.query.page)
-    }
-    if (this.$route.query.status) {
-      this.statusTab = this.$route.query.status
-    }
-    if (this.$route.query.type) {
-      this.selectedType = this.$route.query.type
     }
 
     this.fetchNotifications()
@@ -450,7 +444,7 @@ export default {
         query.type = this.selectedType
       }
 
-      this.$router.push({ query })
+      //this.$router.push({ query })
     },
     markAsRead(notificationId, index) {
       // 如果已经是已读状态，不执行操作

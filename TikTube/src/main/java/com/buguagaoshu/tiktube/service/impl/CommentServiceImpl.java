@@ -1,12 +1,10 @@
 package com.buguagaoshu.tiktube.service.impl;
 
 import com.buguagaoshu.tiktube.cache.CountRecorder;
+import com.buguagaoshu.tiktube.cache.WebSettingCache;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.entity.UserEntity;
-import com.buguagaoshu.tiktube.enums.ArticleStatusEnum;
-import com.buguagaoshu.tiktube.enums.CommentType;
-import com.buguagaoshu.tiktube.enums.NotificationType;
-import com.buguagaoshu.tiktube.enums.SortType;
+import com.buguagaoshu.tiktube.enums.*;
 import com.buguagaoshu.tiktube.model.CustomPage;
 import com.buguagaoshu.tiktube.service.ArticleService;
 import com.buguagaoshu.tiktube.service.NotificationService;
@@ -45,6 +43,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     private final NotificationService notificationService;
 
+    private final WebSettingCache webSettingCache;
 
     private final CountRecorder countRecorder;
 
@@ -54,11 +53,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
     public CommentServiceImpl(ArticleService articleService,
                               UserService userService,
                               NotificationService notificationService,
+                              WebSettingCache webSettingCache,
                               CountRecorder countRecorder,
                               IpUtil ipUtil) {
         this.articleService = articleService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.webSettingCache = webSettingCache;
         this.countRecorder = countRecorder;
         this.ipUtil = ipUtil;
     }
@@ -144,12 +145,28 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
         commentEntity.setUa(ipUtil.getUa(request));
         commentEntity.setCity(ipUtil.getCity(ip));
         commentEntity.setComment(commentVo.getComment());
-        // TODO 保存地址信息，包括视频等
-        // 保存评论
-        this.save(commentEntity);
-        countRecorder.recordArticleComment(articleEntity.getId(), 1L);
+        // 如果开启评论审核
+        if (webSettingCache.getWebConfigData().getOpenCommentExam().equals(1)) {
+            commentEntity.setStatus(TypeCode.EXAM);
+            // 审核通过后再展示
+            this.save(commentEntity);
+            countRecorder.recordArticleComment(articleEntity.getId(), 1L);
+                    return commentEntity;
+        } else {
+            commentEntity.setStatus(TypeCode.NORMAL);
+            // TODO 保存地址信息，包括视频等
+            // 保存评论
+            this.save(commentEntity);
+            countRecorder.recordArticleComment(articleEntity.getId(), 1L);
+            send(commentEntity, fatherComment, articleEntity);
+            return commentEntity;
+        }
+    }
 
-        // TODO 通知作者
+    @Override
+    public void send(CommentEntity commentEntity,
+                     CommentEntity fatherComment,
+                     ArticleEntity articleEntity) {
         // 一级评论只通知稿件作者，二级评论只通知评论作者
         if (commentEntity.getType() == 1) {
             notificationService.sendNotification(
@@ -178,7 +195,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
                     NotificationType.REPLY_COMMENT
             );
         }
-        return commentEntity;
     }
 
     @Override

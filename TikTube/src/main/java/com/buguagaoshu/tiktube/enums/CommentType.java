@@ -14,4 +14,5 @@ public class CommentType {
      * 二级评论
      * */
     public final static int SECOND_COMMENT = 2;
+
 }

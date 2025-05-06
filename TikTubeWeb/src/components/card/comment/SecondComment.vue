@@ -170,11 +170,22 @@ export default {
 
       this.httpPost('/comment/save', this.comment, (json) => {
         if (json.status === 200) {
-          this.message = '评论成功！'
-          this.showMessage = true
+          if (json.data.status == -1) {
+            this.message = '评论成功，待管理员审核通过后，其他观众即可看见你的评论！'
+            this.showMessage = true
+          } else {
+            this.message = '评论成功！'
+            this.showMessage = true
+          }
+          let com = json.data
+          com.avatarUrl = this.userInfo.userData.avatarUrl
+          com.username = this.userInfo.userData.username
+          com.userId = this.userInfo.userData.id
+          this.secondList.push(com)
+          this.total++
           this.comment.comment = ''
           this.$refs.secondCommentView.setTextValue('')
-          this.getSecondList()
+          //this.getSecondList()
         } else if (json.status === 4002) {
           this.message = StringUtils.dataErrorMessage(json.data)
           this.showMessage = true

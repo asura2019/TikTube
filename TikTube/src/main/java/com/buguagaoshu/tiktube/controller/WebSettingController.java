@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,7 +128,11 @@ public class WebSettingController {
 
     @GetMapping("/api/admin/oss/location")
     public ResponseDetails getSaveLocation() {
-        return ResponseDetails.ok().put("data", WebConfig.FILE_SAVE_LOCATION);
+        File diskPartition = new File("/");
+        Map<String, Object> map = new HashMap<>();
+        map.put("free", diskPartition.getFreeSpace());
+        map.put("location", WebConfig.FILE_SAVE_LOCATION);
+        return ResponseDetails.ok().put("data",map);
     }
 
     /**

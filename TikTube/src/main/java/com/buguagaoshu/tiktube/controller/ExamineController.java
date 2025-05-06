@@ -1,8 +1,11 @@
 package com.buguagaoshu.tiktube.controller;
 
 import com.buguagaoshu.tiktube.dto.ExamineDto;
+import com.buguagaoshu.tiktube.entity.CommentEntity;
+import com.buguagaoshu.tiktube.entity.DanmakuEntity;
 import com.buguagaoshu.tiktube.enums.ExamineTypeEnum;
 import com.buguagaoshu.tiktube.service.ArticleService;
+import com.buguagaoshu.tiktube.service.ExamineService;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +27,13 @@ import java.util.Map;
 @RestController
 public class ExamineController {
 
-    private final ArticleService articleService;
+    private final ExamineService examine;
+    private final ExamineService examineService;
 
     @Autowired
-    public ExamineController(ArticleService articleService) {
-        this.articleService = articleService;
+    public ExamineController(ExamineService examine, ExamineService examineService) {
+        this.examine = examine;
+        this.examineService = examineService;
     }
 
 
@@ -52,8 +57,20 @@ public class ExamineController {
     @PostMapping("/api/admin/examine")
     public ResponseDetails examine(@Valid @RequestBody ExamineDto examineDto,
                                    HttpServletRequest request) {
-
-        return ResponseDetails.ok(articleService.examine(examineDto, request));
+        return ResponseDetails.ok(examineService.examineArticle(examineDto, request));
     }
 
+
+    @PostMapping("/api/admin/examine/comment")
+    public ResponseDetails examineComment(@RequestBody CommentEntity comment,
+                                          HttpServletRequest request) {
+        return ResponseDetails.ok(examineService.examineComment(comment, request));
+    }
+
+
+    @PostMapping("/api/admin/examine/danmaku")
+    public ResponseDetails examineDanmaku(@RequestBody DanmakuEntity danmaku,
+                                          HttpServletRequest request) {
+        return ResponseDetails.ok(examineService.examineDanmaku(danmaku, request));
+    }
 }

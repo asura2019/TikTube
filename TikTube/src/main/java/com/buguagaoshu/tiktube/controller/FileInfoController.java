@@ -35,6 +35,8 @@ public class FileInfoController {
         return ResponseDetails.ok().put("data", fileRepository.deleteFileWithDatabase(fileTableEntity));
     }
 
-    // TODO 文件数据更新
-    
+    @PostMapping("/api/admin/files/update")
+    public ResponseDetails update(@RequestBody FileTableEntity fileTableEntity) {
+        return ResponseDetails.ok().put("data", fileTableService.updateFileInfo(fileTableEntity));
+    }
 }

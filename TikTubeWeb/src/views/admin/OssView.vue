@@ -5,8 +5,8 @@
         <v-toolbar-title class="text-h5 font-weight-medium">
           <v-icon icon="mdi-server" class="mr-2"></v-icon>
           对象存储配置管理
-          <v-chip v-if="nowSaveLocation === 0" color="info" size="small" class="ml-2">
-            当前存储位置：本地存储
+          <v-chip v-if="nowSaveLocation.location === 0" color="info" size="small" class="ml-2">
+            当前存储位置：本地存储，剩余可用空间： {{ nowSaveLocation.free }}
           </v-chip>
         </v-toolbar-title>
         <v-spacer></v-spacer>
@@ -37,11 +37,7 @@
         >
           <!-- 配置名称列 -->
           <template #[`item.configName`]="{ item }">
-            <v-chip
-              :color="item.status === 1 ? 'success' : 'grey'"
-              variant="outlined"
-              size="small"
-            >
+            <v-chip :color="item.status === 1 ? 'success' : 'grey'" variant="outlined" size="small">
               {{ item.configName }}
             </v-chip>
           </template>
@@ -53,11 +49,7 @@
 
           <!-- 状态列 -->
           <template #[`item.status`]="{ item }">
-            <v-chip
-              :color="item.status === 1 ? 'success' : 'grey'"
-              size="small"
-              text-color="white"
-            >
+            <v-chip :color="item.status === 1 ? 'success' : 'grey'" size="small" text-color="white">
               {{ item.status === 1 ? '启用' : '禁用' }}
             </v-chip>
           </template>
@@ -132,12 +124,7 @@
           <v-icon class="mr-2">{{ editedItem.id ? 'mdi-pencil' : 'mdi-plus' }}</v-icon>
           {{ editedItem.id ? '编辑配置' : '新增配置' }}
           <v-spacer></v-spacer>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            color="white"
-            @click="dialog = false"
-          ></v-btn>
+          <v-btn icon="mdi-close" variant="text" color="white" @click="dialog = false"></v-btn>
         </v-card-title>
 
         <v-card-text class="pt-4">
@@ -148,7 +135,7 @@
                   <v-text-field
                     v-model="editedItem.configName"
                     label="配置名称"
-                    :rules="[v => !!v || '配置名称不能为空']"
+                    :rules="[(v) => !!v || '配置名称不能为空']"
                     required
                     variant="outlined"
                     density="comfortable"
@@ -159,7 +146,7 @@
                   <v-text-field
                     v-model="editedItem.bucketName"
                     label="存储桶名称"
-                    :rules="[v => !!v || '存储桶名称不能为空']"
+                    :rules="[(v) => !!v || '存储桶名称不能为空']"
                     required
                     variant="outlined"
                     density="comfortable"
@@ -170,7 +157,7 @@
                   <v-text-field
                     v-model="editedItem.endpoint"
                     label="端点地址"
-                    :rules="[v => !!v || '端点地址不能为空']"
+                    :rules="[(v) => !!v || '端点地址不能为空']"
                     required
                     variant="outlined"
                     density="comfortable"
@@ -181,7 +168,7 @@
                   <v-text-field
                     v-model="editedItem.accessKey"
                     label="访问密钥ID"
-                    :rules="[v => !!v || '访问密钥ID不能为空']"
+                    :rules="[(v) => !!v || '访问密钥ID不能为空']"
                     required
                     variant="outlined"
                     density="comfortable"
@@ -192,7 +179,7 @@
                   <v-text-field
                     v-model="editedItem.secretKey"
                     label="访问密钥密码"
-                    :rules="[v => !!v || '访问密钥密码不能为空']"
+                    :rules="[(v) => !!v || '访问密钥密码不能为空']"
                     type="password"
                     required
                     variant="outlined"
@@ -223,7 +210,7 @@
                     v-model="editedItem.pathStyleAccess"
                     :items="[
                       { title: 'Path Style', value: 0 },
-                      { title: 'Virtual Hosted Style', value: 1 }
+                      { title: 'Virtual Hosted Style', value: 1 },
                     ]"
                     label="访问风格"
                     required
@@ -237,7 +224,7 @@
                     v-model="editedItem.status"
                     :items="[
                       { title: '启用', value: 1 },
-                      { title: '禁用', value: 0 }
+                      { title: '禁用', value: 0 },
                     ]"
                     label="状态"
                     required
@@ -263,20 +250,10 @@
 
         <v-card-actions class="pa-4 bg-grey-lighten-5">
           <v-spacer></v-spacer>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="dialog = false"
-            prepend-icon="mdi-close"
-          >
+          <v-btn color="error" variant="text" @click="dialog = false" prepend-icon="mdi-close">
             取消
           </v-btn>
-          <v-btn
-            color="primary"
-            variant="text"
-            @click="saveConfig"
-            prepend-icon="mdi-content-save"
-          >
+          <v-btn color="primary" variant="text" @click="saveConfig" prepend-icon="mdi-content-save">
             保存
           </v-btn>
         </v-card-actions>
@@ -284,11 +261,7 @@
     </v-dialog>
 
     <!-- 消息提示 -->
-    <v-snackbar
-      v-model="snackbar.show"
-      :color="snackbar.color"
-      :timeout="2000"
-    >
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="2000">
       {{ snackbar.text }}
     </v-snackbar>
   </v-container>
@@ -307,7 +280,7 @@ export default {
       { title: '端点', key: 'endpoint', align: 'start', sortable: false },
       { title: '访问风格', key: 'pathStyleAccess', align: 'center', sortable: false },
       { title: '状态', key: 'status', align: 'center', sortable: false },
-      { title: '操作', key: 'actions', align: 'center', sortable: false }
+      { title: '操作', key: 'actions', align: 'center', sortable: false },
     ],
     ossList: [],
     editedItem: {
@@ -321,7 +294,7 @@ export default {
       urlPrefix: '',
       pathStyleAccess: 0,
       other: '',
-      status: 1
+      status: 1,
     },
     defaultItem: {
       id: null,
@@ -334,12 +307,12 @@ export default {
       urlPrefix: '',
       pathStyleAccess: 0,
       other: '',
-      status: 1
+      status: 1,
     },
     snackbar: {
       show: false,
       text: '',
-      color: 'success'
+      color: 'success',
     },
     nowSaveLocation: 0,
   }),
@@ -361,11 +334,18 @@ export default {
       })
     },
     getNowSaveLocation() {
-        this.httpGet('/admin/oss/location', (json) => {
-          if (json.status === 200) {
-            this.nowSaveLocation = json.data
+      this.httpGet('/admin/oss/location', (json) => {
+        if (json.status === 200) {
+          this.nowSaveLocation = json.data
+          let availableDisk = json.data.free / 1024 / 1024
+          if (availableDisk < 1024) {
+            availableDisk = availableDisk.toFixed(2) + 'MB'
+          } else {
+            availableDisk = (availableDisk / 1024).toFixed(2) + 'GB'
           }
-        })
+          this.nowSaveLocation.free = availableDisk
+        }
+      })
     },
 
     // 打开编辑对话框
@@ -420,8 +400,8 @@ export default {
       this.snackbar.text = text
       this.snackbar.color = color
       this.snackbar.show = true
-    }
-  }
+    },
+  },
 }
 </script>
 

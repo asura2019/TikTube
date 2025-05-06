@@ -80,7 +80,9 @@
         class="mb-4"
         @update:model-value="handleTabChange"
       >
+      <v-tab value="pending">待审核评论</v-tab>
         <v-tab value="all">所有评论</v-tab>
+        
         <v-tab value="normal">正常评论</v-tab>
         <v-tab value="deleted">已删除评论</v-tab>
       </v-tabs>
@@ -91,7 +93,6 @@
           :itemsLength="totalCount"
           :items-per-page="pageSize"
           :items="comments"
-          v-model:page="page"
           :loading="loading"
           hover
           @update:options="pageChange"
@@ -169,14 +170,14 @@
 
           <template #[`item.status`]="{ item }">
             <v-chip
-              :color="item.status === 0 ? 'success' : 'error'"
+              :color="getStatusColor(item.status)"
               size="small"
               class="text-white"
             >
-              {{ item.status === 0 ? '正常' : '已删除' }}
+              {{ getStatusText(item.status) }}
             </v-chip>
           </template>
-
+          
           <template #[`item.createTime`]="{ item }">
             {{ formatDate(item.createTime) }}
           </template>
@@ -198,19 +199,39 @@
                 </template>
               </v-tooltip>
 
-              <v-tooltip location="top" :text="item.status === 1 ? '恢复' : '删除'">
-                <template #activator="{ props }">
-                  <v-btn
-                    v-bind="props"
-                    icon
-                    size="small"
-                    :color="item.status === 1 ? 'success' : 'error'"
-                    @click="item.status === 1 ? confirmRestore(item) : confirmDelete(item)"
-                  >
-                    <v-icon>{{ item.status === 1 ? 'mdi-restore' : 'mdi-delete' }}</v-icon>
-                  </v-btn>
-                </template>
-              </v-tooltip>
+              <template v-if="item.status === -1">
+                <v-tooltip location="top" text="通过审核">
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      icon
+                      size="small"
+                      color="success"
+                      class="mr-1"
+                      @click="confirmApprove(item)"
+                    >
+                      <v-icon>mdi-check</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+                
+              </template>
+
+              <template v-else>
+                <v-tooltip location="top" :text="item.status === 1 ? '恢复' : '删除'">
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      icon
+                      size="small"
+                      :color="item.status === 1 ? 'success' : 'error'"
+                      @click="item.status === 1 ? confirmRestore(item) : confirmDelete(item)"
+                    >
+                      <v-icon>{{ item.status === 1 ? 'mdi-restore' : 'mdi-delete' }}</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
+              </template>
             </div>
           </template>
 
@@ -311,13 +332,26 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey" variant="text" @click="detailDialog = false">关闭</v-btn>
-          <v-btn
-            :color="selectedItem?.status === 1 ? 'success' : 'error'"
-            variant="elevated"
-            @click="selectedItem?.status === 1 ? restoreItem() : deleteItem()"
-          >
-            {{ selectedItem?.status === 1 ? '恢复评论' : '删除评论' }}
-          </v-btn>
+          
+          <template v-if="selectedItem?.status === -1">
+            <v-btn
+              color="success"
+              variant="elevated"
+              @click="approveItem()"
+            >
+              通过审核
+            </v-btn>
+          </template>
+          
+          <template v-else>
+            <v-btn
+              :color="selectedItem?.status === 1 ? 'success' : 'error'"
+              variant="elevated"
+              @click="selectedItem?.status === 1 ? restoreItem() : deleteItem()"
+            >
+              {{ selectedItem?.status === 1 ? '恢复评论' : '删除评论' }}
+            </v-btn>
+          </template>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -348,6 +382,20 @@
       </v-card>
     </v-dialog>
 
+        <!-- 审核通过确认对话框 -->
+    <v-dialog v-model="approveDialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-h5">确认通过</v-card-title>
+        <v-card-text> 您确定要通过这条评论的审核吗？ </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="grey" variant="text" @click="approveDialog = false">取消</v-btn>
+          <v-btn color="success" variant="elevated" @click="approveItem">通过</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
     <!-- 消息提示 -->
     <v-snackbar v-model="showMessage" :timeout="3000" location="top" :color="messageType">
       {{ message }}
@@ -365,7 +413,7 @@ export default {
   name: 'CommentControlView',
   data() {
     return {
-      activeTab: 'all',
+      activeTab: 'pending',
       comments: [],
       loading: false,
       page: 1,
@@ -377,6 +425,8 @@ export default {
       messageType: 'info',
       detailDialog: false,
       deleteDialog: false,
+      approveDialog: false,
+      rejectDialog: false,
       restoreDialog: false,
       selectedItem: null,
       searchUserId: '',
@@ -407,6 +457,8 @@ export default {
         url += '&status=0'
       } else if (this.activeTab === 'deleted') {
         url += '&status=1'
+      } else if (this.activeTab === 'pending') {
+        url += '&status=-1'
       }
 
       if (this.searchUserId) {
@@ -429,7 +481,49 @@ export default {
         }
       })
     },
+    getStatusColor(status) {
+      if (status === 0) return 'success'
+      if (status === 1) return 'error'
+      if (status === -1) return 'warning'
+      return 'grey'
+    },
+    
+    getStatusText(status) {
+      if (status === 0) return '正常'
+      if (status === 1) return '已删除'
+      if (status === -1) return '待审核'
+      return '未知'
+    },
+    confirmApprove(item) {
+      this.selectedItem = item
+      this.approveDialog = true
+    },
+    
+    confirmReject(item) {
+      this.selectedItem = item
+      this.rejectDialog = true
+    },
+        
+    approveItem() {
+      if (!this.selectedItem) return
+      this.selectedItem.status = 0
+      this.httpPost(`/admin/examine/comment`, this.selectedItem, (json) => {
+        if (json.status === 200) {
+          this.showNotification('评论已通过审核', 'success')
+          this.approveDialog = false
+          this.detailDialog = false
+          this.getCommentList()
+        } else {
+          this.showNotification(json?.message || '操作失败', 'error')
+        }
+      })
+    },
+    
+    rejectItem() {
+      if (!this.selectedItem) return
 
+      console.log("拒绝审核")
+    },
     pageChange(options) {
       this.page = options.page
       this.getCommentList()

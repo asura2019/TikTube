@@ -49,5 +49,10 @@ public interface FileTableService extends IService<FileTableEntity> {
      * */
     List<FileTableEntity> deprecatedFileList(long endTime, int count);
 
+
+    /**
+     * 更新文件信息
+     * */
+    boolean updateFileInfo(FileTableEntity fileTableEntity);
 }
 

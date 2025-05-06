@@ -207,7 +207,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         fileIds.add(videoArticleDto.getImageId());
         fileIds.add(videoArticleDto.getVideo().getId());
         List<FileTableEntity> files = fileTableService.listByIds(fileIds);
-        
+
+        // TODO 暂未实现视频分 P 功能，实现后移除此判断
         if (files.size() != 2) {
             return ReturnCodeEnum.DATA_VALID_EXCEPTION;
         }

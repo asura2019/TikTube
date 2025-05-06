@@ -1,6 +1,7 @@
 package com.buguagaoshu.tiktube.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.utils.PageUtils;
 import com.buguagaoshu.tiktube.entity.CommentEntity;
 import com.buguagaoshu.tiktube.vo.CommentVo;
@@ -46,5 +47,13 @@ public interface CommentService extends IService<CommentEntity> {
 
 
     void addCount(String col, long commentId, long count);
+
+
+    /**
+     * 发送评论通知
+     * */
+    void send(CommentEntity commentEntity,
+              CommentEntity fatherComment,
+              ArticleEntity articleEntity);
 }
 

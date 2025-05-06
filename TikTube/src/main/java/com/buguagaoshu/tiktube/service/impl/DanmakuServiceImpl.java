@@ -1,10 +1,12 @@
 package com.buguagaoshu.tiktube.service.impl;
 
 import com.buguagaoshu.tiktube.cache.CountRecorder;
+import com.buguagaoshu.tiktube.cache.WebSettingCache;
 import com.buguagaoshu.tiktube.dto.ArtDanmakuDto;
 import com.buguagaoshu.tiktube.entity.FileTableEntity;
 import com.buguagaoshu.tiktube.enums.ArticleStatusEnum;
 import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
+import com.buguagaoshu.tiktube.enums.TypeCode;
 import com.buguagaoshu.tiktube.exception.UserNotLoginException;
 import com.buguagaoshu.tiktube.service.ArticleService;
 import com.buguagaoshu.tiktube.service.FileTableService;
@@ -38,16 +40,20 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
 
     private final CountRecorder countRecorder;
 
+    private final WebSettingCache webSettingCache;
+
     private final IpUtil ipUtil;
 
     @Autowired
     public DanmakuServiceImpl(ArticleService articleService,
                               FileTableService fileTableService,
                               CountRecorder countRecorder,
+                              WebSettingCache webSettingCache,
                               IpUtil ipUtil) {
         this.articleService = articleService;
         this.fileTableService = fileTableService;
         this.countRecorder = countRecorder;
+        this.webSettingCache = webSettingCache;
         this.ipUtil = ipUtil;
     }
 
@@ -108,9 +114,18 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
         String cleanHex = danmakuDto.getColor().replace("#", "");
         // 将十六进制字符串转换为十进制整数
         danmakuEntity.setColorDec(Long.parseLong(cleanHex, 16));
-        this.save(danmakuEntity);
-        countRecorder.recordDanmaku(fileTableEntity.getArticleId(), 1L);
-        return ReturnCodeEnum.SUCCESS;
+        // 如果开启弹幕审核
+        if (webSettingCache.getWebConfigData().getOpenDanmakuExam().equals(1)) {
+            danmakuEntity.setStatus(TypeCode.EXAM);
+            this.save(danmakuEntity);
+            countRecorder.recordDanmaku(fileTableEntity.getArticleId(), 1L);
+            return ReturnCodeEnum.NEED_EXAM;
+        } else {
+            danmakuEntity.setStatus(TypeCode.NORMAL);
+            this.save(danmakuEntity);
+            countRecorder.recordDanmaku(fileTableEntity.getArticleId(), 1L);
+            return ReturnCodeEnum.SUCCESS;
+        }
     }
 
     @Override
@@ -164,9 +179,13 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
     public List<DanmakuEntity> artDanmakuList(Long id, Integer max) {
         Map<String, Object> params = new HashMap<>(2);
         params.put("limit", max);
+        QueryWrapper<DanmakuEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("video_id", id);
+        wrapper.eq("status", TypeCode.NORMAL);
+        wrapper.orderByDesc("create_time");
         IPage<DanmakuEntity> page = this.page(
                 new Query<DanmakuEntity>().getPage(params),
-                new QueryWrapper<DanmakuEntity>().eq("video_id", id)
+                wrapper
         );
         page.getRecords().parallelStream().forEach(d -> {
             d.setCity(null);

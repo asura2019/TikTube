@@ -4,6 +4,8 @@ import com.buguagaoshu.tiktube.model.MailConfigData;
 import com.buguagaoshu.tiktube.valid.ListValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 
 /**
  * @author Pu Zhiwei {@literal puzhiweipuzhiwei@foxmail.com}
@@ -12,6 +14,7 @@ import lombok.Data;
  * web_setting 表已经弃用
  * 采用 web_config 保存配置文件
  */
+@Slf4j
 @Data
 public class WebConfigData {
     /**
@@ -24,13 +27,13 @@ public class WebConfigData {
      * TODO 待实现
      */
     @ListValue(value = {0, 1})
-    private Integer openNoVipLimit;
+    private Integer openNoVipLimit = 0;
 
     /**
      * 非vip 每日观看次数
      * TODO 待实现
      */
-    private Integer noVipViewCount;
+    private Integer noVipViewCount = 0;
 
     /**
      * 网页logo地址
@@ -41,7 +44,7 @@ public class WebConfigData {
      * 是否开启邀请码注册 【0 关闭， 1开启】
      */
     @ListValue(value = {0, 1})
-    private Integer openInvitationRegister;
+    private Integer openInvitationRegister = 1;
 
     /**
      * 网页简短的描述
@@ -53,13 +56,25 @@ public class WebConfigData {
      * TODO 待实现
      */
     @ListValue(value = {0, 1})
-    private Integer openUploadVideoAddViewCount;
+    private Integer openUploadVideoAddViewCount = 0;
 
     /**
      * 是否开启视频，文章，图片审核 【0 关闭， 1 开启】
      */
     @ListValue(value = {0, 1})
-    private Integer openExamine;
+    private Integer openExamine = 1;
+
+    /**
+     * 是否开启评论审核
+     * */
+    @ListValue(value = {0, 1})
+    private Integer openCommentExam = 1;
+
+    /**
+     * 是否开启弹幕审核
+     * */
+    @ListValue(value = {0, 1})
+    private Integer openDanmakuExam = 1;
 
 
     private Integer homeMaxVideoCount;
@@ -68,7 +83,7 @@ public class WebConfigData {
      * 是否开启邮箱设置
      * */
     @ListValue(value = {0, 1})
-    private Integer openEmail;
+    private Integer openEmail = 0;
 
 
     private MailConfigData mailConfig;
@@ -88,6 +103,8 @@ public class WebConfigData {
         webConfigData.setHomeMaxVideoCount(50);
         webConfigData.setOpenEmail(0);
         webConfigData.setLogoUrl("/favicon.jpg");
+        webConfigData.setOpenCommentExam(1);
+        webConfigData.setOpenDanmakuExam(1);
         webConfigData.setMailConfig(new MailConfigData());
         return webConfigData;
 
@@ -98,17 +115,7 @@ public class WebConfigData {
      * */
     public WebConfigData copy() {
         WebConfigData webConfigData = new WebConfigData();
-        webConfigData.setName(this.name);
-        webConfigData.setOpenNoVipLimit(this.openNoVipLimit);
-        webConfigData.setNoVipViewCount(this.noVipViewCount);
-        webConfigData.setOpenInvitationRegister(this.openInvitationRegister);
-        webConfigData.setWebDescribe(this.webDescribe);
-        webConfigData.setOpenUploadVideoAddViewCount(this.openUploadVideoAddViewCount);
-        webConfigData.setOpenExamine(this.openExamine);
-        webConfigData.setHomeMaxVideoCount(this.homeMaxVideoCount);
-        webConfigData.setOpenEmail(this.openEmail);
-        webConfigData.setLogoUrl(this.logoUrl);
-        webConfigData.setMailConfig(this.mailConfig);
+        BeanUtils.copyProperties(this, webConfigData);
         return webConfigData;
     }
 
@@ -126,10 +133,14 @@ public class WebConfigData {
      * */
     public static String createSaveData(WebConfigData webConfigData) {
         ObjectMapper objectMapper = new ObjectMapper();
+        String defaultConfig = null;
         try {
+            defaultConfig = objectMapper.writeValueAsString(defaultConfig());
             return objectMapper.writeValueAsString(webConfigData);
         } catch (Exception e) {
-            return "";
+            log.error("将对象转换为 JSON 字符串异常：{}", e.getMessage());
+            // 发生异常返回默认配置
+            return defaultConfig;
         }
     }
 
@@ -138,7 +149,9 @@ public class WebConfigData {
         try {
             return objectMapper.readValue(json, WebConfigData.class);
         } catch (Exception e) {
-            return null;
+            log.error("配置文件反序列化异常：{}，系统将返回默认配置。", e.getMessage());
+            // 读取失败返回默认配置
+            return defaultConfig();
         }
     }
 }

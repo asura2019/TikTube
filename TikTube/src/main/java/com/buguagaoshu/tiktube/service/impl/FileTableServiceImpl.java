@@ -115,5 +115,23 @@ public class FileTableServiceImpl extends ServiceImpl<FileTableDao, FileTableEnt
         return list(wrapper);
     }
 
+    @Override
+    public boolean updateFileInfo(FileTableEntity fileTableEntity) {
+        // 只允许更新原始文件名
+        // 文件 URL
+        // 文件状态
+        // 关联稿件
+        FileTableEntity byId = this.getById(fileTableEntity.getId());
+        if (byId == null) {
+            return false;
+        }
+        byId.setFileOriginalName(fileTableEntity.getFileOriginalName());
+        byId.setFileUrl(fileTableEntity.getFileUrl());
+        byId.setStatus(fileTableEntity.getStatus());
+        byId.setArticleId(fileTableEntity.getArticleId());
+        this.updateById(byId);
+        return true;
+    }
+
 
 }

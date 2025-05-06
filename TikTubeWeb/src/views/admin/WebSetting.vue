@@ -114,6 +114,28 @@
               persistent-hint
             />
           </v-col>
+          <v-col cols="12" md="6">
+            <v-switch
+              v-model="setting.openCommentExam"
+              :false-value="0"
+              :true-value="1"
+              color="red-darken-3"
+              label="开启评论审核"
+              hint="开启后用户提交的评论需要审核才能发布"
+              persistent-hint
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-switch
+              v-model="setting.openDanmakuExam"
+              :false-value="0"
+              :true-value="1"
+              color="red-darken-3"
+              label="开启弹幕审核"
+              hint="开启后用户发布的弹幕需要审核才能发布"
+              persistent-hint
+            />
+          </v-col>
         </v-row>
       </v-card-text>
     </v-card>

@@ -43,7 +43,10 @@ public class DanmakuController {
         if (codeEnum.equals(ReturnCodeEnum.NO_LOGIN)) {
             return ResponseDetails.ok(codeEnum).put("code", 1);
         }
-        return ResponseDetails.ok(codeEnum).put("code", 0);
+        if (codeEnum.equals(ReturnCodeEnum.SUCCESS)) {
+            return ResponseDetails.ok(codeEnum).put("code", 0);
+        }
+        return ResponseDetails.ok(codeEnum).put("code", -1);
     }
 
     /**
