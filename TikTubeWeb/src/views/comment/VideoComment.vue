@@ -196,7 +196,6 @@ export default {
           this.total = this.total + 1
           this.commentData.comment = ''
           this.$refs.commentVditor.setTextValue('')
-          this.getCommentList()
         } else if (json.status === 4002) {
           this.message = StringUtils.dataErrorMessage(json.data)
           this.showMessage = true

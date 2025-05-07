@@ -203,7 +203,6 @@ export default {
           this.total++
           this.comment.comment = ''
           this.$refs.secondCommentView.setTextValue('')
-          //this.getSecondList()
         } else if (json.status === 4002) {
           this.message = StringUtils.dataErrorMessage(json.data)
           this.showMessage = true
