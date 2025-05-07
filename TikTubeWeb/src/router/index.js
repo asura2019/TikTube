@@ -236,6 +236,16 @@ const router = createRouter({
           }
         },
         {
+          path: '/admin/opinion',
+          name: 'OpinionView',
+          component: () => import('@/views/admin/OpinionView.vue'),
+          meta: {
+            title: '举报与意见反馈',
+            requireAuth: true,
+            requireAdmin: true
+          }
+        },
+        {
           path: '/admin/ads',
           name: 'ADSView',
           component: () => import('@/views/admin/AdvertisementView.vue'),

@@ -118,6 +118,7 @@ export default {
       { icon: 'mdi-home', text: '首页', link: '/admin' },
       { icon: 'mdi-application', text: '邀请码', link: '/admin/invitation' },
       { icon: 'mdi-video', text: '待审核', link: '/admin/examine' },
+      { icon:'mdi-flag', text: '举报与意见反馈', link: '/admin/opinion' },
       { icon: 'mdi-filmstrip-box-multiple', text: '投稿列表', link: '/admin/article/list' },
       { icon: 'mdi-file', text: '文件列表', link: '/admin/file/list' },
       { icon: 'mdi-database', text: '存储管理', link: '/admin/oss' },
@@ -125,8 +126,8 @@ export default {
       { icon: 'mdi-comment', text: '评论管理', link: '/admin/comment' },
       { icon: 'mdi-airplane', text: '弹幕管理', link: '/admin/danmuku' },
       { icon: 'mdi-advertisements', text: '广告公告管理', link: '/admin/ads' },
-      { icon: 'mdi-square-edit-outline', text: '网页设置', link: '/admin/websetting' },
       { icon: 'mdi-playlist-edit', text: '分类管理', link: '/admin/category' },
+      { icon: 'mdi-square-edit-outline', text: '网页设置', link: '/admin/websetting' }
     ],
     userInfo: useUserStore(),
     notificationCount: 0,

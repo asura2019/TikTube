@@ -76,6 +76,9 @@
             </template>
           </v-tooltip>
           <span class="text-body-2" :class="{ 'text-success': isLiked }">{{ likeCount }}</span>
+          <v-btn class="ml-2" color="red" size="small" variant="text" @click="showReportDialog()">
+                举报
+          </v-btn>
           <!-- <v-tooltip text="踩" location="top">
             <template v-slot:activator="{ props }">
               <v-btn
@@ -143,6 +146,9 @@ export default {
   },
   mounted() {},
   methods: {
+    showReportDialog() {
+      this.$emit('open', this.comment)
+    },
     parserUa() {
       const ua = new UAParser(this.comment.ua)
       return `${ua.getOS().name} ${ua.getBrowser().name}`

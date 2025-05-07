@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.buguagaoshu.tiktube.dao.OpinionDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.buguagaoshu.tiktube.entity.OpinionEntity" id="opinionMap">
+        <result property="id" column="id"/>
+        <result property="targetId" column="target_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userOpinion" column="user_opinion"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="opinion" column="opinion"/>
+        <result property="opinionUser" column="opinion_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="opinionTime" column="opinion_time"/>
+        <result property="otherInfo" column="other_info"/>
+        <result property="ua" column="ua"/>
+        <result property="city" column="city"/>
+        <result property="ip" column="ip"/>
+    </resultMap>
+    
+    <select id="findByTargetId" resultType="com.buguagaoshu.tiktube.entity.OpinionEntity">
+        select * from opinion_table where target_id = #{targetId} order by id desc limit 1
+    </select>
+    
+    <select id="findUnprocessedOpinions" resultType="com.buguagaoshu.tiktube.entity.OpinionEntity">
+        select * from opinion_table where status = 0 order by create_time asc
+    </select>
+
+</mapper>

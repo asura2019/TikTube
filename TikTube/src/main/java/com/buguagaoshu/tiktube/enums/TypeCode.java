@@ -34,6 +34,45 @@ public class TypeCode {
     public final static int EXAM = -1;
 
     /**
+     * 举报稿件
+     * */
+    public final static int OPINION_TYPE_ARTICLE = 0;
+
+
+    /**
+     * 举报评论
+     * */
+    public final static int OPINION_TYPE_COMMENT = 1;
+
+    /**
+     * 举报弹幕
+     * */
+    public final static int OPINION_TYPE_DANMAKU = 2;
+
+
+    /**
+     * 意见反馈
+     * */
+    public final static int OPINION_TYPE_FEEDBACK = 10;
+
+
+    /**
+     * 举报未处理
+     * */
+    public final static int OPINION_STATUS_UNTREATED = 0;
+
+    /**
+     * 举报已处理
+     * */
+    public final static int OPINION_STATUS_PROCESSED = 1;
+
+
+    /**
+     * 不予受理
+     * */
+    public final static int OPINION_STATUS_INADMISSIBLE = 2;
+
+    /**
      * 账号邮箱验证未通过
      * */
     public final static int USER_EMAIL_NOT_CHECK = -1;

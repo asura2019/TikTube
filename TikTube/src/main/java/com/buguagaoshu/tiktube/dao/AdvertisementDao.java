@@ -19,9 +19,9 @@ public interface AdvertisementDao extends BaseMapper<AdvertisementEntity> {
     /**
      * 批量更新广告浏览量
      *
-     * @param viewCountMap key为广告ID，value为需要增加的浏览量
+     * @param countMap key为广告ID，value为需要增加的浏览量
      * @return 更新的记录数
      */
-    int batchUpdateViewCount(@Param("viewCountMap") Map<Integer, Long> viewCountMap);
+    int batchUpdateCount(@Param("col") String col, @Param("countMap") Map<Integer, Long> countMap);
 
 }

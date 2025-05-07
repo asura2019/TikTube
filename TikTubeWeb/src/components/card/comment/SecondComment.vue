@@ -56,7 +56,7 @@
       <template v-else>
         <v-row v-for="item in secondList" :key="item.id">
           <v-col>
-            <Card :father="father" :comment="item" :type="type" @comment="getComment" />
+            <Card :father="father" :comment="item" :type="type" @comment="getComment" @open="showSecondReportDialogFun"/>
           </v-col>
         </v-row>
       </template>
@@ -73,6 +73,16 @@
       </v-row>
     </v-container>
 
+    <v-dialog v-model="showSecondReportDialog" width="50vh">
+        <OpinionCard 
+          :targetId="selectSecondComment.id" 
+          :typeNum="1"
+          :target-title="selectSecondComment.comment"  
+          :isReport="true"
+          @close="showSecondReportDialog = false"
+        />
+      </v-dialog>
+
     <v-snackbar v-model="showMessage" location="top" :timeout="3000">
       {{ message }}
       <template v-slot:actions>
@@ -87,11 +97,13 @@ import Card from '@/components/card/comment/SecondCard.vue'
 import SecondCommentVditor from '@/components/vditor/VditorComment.vue'
 import { useUserStore } from '@/stores/userStore'
 import StringUtils from '@/utils/string-utils.vue'
+import OpinionCard from '@/components/card/OpinionCard.vue'
 export default {
   name: 'SecondComment',
   components: {
     Card,
     SecondCommentVditor,
+    OpinionCard
   },
   props: {
     father: {
@@ -125,12 +137,18 @@ export default {
       secondCommentKey: 0,
       uploadurl: this.SERVER_API_URL + '/uploads/file',
       userInfo: useUserStore(),
+      showSecondReportDialog: false,
+      selectSecondComment: null,
     }
   },
   created() {
     this.getSecondList()
   },
   methods: {
+    showSecondReportDialogFun(value) {
+      this.selectSecondComment = value
+      this.showSecondReportDialog = true
+    },
     getComment(value) {
       this.$refs.commentTop.scrollIntoView({ behavior: 'smooth' })
       this.commentPlaceholder = '回复 @' + value.username + ': ' + value.comment

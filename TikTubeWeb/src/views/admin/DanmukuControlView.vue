@@ -94,7 +94,6 @@
           :items="danmakuList"
           :loading="loading"
           hover
-          @update:options="pageChange"
           class="elevation-1"
           hide-default-footer
         >
@@ -276,7 +275,7 @@
                 <v-icon color="indigo">mdi-message-text</v-icon>
               </template>
               <v-list-item-title>弹幕内容</v-list-item-title>
-              <v-list-item-subtitle :style="{ color: selectedItem?.color }">{{
+              <v-list-item-subtitle>{{
                 selectedItem?.text
               }}</v-list-item-subtitle>
             </v-list-item>

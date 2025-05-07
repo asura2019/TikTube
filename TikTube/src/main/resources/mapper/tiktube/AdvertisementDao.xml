@@ -23,11 +23,16 @@
     </resultMap>
     
     <!-- 批量更新广告浏览量 -->
-    <update id="batchUpdateViewCount" parameterType="java.util.Map">
-        <foreach collection="viewCountMap" item="increment" index="id" separator=";" open="" close="">
-            UPDATE advertisement_table
-            SET view_count = view_count + #{increment}
-            WHERE id = #{id}
+    <update id="batchUpdateCount">
+        UPDATE advertisement_table
+        SET ${col} = CASE id
+        <foreach collection="countMap.entrySet()" item="count" index="id">
+            WHEN #{id} THEN ${col} + #{count}
+        </foreach>
+        END
+        WHERE id IN
+        <foreach collection="countMap.keySet()" item="id" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </update>
 

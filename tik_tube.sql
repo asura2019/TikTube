@@ -447,7 +447,7 @@ CREATE TABLE `opinion_table`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `target_id` bigint NOT NULL COMMENT '被举报的目标',
   `user_id` bigint NOT NULL COMMENT '举报人',
-  `user_opinion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '用户举报原因，意见建议'
+  `user_opinion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '用户举报原因，意见建议',
   `type` int NOT NULL COMMENT '举报类型 0 稿件 1 评论 2 弹幕',
   `status` int NOT NULL COMMENT '状态 0 未处理，1已处理',
   `opinion` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '处理意见',
@@ -455,6 +455,9 @@ CREATE TABLE `opinion_table`  (
   `create_time` bigint NULL DEFAULT NULL COMMENT '举报时间',
   `opinion_time` bigint NULL DEFAULT NULL COMMENT '处理日期',
   `other_info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '其它信息',
+  `ua` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `city` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_opinion_target_id`(`target_id`) USING BTREE,
   INDEX `find_opinion_user_id`(`user_id`) USING BTREE,

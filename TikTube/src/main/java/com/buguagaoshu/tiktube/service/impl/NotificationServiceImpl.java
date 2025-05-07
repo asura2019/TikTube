@@ -100,9 +100,17 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationDao, Notifi
         for (NotificationEntity notification : notifications) {
             NotificationAndSendUser notificationAndSendUser = new NotificationAndSendUser();
             UserEntity userEntity = longUserEntityMap.get(notification.getNotifier());
-            userEntity.setMail("");
-            userEntity.setPassword("");
-            userEntity.setPhone("");
+            if (userEntity == null) {
+                userEntity = new UserEntity();
+                userEntity.setId(0L);
+                userEntity.setAvatarUrl("/images/logo.jpg");
+                userEntity.setUsername("System");
+            } else {
+                userEntity = longUserEntityMap.get(notification.getNotifier());
+                userEntity.setMail("");
+                userEntity.setPassword("");
+                userEntity.setPhone("");
+            }
             notificationAndSendUser.setUser(userEntity);
             notificationAndSendUser.setNotification(notification);
             notificationAndSendUsers.add(notificationAndSendUser);

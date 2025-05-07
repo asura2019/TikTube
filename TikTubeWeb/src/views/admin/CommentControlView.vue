@@ -95,7 +95,6 @@
           :items="comments"
           :loading="loading"
           hover
-          @update:options="pageChange"
           class="elevation-1"
           hide-default-footer
         >

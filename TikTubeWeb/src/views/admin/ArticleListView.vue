@@ -35,10 +35,8 @@
           :itemsLength="totalCount"
           :items-per-page="pageSize"
           :items="articles"
-          v-model:page="page"
           :loading="loading"
           hover
-          @update:options="pageChange"
           class="elevation-1"
           hide-default-footer
         >

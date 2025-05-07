@@ -17,9 +17,7 @@
           :itemsLength="videoList.length"
           :items="videoList"
           :items-per-page="size"
-          v-model:page="page"
           hover
-          @update:options="pageChange"
         >
           <template #[`item.createTime`]="{ item }">
             <v-chip size="small">

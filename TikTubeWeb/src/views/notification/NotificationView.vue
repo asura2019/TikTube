@@ -197,6 +197,21 @@
                             </v-btn>
                           </template>
 
+                          <!-- 添加查看举报结果按钮 -->
+                          <template v-if="item.notification.type === 11 && item.notification.outerId">
+                            <v-btn
+                              variant="text"
+                              color="warning"
+                              @click.stop="viewReportResult(item.notification.outerId)"
+                              prepend-icon="mdi-flag-outline"
+                              size="small"
+                              class="mr-2"
+                              rounded
+                            >
+                              查看举报结果
+                            </v-btn>
+                          </template>
+
                           <template v-if="canViewPost(item.notification.type)">
                             <v-btn
                               variant="text"
@@ -284,6 +299,75 @@
       </v-card>
     </v-dialog>
 
+    <!-- 举报消息显示弹窗 -->
+    <v-dialog v-model="reportDialog" max-width="600px" transition="dialog-bottom-transition">
+      <v-card>
+        <v-card-title class="text-h5 bg-warning text-white d-flex align-center">
+          <v-icon class="mr-2">mdi-flag</v-icon>
+          举报处理结果
+          <v-spacer></v-spacer>
+          <v-btn icon="mdi-close" variant="text" color="white" @click="reportDialog = false"></v-btn>
+        </v-card-title>
+        <v-card-text class="pt-4">
+          <v-row v-if="loadingOpinion" justify="center" class="my-6">
+            <v-progress-circular indeterminate color="warning"></v-progress-circular>
+            <span class="text-body-1 ml-3 text-medium-emphasis">加载中...</span>
+          </v-row>
+          <template v-else>
+            <v-list>
+              <v-list-item>
+                <template v-slot:prepend>
+                  <v-icon color="warning" class="mr-2">mdi-flag</v-icon>
+                </template>
+                <v-list-item-title class="text-subtitle-1 font-weight-medium">举报类型</v-list-item-title>
+                <v-list-item-subtitle>{{ getReportTypeText(nowOpinion.type) }}</v-list-item-subtitle>
+              </v-list-item>
+              
+              <v-list-item>
+                <template v-slot:prepend>
+                  <v-icon color="blue" class="mr-2">mdi-comment-text-outline</v-icon>
+                </template>
+                <v-list-item-title class="text-subtitle-1 font-weight-medium">举报内容</v-list-item-title>
+                <v-list-item-subtitle>{{ nowOpinion.userOpinion || '无' }}</v-list-item-subtitle>
+              </v-list-item>
+              
+              <v-list-item>
+                <template v-slot:prepend>
+                  <v-icon :color="getReportStatusColor(nowOpinion.status)" class="mr-2">{{ getReportStatusIcon(nowOpinion.status) }}</v-icon>
+                </template>
+                <v-list-item-title class="text-subtitle-1 font-weight-medium">处理状态</v-list-item-title>
+                <v-list-item-subtitle :class="`text-${getReportStatusColor(nowOpinion.status)}`">
+                  {{ getReportStatusText(nowOpinion.status) }}
+                </v-list-item-subtitle>
+              </v-list-item>
+              
+              <v-list-item v-if="nowOpinion.status === 1 || nowOpinion.status === 2">
+                <template v-slot:prepend>
+                  <v-icon color="primary" class="mr-2">mdi-account-check</v-icon>
+                </template>
+                <v-list-item-title class="text-subtitle-1 font-weight-medium">处理意见</v-list-item-title>
+                <v-list-item-subtitle>
+                  <ShowMarkdown :markdown="nowOpinion.opinion" :anchor="0"></ShowMarkdown>
+                </v-list-item-subtitle>
+              </v-list-item>
+              
+              <v-list-item v-if="nowOpinion.status !== 0">
+                <template v-slot:prepend>
+                  <v-icon color="grey" class="mr-2">mdi-clock-outline</v-icon>
+                </template>
+                <v-list-item-title class="text-subtitle-1 font-weight-medium">处理时间</v-list-item-title>
+                <v-list-item-subtitle>{{ formatTime(nowOpinion.opinionTime) }}</v-list-item-subtitle>
+              </v-list-item>
+            </v-list>
+          </template>
+        </v-card-text>
+        <v-card-actions class="pa-4">
+          <v-spacer></v-spacer>
+          <v-btn color="primary" variant="text" @click="reportDialog = false">关闭</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-snackbar
       v-model="showMessage"
       :timeout="3000"
@@ -336,7 +420,7 @@ export default {
         2: { text: '帖子点赞', icon: 'mdi-thumb-up', color: 'pink' },
         3: { text: '评论点赞', icon: 'mdi-thumb-up-outline', color: 'pink-lighten-2' },
         10: { text: '系统通知', icon: 'mdi-bell', color: 'green' },
-        11: { text: '举报通知', icon: 'mdi-flag', color: 'red' },
+        11: { text: '举报或意见反馈', icon: 'mdi-flag', color: 'red' },
       },
       replyDialog: false,
       currentNotification: null,
@@ -346,6 +430,21 @@ export default {
       unreadCount: 0,
       markingAllRead: false,
       submittingReply: false,
+      seeOinionId: 0,
+      nowOpinion: {},
+      reportDialog: false,
+      loadingOpinion: false,
+      reportTypeMap: {
+        0: '稿件举报',
+        1: '评论举报',
+        2: '弹幕举报',
+        10: '意见反馈'
+      },
+      reportStatusMap: {
+        0: { text: '未处理', icon: 'mdi-clock-alert-outline', color: 'grey' },
+        1: { text: '已处理', icon: 'mdi-check-circle', color: 'success' },
+        2: { text: '已忽略', icon: 'mdi-close-circle', color: 'error' }
+      }
     }
   },
   computed: {
@@ -374,6 +473,52 @@ export default {
     this.fetchNotifications()
   },
   methods: {
+    // 查看举报结果
+    viewReportResult(opinionId) {
+      if (!opinionId) {
+        this.showErrorMessage('无法获取举报信息')
+        return
+      }
+      
+      this.seeOinionId = opinionId
+      this.reportDialog = true
+      this.loadingOpinion = true
+      this.nowOpinion = {}
+      
+      // 获取举报信息
+      this.getOpinion()
+    },
+    
+    // 获取举报类型文本
+    getReportTypeText(type) {
+      return this.reportTypeMap[type] || '未知类型'
+    },
+    
+    // 获取举报状态文本
+    getReportStatusText(status) {
+      return this.reportStatusMap[status]?.text || '未知状态'
+    },
+    
+    // 获取举报状态图标
+    getReportStatusIcon(status) {
+      return this.reportStatusMap[status]?.icon || 'mdi-help-circle'
+    },
+    
+    // 获取举报状态颜色
+    getReportStatusColor(status) {
+      return this.reportStatusMap[status]?.color || 'grey'
+    },
+    getOpinion() {
+      this.httpGet(`/opinion/info?id=${this.seeOinionId}`, (json) => {
+        if (json.status === 200) {
+          this.nowOpinion = json.data
+          this.loadingOpinion = false
+        } else {
+          this.showErrorMessage(json.message || '获取消息失败')
+          this.loadingOpinion = false
+        }
+      })
+    },
     fetchNotifications() {
       this.loading = true
 
@@ -598,9 +743,13 @@ export default {
       this.httpPost('/comment/save', commentData, (json) => {
         this.submittingReply = false
         if (json.status === 200) {
-          this.showSuccessMessage('回复成功')
+          if (json.data.status == -1) {
+            this.showSuccessMessage('评论成功，待管理员审核通过后，其他观众即可看见你的评论！')
+          } else {
+            this.showSuccessMessage('回复成功')
+            
+          }
           this.replyDialog = false
-
           // 可选：刷新消息列表
           this.fetchNotifications()
         } else {
@@ -645,5 +794,13 @@ export default {
 
 .v-pagination {
   margin-top: 8px;
+}
+</style>
+
+<style scoped>
+/* 可以添加一些自定义样式 */
+.notification-title {
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 </style>

@@ -18,7 +18,7 @@ public class MyStringUtils {
         if (str.length() <= num) {
             return str;
         }
-        return str.substring(0, num);
+        return str.substring(0, num) + ",,,";
     }
 
     public static String formatTime(long time) {

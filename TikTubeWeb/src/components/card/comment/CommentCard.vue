@@ -79,6 +79,9 @@
           <span class="text-body-2" :class="{ 'text-success': isLiked }">{{
             comment.likeCount
           }}</span>
+          <v-btn class="ml-2" color="red" size="small" variant="text" @click="showReportDialog()">
+                举报
+              </v-btn>
           <!-- <v-tooltip text="踩" location="top">
             <template v-slot:activator="{ props }">
               <v-btn
@@ -107,6 +110,8 @@
       </v-card>
     </v-dialog>
 
+
+
     <v-snackbar v-model="showMessage" location="top" :timeout="3000">
       {{ message }}
       <template v-slot:actions>
@@ -122,11 +127,12 @@ import TimeUtil from '@/utils/time-util.vue'
 import SecondComment from '@/components/card/comment/SecondComment.vue'
 import { UAParser } from 'ua-parser-js'
 import { useUserStore } from '@/stores/userStore'
+
 export default {
   name: 'CommentCard',
   components: {
     ShowMarkdown,
-    SecondComment,
+    SecondComment
   },
   props: {
     comment: {
@@ -162,12 +168,16 @@ export default {
       isDisliked: false,
       likeCount: this.comment?.likeCount || 0,
       dislikeCount: this.comment?.dislikeCount || 0,
+
     }
   },
   created() {
     this.checkLike()
   },
   methods: {
+    showReportDialog() {
+      this.$emit("open", this.comment)
+    },
     parserUa() {
       const ua = new UAParser(this.comment.ua)
       return `${ua.getOS().name} ${ua.getBrowser().name}`

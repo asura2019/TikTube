@@ -98,11 +98,22 @@
             <a href="https://www.buguagaoshu.com" target="_blank"><strong>不挂高数</strong></a>
             ©2020 - {{ new Date().getFullYear() }} Created by
             <a href="https://vuetifyjs.com/" target="_blank"><strong>Vuetify</strong></a>
+            <v-btn class="ml-2"  size="small" variant="text" @click="showOpinionDialog=true">
+                意见反馈
+              </v-btn>
           </v-col>
         </v-footer>
       </div>
     </v-navigation-drawer>
-
+    <v-dialog v-model="showOpinionDialog" width="50vh">
+        <OpinionCard 
+          :targetId="-1" 
+          :typeNum="10"
+          :target-title="''"  
+          :isReport="false"
+          @close="showOpinionDialog = false"
+        />
+      </v-dialog>
     <v-main>
       <!--  fluid-->
       <router-view v-slot="{ Component }">
@@ -117,9 +128,11 @@ import { useWebInfoStore } from '@/stores/webInfoStore'
 import { useUserStore } from '@/stores/userStore'
 import AppBarHead from '@/components/user/AppBarHead.vue'
 import CheckPower from '@/utils/check-power.vue'
+import OpinionCard from '@/components/card/OpinionCard.vue'
 export default {
   components: {
     AppBarHead,
+    OpinionCard
   },
   data: () => ({
     CheckPower,
@@ -136,6 +149,7 @@ export default {
     userInfo: useUserStore(),
     notificationCount: 0,
     searchText: '',
+    showOpinionDialog: false,
   }),
   created() {
     this.webInfo = useWebInfoStore().webInfo

@@ -87,6 +87,10 @@
               </router-link>
               &nbsp;&nbsp;&nbsp;&nbsp; 发布于：
               {{ TimeUtil.renderTime(videoData.createTime) }}
+
+              <v-btn class="ml-2" color="red" size="small" variant="text" @click="showReportDialog=true">
+                举报
+              </v-btn>
             </v-card-subtitle>
 
             <v-divider class="my-2"></v-divider>
@@ -131,6 +135,7 @@
             <v-card-text class="py-2">
               <div class="d-flex align-start">
                 <div class="text-body-2">{{ videoData.describes }}</div>
+
               </div>
             </v-card-text>
 
@@ -254,6 +259,17 @@
         </v-col>
       </v-row>
 
+      <v-dialog v-model="showReportDialog" width="50vh">
+        <OpinionCard 
+          :targetId="id" 
+          :typeNum="0"
+          :target-title="videoData.title"  
+          :isReport="true"
+          @close="showReportDialog = false"
+          @success="handleReportSuccess"
+        />
+      </v-dialog>
+
       <!-- 分享卡片弹窗 -->
       <v-dialog max-width="600" v-model="shareDialog">
         <ShareCard :article="{ id: id, title: videoData.title }" />
@@ -270,6 +286,7 @@ import { useUserStore } from '@/stores/userStore'
 import ShareCard from '@/components/card/ShareCard.vue'
 import VideoCared from '@/components/card/VideoCard.vue'
 import Power from '@/utils/check-power.vue'
+import OpinionCard from '@/components/card/OpinionCard.vue'
 export default {
   name: 'VideoView',
   components: {
@@ -277,6 +294,7 @@ export default {
     Comment,
     ShareCard,
     VideoCared,
+    OpinionCard
   },
   data() {
     return {
@@ -301,6 +319,7 @@ export default {
       adsInfoStatus: false,
       shareDialog: false,
       openAds: false,
+      showReportDialog: false,
     }
   },
   computed: {
@@ -325,6 +344,10 @@ export default {
     window.removeEventListener('resize', this.onResize)
   },
   methods: {
+    handleReportSuccess() {
+      // 处理举报成功的逻辑
+      //this.showReportDialog = false
+    },
     // 控制页面大小
     onResize() {
       this.windowSize = { x: window.innerWidth, y: window.innerHeight }

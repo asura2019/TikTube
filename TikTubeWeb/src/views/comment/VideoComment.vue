@@ -49,7 +49,7 @@
       <template v-else>
         <v-row v-for="item in commentsList" :key="item.id">
           <v-col>
-            <CommentCard :author-id="authorId" :comment="item" />
+            <CommentCard :author-id="authorId" :comment="item" @open="showReportDialogFun"/>
           </v-col>
         </v-row>
       </template>
@@ -68,6 +68,16 @@
       <v-divider class="mt-2"></v-divider>
     </v-container>
 
+    <v-dialog v-model="showReportDialog" width="50vh">
+        <OpinionCard 
+          :targetId="selectComment.id" 
+          :typeNum="1"
+          :target-title="selectComment.comment"  
+          :isReport="true"
+          @close="showReportDialog = false"
+        />
+      </v-dialog>
+
     <v-snackbar v-model="showMessage" location="top" :timeout="3000">
       {{ message }}
       <template v-slot:actions>
@@ -82,11 +92,13 @@ import Vditor from '@/components/vditor/VditorComponents.vue'
 import CommentCard from '@/components/card/comment/CommentCard.vue'
 import { useUserStore } from '@/stores/userStore'
 import StringUtils from '@/utils/string-utils.vue'
+import OpinionCard from '@/components/card/OpinionCard.vue'
 export default {
   name: 'VideoComment',
   components: {
     Vditor,
     CommentCard,
+    OpinionCard
   },
   props: {
     count: {
@@ -126,12 +138,18 @@ export default {
       sort: 1,
       size: 15,
       userInfo: useUserStore(),
+      showReportDialog: false,
+      selectComment: null,
     }
   },
   created() {
     this.getCommentList()
   },
   methods: {
+    showReportDialogFun(value) {
+      this.selectComment = value
+      this.showReportDialog = true
+    },
     getCommentList() {
       this.httpGet(
         `/comment/list?article=${this.article}&type=1&sort=${this.sort}&page=${this.page}&limit=${this.size}`,

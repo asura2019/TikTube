@@ -729,6 +729,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
             articleEntity.setExamineStatus(ExamineTypeEnum.SUCCESS.getCode());
             // 只有审核通过才增加投稿数量
             userService.addSubmitCount(articleEntity.getUserId(), 1);
+            notificationService.sendNotification(
+                    userId,
+                    articleEntity.getUserId(),
+                    articleEntity.getId(),
+                    articleEntity.getId(),
+                    -1,
+                    "你的稿件已通过审核，现在所有人都能看见你的稿件了",
+                    NotificationType.createExamineLink(articleEntity.getTitle(), articleEntity.getId()),
+                    NotificationType.createExamineContent(articleEntity.getTitle(), examineDto.getType(), examineDto.getMessage()),
+                    NotificationType.SYSTEM
+            );
         } else {
             // 不通过
             articleEntity.setExamineStatus(examineDto.getType());

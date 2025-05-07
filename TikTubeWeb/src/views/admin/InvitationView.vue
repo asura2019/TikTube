@@ -18,9 +18,7 @@
           :itemsLength="invitationList.length"
           :items="invitationList"
           :items-per-page="size"
-          v-model:page="page"
           hover
-          @update:options="pageChange"
         >
           <template #[`item.createUser`]="{ item }">
             <v-btn

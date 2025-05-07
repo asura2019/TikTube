@@ -126,8 +126,6 @@ public class WebConfig implements WebMvcConfigurer {
 //                        "/api/article/video/update",
 //                        // 删除视频接口
 //                        "/api/studio/article/delete",
-//                        // 发送评论
-//                        "/api/comment/save",
 //                        // 用户状态更新接口
 //                        "/api/user/update/**",
 //                        "/api/upload/video",
