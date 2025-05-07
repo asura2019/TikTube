@@ -21,7 +21,6 @@
               :items="logList"
               hide-default-footer
               :items-per-page="size"
-              v-model:page="page"
             >
               <template #[`item.loginTime`]="{ item }">
                 {{ TimeUtil.renderTime(item.loginTime) }}
@@ -42,14 +41,12 @@
 
         <v-card-actions class="pa-4 d-flex justify-center">
           <v-pagination
+            rounded="circle"
+            :total-visible="7"
             v-model="page"
             :length="length"
-            :total-visible="7"
+            color="blue"
             @update:model-value="pageChange"
-            rounded="circle"
-            density="comfortable"
-            active-color="primary"
-            class="my-4"
           />
         </v-card-actions>
       </v-card>
@@ -98,14 +95,18 @@ export default {
     getLog() {
       this.httpGet(`/login/log/list?page=${this.page}&limit=${this.size}`, (json) => {
         this.logList = json.data.list
-        this.page = json.data.currPage
+        //this.page = json.data.currPage
         this.length = json.data.totalPage
       })
     },
     pageChange(value) {
       this.page = value
       this.getLog()
-      document.querySelector('#top').scrollIntoView({ behavior: 'smooth' })
+      
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
     },
   },
 }
