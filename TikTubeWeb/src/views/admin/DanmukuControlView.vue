@@ -94,12 +94,14 @@
           :items="danmakuList"
           :loading="loading"
           hover
-          class="elevation-1"
+          class="elevation-0 rounded-lg"
           hide-default-footer
+          mobile-breakpoint="md"
+          :hide-default-header="$vuetify.display.smAndDown"
         >
           <template #[`item.text`]="{ item }">
             <div class="d-flex flex-column">
-              <div class="text-body-1">{{ item.text }}</div>
+              <div class="text-body-1 title-wrap">{{ item.text }}</div>
               <div class="text-caption mt-1">
                 <v-chip size="x-small" color="grey-lighten-2" class="mr-1">
                   {{ formatTime(item.time) }}
@@ -158,11 +160,7 @@
           </template>
 
           <template #[`item.status`]="{ item }">
-            <v-chip
-              :color="getStatusColor(item.status)"
-              size="small"
-              class="text-white"
-            >
+            <v-chip :color="getStatusColor(item.status)" size="small" class="text-white">
               {{ getStatusText(item.status) }}
             </v-chip>
           </template>
@@ -203,7 +201,19 @@
                     </v-btn>
                   </template>
                 </v-tooltip>
-              
+                <v-tooltip location="top" text="删除">
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      icon
+                      size="small"
+                      color="error"
+                      @click="confirmDelete(item)"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
               </template>
 
               <template v-else>
@@ -274,10 +284,9 @@
               <template #prepend>
                 <v-icon color="indigo">mdi-message-text</v-icon>
               </template>
-              <v-list-item-title>弹幕内容</v-list-item-title>
-              <v-list-item-subtitle>{{
-                selectedItem?.text
-              }}</v-list-item-subtitle>
+              <div>
+                {{ selectedItem?.text }}
+              </div>
             </v-list-item>
 
             <v-list-item>
@@ -358,17 +367,11 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey" variant="text" @click="detailDialog = false">关闭</v-btn>
-          
+
           <template v-if="selectedItem?.status === -1">
-            <v-btn
-              color="success"
-              variant="elevated"
-              @click="approveItem()"
-            >
-              通过审核
-            </v-btn>
+            <v-btn color="success" variant="elevated" @click="approveItem()"> 通过审核 </v-btn>
           </template>
-          
+
           <template v-else>
             <v-btn
               :color="selectedItem?.status === 1 ? 'success' : 'error'"
@@ -420,8 +423,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-
 
     <!-- 消息提示 -->
     <v-snackbar v-model="showMessage" :timeout="3000" location="top" :color="messageType">
@@ -552,17 +553,17 @@ export default {
         }
       })
     },
-    
+
     confirmApprove(item) {
       this.selectedItem = item
       this.approveDialog = true
     },
-    
+
     confirmReject(item) {
       this.selectedItem = item
       this.rejectDialog = true
     },
-    
+
     approveItem() {
       if (!this.selectedItem) return
       this.selectedItem.status = 0
@@ -577,7 +578,7 @@ export default {
         }
       })
     },
-    
+
     rejectItem() {
       if (!this.selectedItem) return
     },
@@ -701,7 +702,7 @@ export default {
       if (status === -1) return 'warning'
       return 'grey'
     },
-    
+
     getStatusText(status) {
       if (status === 0) return '正常'
       if (status === 1) return '已删除'

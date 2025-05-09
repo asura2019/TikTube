@@ -80,9 +80,9 @@
         class="mb-4"
         @update:model-value="handleTabChange"
       >
-      <v-tab value="pending">待审核评论</v-tab>
+        <v-tab value="pending">待审核评论</v-tab>
         <v-tab value="all">所有评论</v-tab>
-        
+
         <v-tab value="normal">正常评论</v-tab>
         <v-tab value="deleted">已删除评论</v-tab>
       </v-tabs>
@@ -95,12 +95,14 @@
           :items="comments"
           :loading="loading"
           hover
-          class="elevation-1"
+          class="elevation-0 rounded-lg"
           hide-default-footer
+          mobile-breakpoint="md"
+          :hide-default-header="$vuetify.display.smAndDown"
         >
           <template #[`item.comment`]="{ item }">
             <div class="d-flex flex-column">
-              <div class="text-body-1">{{ item.comment }}</div>
+              <div class="text-body-1 title-wrap">{{ item.comment }}</div>
               <div v-if="item.parentCommentId !== 0" class="text-caption text-grey mt-1">
                 <v-chip size="x-small" color="primary" class="mr-1">回复评论</v-chip>
                 父评论ID: {{ item.parentCommentId }}
@@ -168,15 +170,11 @@
           </template>
 
           <template #[`item.status`]="{ item }">
-            <v-chip
-              :color="getStatusColor(item.status)"
-              size="small"
-              class="text-white"
-            >
+            <v-chip :color="getStatusColor(item.status)" size="small" class="text-white">
               {{ getStatusText(item.status) }}
             </v-chip>
           </template>
-          
+
           <template #[`item.createTime`]="{ item }">
             {{ formatDate(item.createTime) }}
           </template>
@@ -213,7 +211,19 @@
                     </v-btn>
                   </template>
                 </v-tooltip>
-                
+                <v-tooltip location="top" text="删除">
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      icon
+                      size="small"
+                      color="error"
+                      @click="confirmDelete(item)"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
               </template>
 
               <template v-else>
@@ -256,7 +266,7 @@
     </v-card>
 
     <!-- 评论详情对话框 -->
-    <v-dialog v-model="detailDialog" max-width="600px">
+    <v-dialog v-model="detailDialog" width="90vh">
       <v-card>
         <v-card-title class="text-h5 bg-primary text-white">
           <v-icon class="mr-2">mdi-comment-text</v-icon>
@@ -284,8 +294,7 @@
               <template #prepend>
                 <v-icon color="indigo">mdi-comment-text</v-icon>
               </template>
-              <v-list-item-title>评论内容</v-list-item-title>
-              <v-list-item-subtitle>{{ selectedItem?.comment }}</v-list-item-subtitle>
+              <ShowMarkdown :markdown="selectedItem.comment" :anchor="0"></ShowMarkdown>
             </v-list-item>
 
             <v-list-item v-if="selectedItem?.parentCommentId !== 0">
@@ -331,17 +340,11 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey" variant="text" @click="detailDialog = false">关闭</v-btn>
-          
+
           <template v-if="selectedItem?.status === -1">
-            <v-btn
-              color="success"
-              variant="elevated"
-              @click="approveItem()"
-            >
-              通过审核
-            </v-btn>
+            <v-btn color="success" variant="elevated" @click="approveItem()"> 通过审核 </v-btn>
           </template>
-          
+
           <template v-else>
             <v-btn
               :color="selectedItem?.status === 1 ? 'success' : 'error'"
@@ -381,7 +384,7 @@
       </v-card>
     </v-dialog>
 
-        <!-- 审核通过确认对话框 -->
+    <!-- 审核通过确认对话框 -->
     <v-dialog v-model="approveDialog" max-width="400">
       <v-card>
         <v-card-title class="text-h5">确认通过</v-card-title>
@@ -393,7 +396,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
 
     <!-- 消息提示 -->
     <v-snackbar v-model="showMessage" :timeout="3000" location="top" :color="messageType">
@@ -407,9 +409,12 @@
 
 <script>
 import { UAParser } from 'ua-parser-js'
-
+import ShowMarkdown from '@/components/vditor/ShowMarkdown.vue'
 export default {
   name: 'CommentControlView',
+  components: {
+    ShowMarkdown,
+  },
   data() {
     return {
       activeTab: 'pending',
@@ -486,7 +491,7 @@ export default {
       if (status === -1) return 'warning'
       return 'grey'
     },
-    
+
     getStatusText(status) {
       if (status === 0) return '正常'
       if (status === 1) return '已删除'
@@ -497,12 +502,12 @@ export default {
       this.selectedItem = item
       this.approveDialog = true
     },
-    
+
     confirmReject(item) {
       this.selectedItem = item
       this.rejectDialog = true
     },
-        
+
     approveItem() {
       if (!this.selectedItem) return
       this.selectedItem.status = 0
@@ -517,11 +522,11 @@ export default {
         }
       })
     },
-    
+
     rejectItem() {
       if (!this.selectedItem) return
 
-      console.log("拒绝审核")
+      console.log('拒绝审核')
     },
     pageChange(options) {
       this.page = options.page

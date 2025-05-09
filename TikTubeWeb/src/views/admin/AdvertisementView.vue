@@ -18,13 +18,7 @@
         </v-btn>
       </v-toolbar>
 
-      <v-alert
-        type="info"
-        variant="tonal"
-        border="start"
-        density="comfortable"
-        class="ma-4"
-      >
+      <v-alert type="info" variant="tonal" border="start" density="comfortable" class="ma-4">
         首页公告与首页弹窗广告仅支持一条，如有多条只显示第一条内容，只建议在视频贴片广告中加入视频，别的地方不建议。新闻轮播因为目前没有找到一个合适的投放位置，所以暂不生效。访问量统计目前仅支持贴片广告和弹窗广告！
       </v-alert>
 
@@ -77,7 +71,9 @@
           :loading="loading"
           :hide-default-footer="true"
           hover
-          class="elevation-1"
+          class="elevation-0 rounded-lg"
+          mobile-breakpoint="sm"
+          :hide-default-header="$vuetify.display.xs"
         >
           <template #[`item.title`]="{ item }">
             <div class="d-flex flex-column">
@@ -92,11 +88,7 @@
           </template>
 
           <template #[`item.type`]="{ item }">
-            <v-chip
-              :color="getTypeColor(item.type)"
-              text-color="white"
-              size="small"
-            >
+            <v-chip :color="getTypeColor(item.type)" text-color="white" size="small">
               {{ getTypeText(item.type) }}
             </v-chip>
           </template>
@@ -217,7 +209,7 @@
                   v-model="currentAd.title"
                   label="标题"
                   required
-                  :rules="[v => !!v || '标题不能为空']"
+                  :rules="[(v) => !!v || '标题不能为空']"
                   variant="outlined"
                   density="comfortable"
                   prepend-inner-icon="mdi-format-title"
@@ -229,7 +221,7 @@
                   :items="adTypeOptions"
                   label="广告类型"
                   required
-                  :rules="[v => v !== null || '请选择广告类型']"
+                  :rules="[(v) => v !== null || '请选择广告类型']"
                   variant="outlined"
                   density="comfortable"
                   prepend-inner-icon="mdi-tag"
@@ -279,7 +271,7 @@
                   label="开始时间"
                   type="datetime-local"
                   required
-                  :rules="[v => !!v || '开始时间不能为空']"
+                  :rules="[(v) => !!v || '开始时间不能为空']"
                   variant="outlined"
                   density="comfortable"
                   prepend-inner-icon="mdi-calendar-start"
@@ -291,7 +283,13 @@
                   label="结束时间"
                   type="datetime-local"
                   required
-                  :rules="[v => !!v || '结束时间不能为空', v => !startTimeStr || new Date(v) > new Date(startTimeStr) || '结束时间必须大于开始时间']"
+                  :rules="[
+                    (v) => !!v || '结束时间不能为空',
+                    (v) =>
+                      !startTimeStr ||
+                      new Date(v) > new Date(startTimeStr) ||
+                      '结束时间必须大于开始时间',
+                  ]"
                   variant="outlined"
                   density="comfortable"
                   prepend-inner-icon="mdi-calendar-end"
@@ -312,12 +310,7 @@
         </v-card-text>
         <v-card-actions class="pa-4 bg-grey-lighten-5">
           <v-spacer></v-spacer>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="closeDialog"
-            prepend-icon="mdi-close"
-          >
+          <v-btn color="error" variant="text" @click="closeDialog" prepend-icon="mdi-close">
             取消
           </v-btn>
           <v-btn
@@ -339,7 +332,12 @@
           <v-icon class="mr-2">mdi-eye</v-icon>
           广告预览
           <v-spacer></v-spacer>
-          <v-btn icon="mdi-close" variant="text" color="white" @click="previewDialog = false"></v-btn>
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            color="white"
+            @click="previewDialog = false"
+          ></v-btn>
         </v-card-title>
         <v-card-text class="pa-4">
           <v-row v-if="previewItem">
@@ -357,7 +355,7 @@
                 >
                   {{ getTypeText(previewItem.type) }}
                 </v-chip>
-                
+
                 <div v-if="previewItem.imageUrl" class="mb-3">
                   <v-img
                     :src="previewItem.imageUrl"
@@ -366,23 +364,21 @@
                     class="bg-grey-lighten-3 rounded-lg"
                   ></v-img>
                 </div>
-                
+
                 <div v-if="previewItem.videoUrl" class="mb-3">
-                  <video
-                    controls
-                    width="100%"
-                    max-height="300"
-                    class="rounded-lg"
-                  >
-                    <source :src="previewItem.videoUrl" type="video/mp4">
+                  <video controls width="100%" max-height="300" class="rounded-lg">
+                    <source :src="previewItem.videoUrl" type="video/mp4" />
                     您的浏览器不支持视频播放
                   </video>
                 </div>
-                
-                <div v-if="previewItem.content" class="mb-3 text-body-1 pa-2 bg-grey-lighten-5 rounded">
+
+                <div
+                  v-if="previewItem.content"
+                  class="mb-3 text-body-1 pa-2 bg-grey-lighten-5 rounded"
+                >
                   {{ previewItem.content }}
                 </div>
-                
+
                 <div v-if="previewItem.url" class="mb-3">
                   <v-btn
                     :href="previewItem.url"
@@ -394,9 +390,9 @@
                     {{ previewItem.url }}
                   </v-btn>
                 </div>
-                
+
                 <v-divider class="my-3"></v-divider>
-                
+
                 <div class="d-flex justify-space-between text-caption">
                   <v-chip size="x-small" color="primary" variant="outlined">
                     <v-icon start size="x-small">mdi-calendar-start</v-icon>
@@ -415,21 +411,10 @@
     </v-dialog>
 
     <!-- 消息提示 -->
-    <v-snackbar
-      v-model="snackbar.show"
-      :color="snackbar.color"
-      :timeout="3000"
-      location="top"
-    >
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" location="top">
       {{ snackbar.text }}
       <template v-slot:actions>
-        <v-btn
-          variant="text"
-          color="white"
-          @click="snackbar.show = false"
-        >
-          关闭
-        </v-btn>
+        <v-btn variant="text" color="white" @click="snackbar.show = false"> 关闭 </v-btn>
       </template>
     </v-snackbar>
   </v-container>
@@ -444,7 +429,7 @@ export default {
         page: 1,
         limit: 10,
         type: null,
-        status: null
+        status: null,
       },
       // 广告列表
       advertisements: [],
@@ -478,7 +463,7 @@ export default {
         type: 0,
         startTime: null,
         endTime: null,
-        position: 0
+        position: 0,
       },
       // 开始时间字符串
       startTimeStr: '',
@@ -488,11 +473,11 @@ export default {
       headers: [
         { title: 'ID', key: 'id', sortable: false, width: '80px' },
         { title: '标题', key: 'title', sortable: false, width: '200px' },
-        {title: '内容', key: 'content', sortable: false, width: '300px'},
+        { title: '内容', key: 'content', sortable: false, width: '300px' },
         { title: '类型', key: 'type', sortable: false, width: '120px' },
         { title: '访问量', key: 'viewCount', sortable: false, width: '120px' },
         { title: '状态', key: 'status', sortable: false, width: '100px' },
-        { title: '操作', key: 'actions', sortable: false, width: '120px', align: 'center' }
+        { title: '操作', key: 'actions', sortable: false, width: '120px', align: 'center' },
       ],
       // 广告类型选项
       adTypeOptions: [
@@ -500,20 +485,20 @@ export default {
         { title: '首页公告', value: 0 },
         { title: '首页弹窗广告', value: 1 },
         { title: '视频贴片广告', value: 2 },
-        { title: '轮播新闻', value: 3 }
+        { title: '轮播新闻', value: 3 },
       ],
       // 状态选项
       statusOptions: [
         { title: '全部状态', value: null },
         { title: '启用', value: 1 },
-        { title: '禁用', value: 0 }
+        { title: '禁用', value: 0 },
       ],
       // 消息提示
       snackbar: {
         show: false,
         text: '',
-        color: 'success'
-      }
+        color: 'success',
+      },
     }
   },
   created() {
@@ -524,29 +509,29 @@ export default {
     // 获取广告列表
     fetchAdvertisements() {
       this.loading = true
-      
+
       // 构建查询参数
       const params = {
         page: this.queryParams.page,
-        limit: this.queryParams.limit
+        limit: this.queryParams.limit,
       }
-      
+
       // 添加类型过滤
       if (this.queryParams.type !== null) {
         params.type = this.queryParams.type
       }
-      
+
       // 添加状态过滤
       if (this.queryParams.status !== null) {
         params.status = this.queryParams.status
       }
-      
+
       // 构建URL查询参数
       const queryString = Object.entries(params)
         .filter(([_, value]) => value !== null && value !== undefined)
         .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      
+        .join('&')
+
       this.httpGet(`/admin/ads/list?${queryString}`, (json) => {
         if (json.status === 200) {
           this.advertisements = json.data.list
@@ -558,48 +543,48 @@ export default {
         this.loading = false
       })
     },
-    
+
     // 打开对话框
     openDialog(item) {
       this.resetForm()
-      
+
       if (item) {
         // 编辑模式
         this.isEdit = true
         this.currentAd = { ...item }
-        
+
         // 转换时间戳为日期字符串
         if (this.currentAd.startTime) {
           this.startTimeStr = this.formatDateTimeForInput(this.currentAd.startTime)
         }
-        
+
         if (this.currentAd.endTime) {
           this.endTimeStr = this.formatDateTimeForInput(this.currentAd.endTime)
         }
       } else {
         // 新增模式
         this.isEdit = false
-        
+
         // 设置默认值
         const now = new Date()
         const tomorrow = new Date()
         tomorrow.setDate(now.getDate() + 7)
-        
+
         this.startTimeStr = this.formatDateTimeForInput(now.getTime())
         this.endTimeStr = this.formatDateTimeForInput(tomorrow.getTime())
         this.currentAd.startTime = now.getTime()
         this.currentAd.endTime = tomorrow.getTime()
       }
-      
+
       this.dialog = true
     },
-    
+
     // 关闭对话框
     closeDialog() {
       this.dialog = false
       this.resetForm()
     },
-    
+
     // 重置表单
     resetForm() {
       this.currentAd = {
@@ -613,38 +598,38 @@ export default {
         type: 0,
         startTime: null,
         endTime: null,
-        position: 0
+        position: 0,
       }
       this.startTimeStr = ''
       this.endTimeStr = ''
       this.isEdit = false
-      
+
       if (this.$refs.form) {
         this.$refs.form.reset()
       }
     },
-    
+
     // 保存广告
     saveAdvertisement() {
       // 表单验证
       if (!this.$refs.form.validate()) {
         return
       }
-      
+
       // 转换时间
       if (this.startTimeStr) {
         this.currentAd.startTime = new Date(this.startTimeStr).getTime()
       }
-      
+
       if (this.endTimeStr) {
         this.currentAd.endTime = new Date(this.endTimeStr).getTime()
       }
-      
+
       this.saving = true
-      
+
       // 根据是否编辑模式选择接口
       const url = this.isEdit ? '/admin/ads/update' : '/admin/ads/save'
-      
+
       this.httpPost(url, this.currentAd, (json) => {
         if (json.status === 200) {
           this.showMessage(this.isEdit ? '更新成功' : '添加成功', 'success')
@@ -656,18 +641,18 @@ export default {
         this.saving = false
       })
     },
-    
+
     // 切换状态
     toggleStatus(item) {
       const newStatus = item.status === 1 ? 0 : 1
       const statusText = newStatus === 1 ? '启用' : '禁用'
-      
+
       const updateData = {
         id: item.id,
         status: newStatus,
-        type: item.type
+        type: item.type,
       }
-      
+
       this.httpPost('/admin/ads/update', updateData, (json) => {
         if (json.status === 200) {
           this.showMessage(`${statusText}成功`, 'success')
@@ -678,41 +663,41 @@ export default {
         }
       })
     },
-    
+
     // 预览广告
     previewAd(item) {
       this.previewItem = { ...item }
       this.previewDialog = true
     },
-    
+
     // 格式化时间
     formatTime(timestamp) {
       if (!timestamp) return '未设置'
-      
+
       const date = new Date(timestamp)
       return date.toLocaleString('zh-CN', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       })
     },
-    
+
     // 格式化日期时间为输入框格式
     formatDateTimeForInput(timestamp) {
       if (!timestamp) return ''
-      
+
       const date = new Date(timestamp)
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
       const hours = String(date.getHours()).padStart(2, '0')
       const minutes = String(date.getMinutes()).padStart(2, '0')
-      
+
       return `${year}-${month}-${day}T${hours}:${minutes}`
     },
-    
+
     // 获取类型文本
     getTypeText(type) {
       if (type == 0) return '首页公告'
@@ -724,21 +709,26 @@ export default {
     // 获取类型颜色
     getTypeColor(type) {
       switch (type) {
-        case 0: return 'primary'
-        case 1: return 'warning'
-        case 2: return 'error'
-        case 3: return 'success'
-        default: return 'grey'
+        case 0:
+          return 'primary'
+        case 1:
+          return 'warning'
+        case 2:
+          return 'error'
+        case 3:
+          return 'success'
+        default:
+          return 'grey'
       }
     },
-    
+
     // 显示消息
     showMessage(text, color = 'success') {
       this.snackbar.text = text
       this.snackbar.color = color
       this.snackbar.show = true
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -32,8 +32,10 @@
           :headers="headers"
           :items="ossList"
           :loading="loading"
+          mobile-breakpoint="md"
+          :hide-default-header="$vuetify.display.smAndDown"
           hover
-          class="elevation-1"
+          class="elevation-0 rounded-lg"
         >
           <!-- 配置名称列 -->
           <template #[`item.configName`]="{ item }">
@@ -42,9 +44,15 @@
             </v-chip>
           </template>
 
+          
           <!-- 访问风格列 -->
           <template #[`item.pathStyleAccess`]="{ item }">
             {{ item.pathStyleAccess === 0 ? 'Path Style' : 'Virtual Hosted Style' }}
+          </template>
+
+          <!-- 访问风格列 -->
+          <template #[`item.endpoint`]="{ item }" >
+            <span class="title-wrap">{{ item.endpoint }}</span>
           </template>
 
           <!-- 状态列 -->
@@ -413,4 +421,5 @@ export default {
   display: block;
   border-radius: 4px;
 }
+
 </style>

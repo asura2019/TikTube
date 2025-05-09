@@ -78,23 +78,21 @@
         :items-length="totalCount"
         :hide-default-footer="true"
         :loading="loading"
-        class="elevation-1"
+        class="elevation-0 rounded-lg"
+        mobile-breakpoint="md"
+        :hide-default-header="$vuetify.display.smAndDown"
         @update:options="handleTableOptions"
       >
         <!-- 举报类型 -->
         <template #[`item.type`]="{ item }">
-          <v-chip
-            :color="getTypeColor(item.type)"
-            size="small"
-            class="text-white"
-          >
+          <v-chip :color="getTypeColor(item.type)" size="small" class="text-white">
             {{ getTypeText(item.type) }}
           </v-chip>
         </template>
 
         <!-- 举报内容 -->
         <template #[`item.userOpinion`]="{ item }">
-          <div class="text-truncate" style="max-width: 300px;">
+          <div class="text-truncate" style="max-width: 300px">
             {{ item.userOpinion }}
           </div>
           <v-btn
@@ -110,11 +108,7 @@
 
         <!-- 处理状态 -->
         <template #[`item.status`]="{ item }">
-          <v-chip
-            :color="getStatusColor(item.status)"
-            size="small"
-            class="text-white"
-          >
+          <v-chip :color="getStatusColor(item.status)" size="small" class="text-white">
             {{ getStatusText(item.status) }}
           </v-chip>
         </template>
@@ -185,7 +179,12 @@
           <v-icon icon="mdi-flag" class="mr-2"></v-icon>
           举报详情
           <v-spacer></v-spacer>
-          <v-btn icon="mdi-close" variant="text" color="white" @click="detailDialog = false"></v-btn>
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            color="white"
+            @click="detailDialog = false"
+          ></v-btn>
         </v-card-title>
         <v-card-text class="pa-4">
           <v-list>
@@ -201,7 +200,9 @@
               <template v-slot:prepend>
                 <v-icon color="warning" class="mr-2">mdi-flag</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">举报类型</v-list-item-title>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >举报类型</v-list-item-title
+              >
               <v-list-item-subtitle>{{ getTypeText(selectedOpinion.type) }}</v-list-item-subtitle>
             </v-list-item>
 
@@ -209,7 +210,9 @@
               <template v-slot:prepend>
                 <v-icon color="blue" class="mr-2">mdi-target</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">目标ID</v-list-item-title>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >目标ID</v-list-item-title
+              >
               <v-list-item-subtitle>{{ selectedOpinion.targetId || '无' }}</v-list-item-subtitle>
             </v-list-item>
 
@@ -217,7 +220,9 @@
               <template v-slot:prepend>
                 <v-icon color="indigo" class="mr-2">mdi-account</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">举报人ID</v-list-item-title>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >举报人ID</v-list-item-title
+              >
               <v-list-item-subtitle>{{ selectedOpinion.userId || '无' }}</v-list-item-subtitle>
             </v-list-item>
 
@@ -226,8 +231,7 @@
                 <v-icon color="indigo" class="mr-2">mdi-account</v-icon>
               </template>
               <div>
-                {{ selectedOpinion.ip }}   /   {{ selectedOpinion.city }}
-                /  {{ selectedOpinion.ua }}
+                {{ selectedOpinion.ip }} / {{ selectedOpinion.city }} / {{ selectedOpinion.ua }}
               </div>
             </v-list-item>
 
@@ -235,8 +239,12 @@
               <template v-slot:prepend>
                 <v-icon color="blue" class="mr-2">mdi-comment-text-outline</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">举报内容</v-list-item-title>
-              <v-list-item-subtitle class="mt-2 text-body-2 text-pre-wrap">{{ selectedOpinion.userOpinion || '无' }}</v-list-item-subtitle>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >举报内容</v-list-item-title
+              >
+              <v-list-item-subtitle class="mt-2 text-body-2 text-pre-wrap">{{
+                selectedOpinion.userOpinion || '无'
+              }}</v-list-item-subtitle>
             </v-list-item>
 
             <v-list-item>
@@ -248,17 +256,25 @@
 
             <v-list-item>
               <template v-slot:prepend>
-                <v-icon :color="getStatusColor(selectedOpinion.status)" class="mr-2">{{ getStatusIcon(selectedOpinion.status) }}</v-icon>
+                <v-icon :color="getStatusColor(selectedOpinion.status)" class="mr-2">{{
+                  getStatusIcon(selectedOpinion.status)
+                }}</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">处理状态</v-list-item-title>
-              <v-list-item-subtitle>{{ getStatusText(selectedOpinion.status) }}</v-list-item-subtitle>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >处理状态</v-list-item-title
+              >
+              <v-list-item-subtitle>{{
+                getStatusText(selectedOpinion.status)
+              }}</v-list-item-subtitle>
             </v-list-item>
 
             <v-list-item v-if="selectedOpinion.status !== 0">
               <template v-slot:prepend>
                 <v-icon color="green" class="mr-2">mdi-account-check</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">处理人ID</v-list-item-title>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >处理人ID</v-list-item-title
+              >
               <v-list-item-subtitle>{{ selectedOpinion.opinionUser || '无' }}</v-list-item-subtitle>
             </v-list-item>
 
@@ -266,7 +282,9 @@
               <template v-slot:prepend>
                 <v-icon color="purple" class="mr-2">mdi-comment-check</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">处理意见</v-list-item-title>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >处理意见</v-list-item-title
+              >
               <ShowMarkdown :markdown="selectedOpinion.opinion" :anchor="0"></ShowMarkdown>
             </v-list-item>
 
@@ -274,16 +292,24 @@
               <template v-slot:prepend>
                 <v-icon color="grey" class="mr-2">mdi-clock-outline</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">举报时间</v-list-item-title>
-              <v-list-item-subtitle>{{ formatTime(selectedOpinion.createTime) }}</v-list-item-subtitle>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >举报时间</v-list-item-title
+              >
+              <v-list-item-subtitle>{{
+                formatTime(selectedOpinion.createTime)
+              }}</v-list-item-subtitle>
             </v-list-item>
 
             <v-list-item v-if="selectedOpinion.opinionTime">
               <template v-slot:prepend>
                 <v-icon color="grey" class="mr-2">mdi-clock-check-outline</v-icon>
               </template>
-              <v-list-item-title class="text-subtitle-1 font-weight-medium">处理时间</v-list-item-title>
-              <v-list-item-subtitle>{{ formatTime(selectedOpinion.opinionTime) }}</v-list-item-subtitle>
+              <v-list-item-title class="text-subtitle-1 font-weight-medium"
+                >处理时间</v-list-item-title
+              >
+              <v-list-item-subtitle>{{
+                formatTime(selectedOpinion.opinionTime)
+              }}</v-list-item-subtitle>
             </v-list-item>
           </v-list>
         </v-card-text>
@@ -293,13 +319,20 @@
     <!-- 处理对话框 -->
     <v-dialog v-model="handleDialog" width="60vh">
       <v-card>
-        <v-card-title class="text-h5 font-weight-bold py-4 px-6" :class="handleStatus === 1 ? 'bg-success' : 'bg-error'" style="color: white;">
-          <v-icon :icon="handleStatus === 1 ? 'mdi-check-circle' : 'mdi-close-circle'" class="mr-2"></v-icon>
+        <v-card-title
+          class="text-h5 font-weight-bold py-4 px-6"
+          :class="handleStatus === 1 ? 'bg-success' : 'bg-error'"
+          style="color: white"
+        >
+          <v-icon
+            :icon="handleStatus === 1 ? 'mdi-check-circle' : 'mdi-close-circle'"
+            class="mr-2"
+          ></v-icon>
           {{ handleStatus === 1 ? '受理举报' : '不予受理' }}
         </v-card-title>
         <v-card-text class="pa-4 pt-6">
           <!-- 将v-textarea替换为Vditor组件 -->
-          <Vditor 
+          <Vditor
             ref="opinionVditor"
             :idname="`opinion-editor-${selectedOpinion.id || 'new'}`"
             :placeholder="handleStatus === 1 ? '请输入处理意见...' : '请输入不予受理的原因...'"
@@ -311,7 +344,12 @@
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
-          <v-btn color="grey-darken-1" variant="text" @click="handleDialog = false" :disabled="submitting">
+          <v-btn
+            color="grey-darken-1"
+            variant="text"
+            @click="handleDialog = false"
+            :disabled="submitting"
+          >
             取消
           </v-btn>
           <v-btn
@@ -344,7 +382,7 @@ export default {
   name: 'OpinionView',
   components: {
     Vditor,
-    ShowMarkdown
+    ShowMarkdown,
   },
   data() {
     return {
@@ -355,12 +393,12 @@ export default {
       pageSize: 10,
       totalPages: 1,
       totalCount: 0,
-      
+
       // 筛选条件
       filterStatus: '',
       filterType: '',
       filterTarget: '',
-      
+
       // 对话框控制
       detailDialog: false,
       handleDialog: false,
@@ -368,12 +406,12 @@ export default {
       handleStatus: 1,
       handleOpinion: '',
       submitting: false,
-      
+
       // 消息提示
       showMessage: false,
       message: '',
       messageType: 'info',
-      
+
       // 表格列配置
       headers: [
         { title: 'ID', key: 'id', align: 'center', sortable: false, width: '80px' },
@@ -386,34 +424,34 @@ export default {
         { title: 'IP', key: 'ip', align: 'center', sortable: false, width: '160px' },
         { title: 'City', key: 'city', align: 'center', sortable: false, width: '160px' },
         { title: '处理时间', key: 'opinionTime', align: 'center', sortable: false, width: '160px' },
-        { title: '操作', key: 'actions', align: 'center', sortable: false, width: '150px' }
+        { title: '操作', key: 'actions', align: 'center', sortable: false, width: '150px' },
       ],
-      
+
       // 选项数据
       statusOptions: [
         { title: '全部', value: '' },
         { title: '未处理', value: '0' },
         { title: '已处理', value: '1' },
-        { title: '不予受理', value: '2' }
+        { title: '不予受理', value: '2' },
       ],
       typeOptions: [
         { title: '全部', value: '' },
         { title: '稿件举报', value: '0' },
         { title: '评论举报', value: '1' },
         { title: '弹幕举报', value: '2' },
-        { title: '意见反馈', value: '10' }
+        { title: '意见反馈', value: '10' },
       ],
       typeMap: {
         0: { text: '稿件举报', color: 'error' },
         1: { text: '评论举报', color: 'warning' },
         2: { text: '弹幕举报', color: 'orange' },
-        10: { text: '意见反馈', color: 'blue' }
+        10: { text: '意见反馈', color: 'blue' },
       },
       statusMap: {
         0: { text: '未处理', color: 'grey', icon: 'mdi-clock-alert-outline' },
         1: { text: '已处理', color: 'success', icon: 'mdi-check-circle' },
-        2: { text: '不予受理', color: 'error', icon: 'mdi-close-circle' }
-      }
+        2: { text: '不予受理', color: 'error', icon: 'mdi-close-circle' },
+      },
     }
   },
   created() {
@@ -423,26 +461,26 @@ export default {
     // 获取举报列表
     fetchOpinions() {
       this.loading = true
-      
+
       const params = new URLSearchParams()
       params.append('page', this.page)
       params.append('limit', this.pageSize)
-      
+
       if (this.filterStatus) {
         params.append('status', this.filterStatus)
       }
-      
+
       if (this.filterType) {
         params.append('type', this.filterType)
       }
-      
+
       if (this.filterTarget) {
         params.append('target', this.filterTarget)
       }
-      
+
       this.httpGet(`/admin/opinion/list?${params.toString()}`, (json) => {
         this.loading = false
-        
+
         if (json.status === 200) {
           this.opinions = json.data.list || []
           this.totalCount = json.data.totalCount || 0
@@ -452,14 +490,14 @@ export default {
         }
       })
     },
-    
+
     // 处理表格选项变更
     handleTableOptions(options) {
       this.page = options.page
       this.pageSize = options.itemsPerPage
       this.fetchOpinions()
     },
-    
+
     // 重置筛选条件
     resetFilters() {
       this.filterStatus = ''
@@ -468,20 +506,20 @@ export default {
       this.page = 1
       this.fetchOpinions()
     },
-    
+
     // 查看详情
     viewDetail(item) {
       this.selectedOpinion = { ...item }
       this.detailDialog = true
     },
-    
+
     // 处理举报
     handleOpinionFun(item, status) {
       this.selectedOpinion = { ...item }
       this.handleStatus = status
       this.handleOpinion = ''
       this.handleDialog = true
-      
+
       // 在对话框打开后，需要重置编辑器内容
       this.$nextTick(() => {
         if (this.$refs.opinionVditor) {
@@ -489,30 +527,30 @@ export default {
         }
       })
     },
-    
+
     // 处理Vditor输入
     handleVditorInput(content) {
       this.handleOpinion = content
     },
-    
+
     // 提交处理意见
     submitHandleOpinion() {
       if (!this.handleOpinion || this.handleOpinion.trim() === '') {
         this.showErrorMessage('请填写处理意见')
         return
       }
-      
+
       this.submitting = true
-      
+
       const data = {
         id: this.selectedOpinion.id,
         status: this.handleStatus,
-        opinion: this.handleOpinion
+        opinion: this.handleOpinion,
       }
-      
+
       this.httpPost('/admin/opinion/acceptance', data, (json) => {
         this.submitting = false
-        
+
         if (json.status === 200) {
           this.showSuccessMessage(this.handleStatus === 1 ? '举报已受理' : '举报已拒绝')
           this.handleDialog = false
@@ -522,54 +560,58 @@ export default {
         }
       })
     },
-    
+
     // 格式化时间
     formatTime(timestamp) {
       if (!timestamp) return '无'
-      
+
       const date = new Date(timestamp)
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+        date.getDate()
+      ).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(
+        date.getMinutes()
+      ).padStart(2, '0')}`
     },
-    
+
     // 获取类型文本
     getTypeText(type) {
       return this.typeMap[type]?.text || '未知类型'
     },
-    
+
     // 获取类型颜色
     getTypeColor(type) {
       return this.typeMap[type]?.color || 'grey'
     },
-    
+
     // 获取状态文本
     getStatusText(status) {
       return this.statusMap[status]?.text || '未知状态'
     },
-    
+
     // 获取状态颜色
     getStatusColor(status) {
       return this.statusMap[status]?.color || 'grey'
     },
-    
+
     // 获取状态图标
     getStatusIcon(status) {
       return this.statusMap[status]?.icon || 'mdi-help-circle'
     },
-    
+
     // 显示成功消息
     showSuccessMessage(msg) {
       this.message = msg
       this.messageType = 'success'
       this.showMessage = true
     },
-    
+
     // 显示错误消息
     showErrorMessage(msg) {
       this.message = msg
       this.messageType = 'error'
       this.showMessage = true
-    }
-  }
+    },
+  },
 }
 </script>
 

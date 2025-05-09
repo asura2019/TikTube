@@ -39,6 +39,8 @@
           :loading="loading"
           :items-per-page="pageSize"
           class="elevation-0 rounded-lg"
+          mobile-breakpoint="md"
+          :hide-default-header="$vuetify.display.smAndDown"
           hover
         >
           <template #[`item.id`]="{ item }">
@@ -117,7 +119,7 @@
           </template>
 
           <template #[`item.status`]="{ item }">
-            <div >
+            <div>
               <v-chip size="small" color="green" v-if="item.status == 0">正常</v-chip>
               <v-chip size="small" color="red" v-if="item.status == 1">封禁</v-chip>
               <span v-if="item.status == 1">{{ formatDate(item.blockEndTime) }}</span>
@@ -454,7 +456,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
 
     <!-- 新增用户弹窗 -->
     <v-dialog v-model="addUserDialog" max-width="600" transition="dialog-bottom-transition">
@@ -652,12 +653,17 @@
       </v-card>
     </v-dialog>
 
-        <!-- 封禁用户弹窗 -->
+    <!-- 封禁用户弹窗 -->
     <v-dialog v-model="blockUserDialog" max-width="500" transition="dialog-bottom-transition">
       <v-card elevation="4" rounded="lg">
-        <v-toolbar :color="selectedUser && selectedUser.status === 1 ? 'success' : 'error'" density="comfortable">
+        <v-toolbar
+          :color="selectedUser && selectedUser.status === 1 ? 'success' : 'error'"
+          density="comfortable"
+        >
           <v-toolbar-title class="text-h6 text-white d-flex align-center">
-            <v-icon class="mr-2">{{ selectedUser && selectedUser.status === 1 ? 'mdi-account-check' : 'mdi-account-lock' }}</v-icon>
+            <v-icon class="mr-2">{{
+              selectedUser && selectedUser.status === 1 ? 'mdi-account-check' : 'mdi-account-lock'
+            }}</v-icon>
             {{ selectedUser && selectedUser.status === 1 ? '解除封禁' : '封禁用户' }}
           </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -701,9 +707,7 @@
               </span>
               <span v-else>（永久封禁）</span>
             </span>
-            <span v-else>
-              您确定要封禁此用户吗？封禁后该用户将无法登录系统。
-            </span>
+            <span v-else> 您确定要封禁此用户吗？封禁后该用户将无法登录系统。 </span>
           </v-alert>
 
           <v-expand-transition>
@@ -765,14 +769,18 @@
 
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
-          <v-btn color="grey" variant="text" @click="blockUserDialog = false" class="mr-2"> 取消 </v-btn>
+          <v-btn color="grey" variant="text" @click="blockUserDialog = false" class="mr-2">
+            取消
+          </v-btn>
           <v-btn
             :color="selectedUser && selectedUser.status === 1 ? 'success' : 'error'"
             variant="elevated"
             @click="updateUserBlockStatus"
             :loading="blockUserLoading"
             rounded="lg"
-            :prepend-icon="selectedUser && selectedUser.status === 1 ? 'mdi-account-check' : 'mdi-account-lock'"
+            :prepend-icon="
+              selectedUser && selectedUser.status === 1 ? 'mdi-account-check' : 'mdi-account-lock'
+            "
           >
             {{ selectedUser && selectedUser.status === 1 ? '解除封禁' : '确认封禁' }}
           </v-btn>
@@ -1033,22 +1041,22 @@ export default {
     openBlockUserDialog(item) {
       this.selectedUser = item
       this.blockType = 'temporary'
-      
+
       // 设置默认封禁结束时间为一周后
       const oneWeekLater = new Date()
       oneWeekLater.setDate(oneWeekLater.getDate() + 7)
       this.blockEndDate = this.formatDateForPicker(oneWeekLater)
-      
+
       this.blockUserDialog = true
     },
     updateUserBlockStatus() {
       if (!this.selectedUser) return
-      
+
       this.blockUserLoading = true
-      
+
       try {
         let blockEndTime = 0
-        
+
         // 如果是解除封禁
         if (this.selectedUser.status === 1) {
           blockEndTime = 0
@@ -1063,34 +1071,38 @@ export default {
             blockEndTime = endDate.getTime()
           }
         }
-        
+
         // 修改为使用httpPost方法
-        this.httpPost('/admin/user/lock', {
-          id: this.selectedUser.id,
-          status: this.selectedUser.status === 1 ? 0 : 1, // 切换状态
-          blockEndTime: blockEndTime
-        }, (json) => {
-          if (json.data === true) {
-            // 操作成功
-            this.showSnackbar(
-              this.selectedUser.status === 1 ? '用户已解除封禁' : '用户已被封禁',
-              'success'
-            )
-            
-            // 更新用户状态
-            this.selectedUser.status = this.selectedUser.status === 1 ? 0 : 1
-            this.selectedUser.blockEndTime = blockEndTime
-            
-            // 刷新用户列表
-            this.fetchUsers()
-            
-            // 关闭弹窗
-            this.blockUserDialog = false
-          } else {
-            this.showSnackbar('操作失败，请重试', 'error')
+        this.httpPost(
+          '/admin/user/lock',
+          {
+            id: this.selectedUser.id,
+            status: this.selectedUser.status === 1 ? 0 : 1, // 切换状态
+            blockEndTime: blockEndTime,
+          },
+          (json) => {
+            if (json.data === true) {
+              // 操作成功
+              this.showSnackbar(
+                this.selectedUser.status === 1 ? '用户已解除封禁' : '用户已被封禁',
+                'success'
+              )
+
+              // 更新用户状态
+              this.selectedUser.status = this.selectedUser.status === 1 ? 0 : 1
+              this.selectedUser.blockEndTime = blockEndTime
+
+              // 刷新用户列表
+              this.fetchUsers()
+
+              // 关闭弹窗
+              this.blockUserDialog = false
+            } else {
+              this.showSnackbar('操作失败，请重试', 'error')
+            }
+            this.blockUserLoading = false
           }
-          this.blockUserLoading = false
-        })
+        )
       } catch (error) {
         console.error('封禁用户出错:', error)
         this.showSnackbar('操作失败: ' + (error.response?.data?.message || '未知错误'), 'error')

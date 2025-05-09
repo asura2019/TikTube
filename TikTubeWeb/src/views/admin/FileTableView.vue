@@ -73,7 +73,9 @@
           :loading="loading"
           :items-per-page="itemsPerPage"
           hover
-          class="elevation-1"
+          mobile-breakpoint="md"
+          :hide-default-header="$vuetify.display.smAndDown"
+          class="elevation-0 rounded-lg"
         >
           <!-- 文件类型列 -->
           <template #[`item.type`]="{ item }">
@@ -85,11 +87,11 @@
           <!-- 文件状态列 -->
           <template #[`item.status`]="{ item }">
             <v-chip
-              :color="item.status === 0 ? 'warning' : (item.status === 1 ? 'success' : 'error')"
+              :color="item.status === 0 ? 'warning' : item.status === 1 ? 'success' : 'error'"
               text-color="white"
               size="small"
             >
-              {{ item.status === 0 ? '临时文件' : (item.status === 1 ? '已发布' : '删除失败') }}
+              {{ item.status === 0 ? '临时文件' : item.status === 1 ? '已发布' : '删除失败' }}
             </v-chip>
           </template>
 
@@ -279,11 +281,23 @@
                     <strong>状态：</strong>
                     <v-chip
                       size="x-small"
-                      :color="selectedFile.status === 0 ? 'warning' : (selectedFile.status === 1 ? 'success' : 'error')"
+                      :color="
+                        selectedFile.status === 0
+                          ? 'warning'
+                          : selectedFile.status === 1
+                          ? 'success'
+                          : 'error'
+                      "
                       class="ml-2"
                       text-color="white"
                     >
-                      {{ selectedFile.status === 0 ? '临时文件' : (selectedFile.status === 1 ? '已发布' : '删除失败') }}
+                      {{
+                        selectedFile.status === 0
+                          ? '临时文件'
+                          : selectedFile.status === 1
+                          ? '已发布'
+                          : '删除失败'
+                      }}
                     </v-chip>
                   </div>
                 </div>
@@ -310,19 +324,20 @@
       <v-card>
         <v-card-title class="text-h5 bg-primary text-white">
           <v-row class="mt-2 mb-2">
-            
             <v-icon class="mr-2">mdi-pencil</v-icon>
-          修改文件信息
-          <v-spacer></v-spacer>
-          <v-btn icon="mdi-close" variant="text" color="white" @click="editDialog = false"></v-btn>
-           
+            修改文件信息
+            <v-spacer></v-spacer>
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              color="white"
+              @click="editDialog = false"
+            ></v-btn>
           </v-row>
         </v-card-title>
         <v-card-text class="pt-4">
           <v-row>
-            <v-col>
-              谨慎使用，误修改可能造成系统数据异常，部分稿件无法正常访问等问题
-            </v-col>
+            <v-col> 谨慎使用，误修改可能造成系统数据异常，部分稿件无法正常访问等问题 </v-col>
           </v-row>
           <v-form ref="form">
             <v-row>
@@ -349,7 +364,7 @@
               <v-col cols="12" sm="6">
                 <v-select
                   v-model="editedFile.status"
-                  :items="statusOptions.filter(item => item.value !== null)"
+                  :items="statusOptions.filter((item) => item.value !== null)"
                   label="文件状态"
                   variant="outlined"
                   density="comfortable"
@@ -497,7 +512,7 @@ export default {
         fileOriginalName: '',
         fileUrl: '',
         status: 0,
-        articleId: null
+        articleId: null,
       },
 
       // 通知提示
@@ -616,7 +631,7 @@ export default {
         fileOriginalName: item.fileOriginalName,
         fileUrl: item.fileUrl,
         status: item.status,
-        articleId: item.articleId || null
+        articleId: item.articleId || null,
       }
       this.editDialog = true
     },
@@ -629,14 +644,14 @@ export default {
         fileOriginalName: this.editedFile.fileOriginalName,
         fileUrl: this.editedFile.fileUrl,
         status: this.editedFile.status,
-        articleId: this.editedFile.articleId
+        articleId: this.editedFile.articleId,
       }
 
       this.httpPost('/admin/files/update', updateData, (json) => {
         if (json.data == true) {
           // 更新本地数据
           this.loadItems()
-          
+
           this.showSnackbar('文件信息已更新', 'success')
         } else {
           this.showSnackbar('更新文件信息失败', 'error')

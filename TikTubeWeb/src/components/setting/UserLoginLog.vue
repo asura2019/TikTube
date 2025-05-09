@@ -14,11 +14,13 @@
         <v-divider></v-divider>
 
         <v-row justify="center">
-          <div id="top" />
           <v-col cols="12">
             <v-data-table
               :headers="headers"
               :items="logList"
+              mobile-breakpoint="sm"
+              :hide-default-header="$vuetify.display.xs"
+              class="elevation-0 rounded-lg"
               hide-default-footer
               :items-per-page="size"
             >

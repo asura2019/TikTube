@@ -11,6 +11,8 @@ import App from './App.vue'
 import router from './router'
 import HttpFetch from './utils/fetch'
 
+import './assets/css/Main.css'
+
 const app = createApp(App)
 
 app.config.globalProperties.SERVER_API_URL = '/api'

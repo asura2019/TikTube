@@ -18,7 +18,10 @@
           :itemsLength="invitationList.length"
           :items="invitationList"
           :items-per-page="size"
+          mobile-breakpoint="sm"
+          :hide-default-header="$vuetify.display.xs"
           hover
+          class="elevation-0 rounded-lg"
         >
           <template #[`item.createUser`]="{ item }">
             <v-btn

@@ -17,7 +17,10 @@
           :itemsLength="videoList.length"
           :items="videoList"
           :items-per-page="size"
+          mobile-breakpoint="md"
+          :hide-default-header="$vuetify.display.smAndDown"
           hover
+          class="elevation-0 rounded-lg"
         >
           <template #[`item.createTime`]="{ item }">
             <v-chip size="small">

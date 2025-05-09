@@ -22,152 +22,143 @@
         <v-tab value="rejected">未通过</v-tab> -->
       </v-tabs>
 
-      <v-table hover>
-        <thead>
-          <tr>
-            <th class="text-center" width="220">封面</th>
-            <th class="text-left">视频信息</th>
-            <th class="text-center">数据统计</th>
-            <th class="text-center" width="100">时长</th>
-            <th class="text-center" width="120">分区</th>
-            <th class="text-center" width="120">审核状态</th>
-            <th class="text-center" width="120">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in filteredArticles" :key="item.id">
-            <td class="text-center">
-              <v-img
-                :src="item.imgUrl"
-                height="120px"
-                width="213px"
-                class="rounded-lg elevation-1 my-2 mx-auto"
-                :aspect-ratio="16 / 9"
-              />
-            </td>
-            <td>
-              <div class="d-flex flex-column">
-                <div class="text-subtitle-1 font-weight-medium text-truncate">
-                  {{ item.title }}
-                </div>
-                <div class="text-caption text-grey">
-                  {{ formatDate(item.createTime) }}
-                </div>
-                <div class="mt-1 text-caption d-flex align-center">
-                  <v-icon size="small" class="mr-1">mdi-tag-multiple</v-icon>
-                  <span v-for="(tag, index) in parseTags(item.tag)" :key="index" class="mr-1">
-                    <v-chip size="x-small" color="blue" class="mr-1">
-                      {{ tag }}
-                    </v-chip>
-                  </span>
-                </div>
-              </div>
-            </td>
-            <td class="text-center">
-              <div class="d-flex flex-column align-center">
-                <div class="d-flex align-center mb-1">
-                  <v-icon size="small" class="mr-1">mdi-eye</v-icon>
-                  <span class="text-caption">{{ formatNumber(item.viewCount) }} 次观看</span>
-                </div>
-                <div class="d-flex align-center mb-1">
-                  <v-icon size="small" class="mr-1">mdi-thumb-up</v-icon>
-                  <span class="text-caption">{{ formatNumber(item.likeCount) }} 点赞</span>
-                </div>
-                <div class="d-flex align-center mb-1">
-                  <v-icon size="small" class="mr-1">mdi-message</v-icon>
-                  <span class="text-caption">{{ formatNumber(item.commentCount) }} 评论</span>
-                </div>
-                <div class="d-flex align-center">
-                  <v-icon size="small" class="mr-1">mdi-message-text</v-icon>
-                  <span class="text-caption">{{ formatNumber(item.danmakuCount) }} 弹幕</span>
-                </div>
-              </div>
-            </td>
-            <td class="text-center">
-              {{ formatDuration(item.duration) }}
-            </td>
-            <td class="text-center">
-              <div v-if="getCategoryInfo(item.category)" class="d-flex flex-column align-center">
-                <v-chip size="small" color="primary-lighten-1" class="mb-1">
-                  {{ getCategoryInfo(item.category).parent }}
-                </v-chip>
-                <v-chip size="small" variant="outlined" color="primary">
-                  {{ getCategoryInfo(item.category).children }}
-                </v-chip>
-              </div>
-              <div v-else class="text-caption text-grey">未分类</div>
-            </td>
-            <td class="text-center">
-              <v-chip :color="getStatusColor(item.examineStatus)" size="small" class="text-white">
-                {{ getStatusText(item.examineStatus) }}
-              </v-chip>
-              <div
-                v-if="item.examineStatus !== 1 && item.examineStatus !== 0"
-                class="mt-2 text-caption text-red"
-              >
-                {{ item.examineMessage }}
-              </div>
-            </td>
-            <td class="text-center">
-              <div class="d-flex justify-center">
-                <v-tooltip location="top" text="预览">
-                  <template #activator="{ props }">
-                    <v-btn
-                      v-bind="props"
-                      icon
-                      size="small"
-                      color="primary"
-                      class="mr-1"
-                      :href="`/video/${item.id}`"
-                      target="_blank"
-                    >
-                      <v-icon>mdi-eye</v-icon>
-                    </v-btn>
-                  </template>
-                </v-tooltip>
+      <v-data-table
+        :headers="headers"
+        :items="filteredArticles"
+        hide-default-footer
+        class="elevation-1"
+        mobile-breakpoint="md"
+        :hide-default-header="$vuetify.display.smAndDown"
+      >
+        <template #[`item.imgUrl`]="{ item }">
+          <v-img
+            :src="item.imgUrl"
+            height="120px"
+            width="213px"
+            class="rounded-lg elevation-1 my-2 mx-auto"
+            :aspect-ratio="16 / 9"
+          />
+        </template>
 
-                <v-tooltip location="top" text="编辑">
-                  <template #activator="{ props }">
-                    <v-btn
-                      v-bind="props"
-                      icon
-                      size="small"
-                      color="warning"
-                      class="mr-1"
-                      @click="editItem(item)"
-                    >
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
-                  </template>
-                </v-tooltip>
+        <template #[`item.title`]="{ item }">
+          <div class="d-flex flex-column">
+            <div class="text-subtitle-1 font-weight-medium title-wrap">
+              {{ item.title }}
+            </div>
+            <div class="text-caption text-grey">
+              {{ formatDate(item.createTime) }}
+            </div>
+            <div class="mt-1 text-caption d-flex align-center">
+              <v-icon size="small" class="mr-1">mdi-tag-multiple</v-icon>
+              <span v-for="(tag, index) in parseTags(item.tag)" :key="index" class="mr-1">
+                <v-chip size="x-small" color="blue" class="mr-1">
+                  {{ tag }}
+                </v-chip>
+              </span>
+            </div>
+          </div>
+        </template>
 
-                <v-tooltip location="top" text="删除">
-                  <template #activator="{ props }">
-                    <v-btn
-                      v-bind="props"
-                      icon
-                      size="small"
-                      color="error"
-                      @click="confirmDelete(item)"
-                    >
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                  </template>
-                </v-tooltip>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="!articles.length">
-            <td colspan="7">
-              <div class="d-flex flex-column align-center pa-4">
-                <v-icon size="large" color="grey-lighten-1" class="mb-2">mdi-emoticon-sad</v-icon>
-                <span class="text-body-1 text-grey">暂无稿件数据</span>
-                <v-btn color="primary" class="mt-4" @click="getList">刷新数据</v-btn>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
+        <template #[`item.stats`]="{ item }">
+          <div class="d-flex flex-column align-center">
+            <div class="d-flex align-center mb-1">
+              <v-icon size="small" class="mr-1">mdi-eye</v-icon>
+              <span class="text-caption">{{ formatNumber(item.viewCount) }} 次观看</span>
+            </div>
+            <div class="d-flex align-center mb-1">
+              <v-icon size="small" class="mr-1">mdi-thumb-up</v-icon>
+              <span class="text-caption">{{ formatNumber(item.likeCount) }} 点赞</span>
+            </div>
+            <div class="d-flex align-center mb-1">
+              <v-icon size="small" class="mr-1">mdi-message</v-icon>
+              <span class="text-caption">{{ formatNumber(item.commentCount) }} 评论</span>
+            </div>
+            <div class="d-flex align-center">
+              <v-icon size="small" class="mr-1">mdi-message-text</v-icon>
+              <span class="text-caption">{{ formatNumber(item.danmakuCount) }} 弹幕</span>
+            </div>
+          </div>
+        </template>
+
+        <template #[`item.duration`]="{ item }">
+          {{ formatDuration(item.duration) }}
+        </template>
+
+        <template #[`item.category`]="{ item }">
+          <div v-if="getCategoryInfo(item.category)" class="d-flex flex-column align-center">
+            <v-chip size="small" color="primary-lighten-1" class="mb-1">
+              {{ getCategoryInfo(item.category).parent }}
+            </v-chip>
+            <v-chip size="small" variant="outlined" color="primary">
+              {{ getCategoryInfo(item.category).children }}
+            </v-chip>
+          </div>
+          <div v-else class="text-caption text-grey">未分类</div>
+        </template>
+
+        <template #[`item.examineStatus`]="{ item }">
+          <v-chip :color="getStatusColor(item.examineStatus)" size="small" class="text-white">
+            {{ getStatusText(item.examineStatus) }}
+          </v-chip>
+          <div
+            v-if="item.examineStatus !== 1 && item.examineStatus !== 0"
+            class="mt-2 text-caption text-red"
+          >
+            {{ item.examineMessage }}
+          </div>
+        </template>
+
+        <template #[`item.actions`]="{ item }">
+          <div class="d-flex justify-center">
+            <v-tooltip location="top" text="预览">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon
+                  size="small"
+                  color="primary"
+                  class="mr-1"
+                  :href="`/video/${item.id}`"
+                  target="_blank"
+                >
+                  <v-icon>mdi-eye</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+
+            <v-tooltip location="top" text="编辑">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon
+                  size="small"
+                  color="warning"
+                  class="mr-1"
+                  @click="editItem(item)"
+                >
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+
+            <v-tooltip location="top" text="删除">
+              <template #activator="{ props }">
+                <v-btn v-bind="props" icon size="small" color="error" @click="confirmDelete(item)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+          </div>
+        </template>
+
+        <template v-slot:no-data>
+          <div class="d-flex flex-column align-center pa-4">
+            <v-icon size="large" color="grey-lighten-1" class="mb-2">mdi-emoticon-sad</v-icon>
+            <span class="text-body-1 text-grey">暂无稿件数据</span>
+            <v-btn color="primary" class="mt-4" @click="getList">刷新数据</v-btn>
+          </div>
+        </template>
+      </v-data-table>
 
       <div class="text-center pa-4">
         <v-pagination
@@ -214,7 +205,7 @@ export default {
       articles: [],
       loading: false,
       page: 1,
-      pageSize: 10,
+      pageSize: 15,
       totalPages: 1,
       totalCount: 0,
       showMessage: false,
@@ -224,6 +215,56 @@ export default {
       selectedItem: null,
       categoryList: {},
       categoryMap: {},
+      headers: [
+        {
+          title: '封面',
+          align: 'center',
+          key: 'imgUrl',
+          width: '220px',
+          sortable: false,
+        },
+        {
+          title: '视频信息',
+          align: 'start',
+          key: 'title',
+          sortable: false,
+        },
+        {
+          title: '数据统计',
+          align: 'center',
+          key: 'stats',
+          width: '120px',
+          sortable: false,
+        },
+        {
+          title: '时长',
+          align: 'center',
+          key: 'duration',
+          width: '100px',
+          sortable: false,
+        },
+        {
+          title: '分区',
+          align: 'center',
+          key: 'category',
+          width: '120px',
+          sortable: false,
+        },
+        {
+          title: '审核状态',
+          align: 'center',
+          key: 'examineStatus',
+          width: '120px',
+          sortable: false,
+        },
+        {
+          title: '操作',
+          align: 'center',
+          key: 'actions',
+          width: '120px',
+          sortable: false,
+        },
+      ],
     }
   },
   computed: {

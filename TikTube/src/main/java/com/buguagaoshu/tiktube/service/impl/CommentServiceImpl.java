@@ -151,7 +151,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
             // 审核通过后再展示
             this.save(commentEntity);
             countRecorder.recordArticleComment(articleEntity.getId(), 1L);
-                    return commentEntity;
+            return commentEntity;
         } else {
             commentEntity.setStatus(TypeCode.NORMAL);
             // TODO 保存地址信息，包括视频等
@@ -284,17 +284,17 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
             return false;
         }
         comment.setUpdateTime(System.currentTimeMillis());
-        // 正常状态
-        if (comment.getStatus().equals(ArticleStatusEnum.NORMAL.getCode())) {
-            // 删除评论
-            comment.setStatus(ArticleStatusEnum.DELETE.getCode());
-            articleService.addCount("comment_count", comment.getArticleId(), -1L);
-            commentCountController(comment, -1L);
-        } else {
+
+        if (comment.getStatus().equals(ArticleStatusEnum.DELETE.getCode())) {
             // 恢复评论
             comment.setStatus(ArticleStatusEnum.NORMAL.getCode());
             articleService.addCount("comment_count", comment.getArticleId(), 1L);
             commentCountController(comment, 1L);
+        } else {
+            // 删除评论
+            comment.setStatus(ArticleStatusEnum.DELETE.getCode());
+            articleService.addCount("comment_count", comment.getArticleId(), -1L);
+            commentCountController(comment, -1L);
         }
         this.updateById(comment);
 

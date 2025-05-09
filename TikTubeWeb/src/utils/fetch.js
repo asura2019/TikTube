@@ -1,5 +1,5 @@
-import { useUserStore } from '../stores/userStore';
-
+import { useUserStore } from '@/stores/userStore';
+import { useWebInfoStore } from '@/stores/webInfoStore';
 export default {
   install: (app) => {
     // 检查未授权访问的函数
@@ -21,9 +21,11 @@ export default {
     };
     
     app.config.globalProperties.httpGet = function (url, cb) {
+      const webInfoStore = useWebInfoStore().webInfo;
       fetch(`${this.SERVER_API_URL}${url}`, {
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'App-Name': webInfoStore.name,
           //'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
         },
         method: 'GET',
@@ -42,9 +44,11 @@ export default {
     }
 
     app.config.globalProperties.httpPost = function (url, data, cb) {
+      const webInfoStore = useWebInfoStore().webInfo;
       fetch(`${this.SERVER_API_URL}${url}`, {
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          'App-Name': webInfoStore.name
           //'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
         },
         method: 'POST',
@@ -64,8 +68,10 @@ export default {
     }
 
     app.config.globalProperties.uploadFiles = function (url, form, cb) {
+      const webInfoStore = useWebInfoStore().webInfo;
       fetch(`${this.SERVER_API_URL}${url}`, {
         headers: {
+          'App-Name': webInfoStore.name,
           //'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
         },
         method: 'POST',

@@ -199,7 +199,7 @@ export default {
           com.avatarUrl = this.userInfo.userData.avatarUrl
           com.username = this.userInfo.userData.username
           com.userId = this.userInfo.userData.id
-          this.secondList.push(com)
+          this.secondList.unshift(com)
           this.total++
           this.comment.comment = ''
           this.$refs.secondCommentView.setTextValue('')

@@ -36,8 +36,10 @@
           :items-per-page="pageSize"
           :items="articles"
           :loading="loading"
+          mobile-breakpoint="md"
+          :hide-default-header="$vuetify.display.smAndDown"
           hover
-          class="elevation-1"
+          class="elevation-0 rounded-lg"
           hide-default-footer
         >
           <template #[`item.imgUrl`]="{ item }">
@@ -51,7 +53,7 @@
 
           <template #[`item.info`]="{ item }">
             <div class="d-flex flex-column">
-              <div class="text-subtitle-1 font-weight-medium text-truncate">
+              <div class="text-subtitle-1 font-weight-medium title-wrap">
                 {{ item.title }}
               </div>
               <div class="text-caption text-grey">
@@ -164,7 +166,7 @@
                 </template>
               </v-tooltip>
 
-              <v-tooltip :location="top" :text="item.status === 1 ? '恢复' : '删除'">
+              <v-tooltip location="top" :text="item.status === 1 ? '恢复' : '删除'">
                 <template #activator="{ props }">
                   <v-btn
                     v-bind="props"
@@ -555,4 +557,6 @@ export default {
 .v-img:hover {
   transform: scale(1.02);
 }
+
+
 </style>

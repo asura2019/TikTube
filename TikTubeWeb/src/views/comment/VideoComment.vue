@@ -192,7 +192,7 @@ export default {
           com.avatarUrl = this.userInfo.userData.avatarUrl
           com.username = this.userInfo.userData.username
           com.userId = this.userInfo.userData.id
-          this.commentsList.push(com)
+          this.commentsList.unshift(com)
           this.total = this.total + 1
           this.commentData.comment = ''
           this.$refs.commentVditor.setTextValue('')

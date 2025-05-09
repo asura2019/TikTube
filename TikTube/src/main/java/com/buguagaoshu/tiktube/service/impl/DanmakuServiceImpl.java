@@ -163,12 +163,12 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
         }
         FileTableEntity fileTableEntity = fileTableService.getById(danmaku.getVideoId());
         // 切换状态：正常 <-> 删除
-        if (danmaku.getStatus().equals(ArticleStatusEnum.NORMAL.getCode())) {
-            danmaku.setStatus(ArticleStatusEnum.DELETE.getCode());
-            articleService.addDanmakuCount(fileTableEntity.getArticleId(), -1L);
-        } else {
+        if (danmaku.getStatus().equals(ArticleStatusEnum.DELETE.getCode())) {
             danmaku.setStatus(ArticleStatusEnum.NORMAL.getCode());
             articleService.addDanmakuCount(fileTableEntity.getArticleId(), 1L);
+        } else {
+            danmaku.setStatus(ArticleStatusEnum.DELETE.getCode());
+            articleService.addDanmakuCount(fileTableEntity.getArticleId(), -1L);
         }
 
         this.updateById(danmaku);

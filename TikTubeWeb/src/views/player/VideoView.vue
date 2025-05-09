@@ -31,42 +31,55 @@
 
             <!-- 视频交互工具栏 -->
             <v-card-actions class="px-0 py-2">
-              <v-btn
-                prepend-icon="mdi-thumb-up"
-                :variant="isLiked ? 'flat' : 'tonal'"
-                color="primary"
-                @click="likeVideo"
-              >
-                {{ videoData.likeCount }}
-              </v-btn>
-              <v-btn
-                prepend-icon="mdi-thumb-down"
-                :variant="isDisliked ? 'flat' : 'tonal'"
-                color="error"
-                @click="dislikeVideo"
-              >
-                {{ videoData.dislikeCount }}
-              </v-btn>
-              <v-btn prepend-icon="mdi-share" variant="tonal" @click="shareDialog = true">
-                分享
-              </v-btn>
-              <v-btn
-                prepend-icon="mdi-content-save"
-                color="orange-lighten-2"
-                :variant="isFavorited ? 'flat' : 'tonal'"
-                @click="favoritesClick"
-              >
-                <span v-if="isFavorited">取消收藏</span>
-                <span v-else>收藏</span>
-              </v-btn>
-              <v-spacer></v-spacer>
-              <v-chip variant="outlined" color="orange-lighten-2" class="mr-2">
-                {{ videoData.favoriteCount }} 次收藏
-              </v-chip>
-              <v-chip variant="outlined" color="blue" class="mr-2">
-                {{ videoData.viewCount }} 次观看
-              </v-chip>
-              <v-chip variant="outlined"> {{ videoData.danmakuCount }} 弹幕 </v-chip>
+              <div class="d-flex flex-wrap align-center w-100">
+                <div class="d-flex flex-wrap">
+                  <v-btn
+                    prepend-icon="mdi-thumb-up"
+                    :variant="isLiked ? 'flat' : 'tonal'"
+                    color="primary"
+                    @click="likeVideo"
+                    class="ma-1"
+                  >
+                    {{ videoData.likeCount }}
+                  </v-btn>
+                  <v-btn
+                    prepend-icon="mdi-thumb-down"
+                    :variant="isDisliked ? 'flat' : 'tonal'"
+                    color="error"
+                    @click="dislikeVideo"
+                    class="ma-1"
+                  >
+                    {{ videoData.dislikeCount }}
+                  </v-btn>
+                  <v-btn prepend-icon="mdi-share" variant="tonal" @click="shareDialog = true" class="ma-1">
+                    分享
+                  </v-btn>
+                  <v-btn
+                    prepend-icon="mdi-content-save"
+                    color="orange-lighten-2"
+                    :variant="isFavorited ? 'flat' : 'tonal'"
+                    @click="favoritesClick"
+                    class="ma-1"
+                  >
+                    <span v-if="isFavorited">取消收藏</span>
+                    <span v-else>收藏</span>
+                  </v-btn>
+                </div>
+                
+                <v-spacer class="d-none d-sm-block"></v-spacer>
+                
+                <div class="d-flex flex-wrap mt-2 mt-sm-0">
+                  <v-chip variant="outlined" color="orange-lighten-2" class="ma-1">
+                    {{ videoData.favoriteCount }} 次收藏
+                  </v-chip>
+                  <v-chip variant="outlined" color="blue" class="ma-1">
+                    {{ videoData.viewCount }} 次观看
+                  </v-chip>
+                  <v-chip variant="outlined" class="ma-1">
+                    {{ videoData.danmakuCount }} 弹幕
+                  </v-chip>
+                </div>
+              </div>
             </v-card-actions>
 
             <!-- 视频分类信息 -->

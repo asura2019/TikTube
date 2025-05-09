@@ -54,7 +54,7 @@
 
     <!-- 视频卡片 -->
     <v-row v-if="videoList.length > 0">
-      <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="item in videoList" :key="item.id">
+      <v-col cols="12" sm="6" md="4" lg="3" xxl="2" v-for="item in videoList" :key="item.id">
         <VideoCared :video="item" />
       </v-col>
     </v-row>
