@@ -11,20 +11,18 @@
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row class="mb-4">
         <v-col>
-          <v-card variant="text" class="pa-3">
-            <SecondCommentVditor
-              :key="secondCommentKey"
-              ref="secondCommentView"
-              :idname="`second-comment-${father.id}`"
-              :placeholder="commentPlaceholder"
-              @vditor-input="getSecondCommentText"
-            />
-            <div class="d-flex justify-end mt-3">
-              <v-btn color="success" @click="submit">提交评论</v-btn>
-            </div>
-          </v-card>
+          <SecondCommentVditor
+            :key="secondCommentKey"
+            ref="secondCommentView"
+            :idname="`second-comment-${father.id}`"
+            :placeholder="commentPlaceholder"
+            @vditor-input="getSecondCommentText"
+          />
+          <div class="d-flex justify-end mt-3">
+            <v-btn color="success" @click="submit">提交评论</v-btn>
+          </div>
         </v-col>
       </v-row>
 
@@ -56,7 +54,13 @@
       <template v-else>
         <v-row v-for="item in secondList" :key="item.id">
           <v-col>
-            <Card :father="father" :comment="item" :type="type" @comment="getComment" @open="showSecondReportDialogFun"/>
+            <Card
+              :father="father"
+              :comment="item"
+              :type="type"
+              @comment="getComment"
+              @open="showSecondReportDialogFun"
+            />
           </v-col>
         </v-row>
       </template>
@@ -74,14 +78,14 @@
     </v-container>
 
     <v-dialog v-model="showSecondReportDialog" width="50vh">
-        <OpinionCard 
-          :targetId="selectSecondComment.id" 
-          :typeNum="1"
-          :target-title="selectSecondComment.comment"  
-          :isReport="true"
-          @close="showSecondReportDialog = false"
-        />
-      </v-dialog>
+      <OpinionCard
+        :targetId="selectSecondComment.id"
+        :typeNum="1"
+        :target-title="selectSecondComment.comment"
+        :isReport="true"
+        @close="showSecondReportDialog = false"
+      />
+    </v-dialog>
 
     <v-snackbar v-model="showMessage" location="top" :timeout="3000">
       {{ message }}
@@ -103,7 +107,7 @@ export default {
   components: {
     Card,
     SecondCommentVditor,
-    OpinionCard
+    OpinionCard,
   },
   props: {
     father: {

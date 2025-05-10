@@ -1,5 +1,5 @@
 <template>
-  <div :id="idName" />
+  <div :id="idName"/>
 </template>
   
 <script>
@@ -123,6 +123,9 @@ export default {
           //   click() { alert('捐赠地址：https://ld246.com/sponsor') }
           // }
         ],
+        fullscreen: {
+          index: 10000,
+        },
         height: 200,
         // cdn: '/vditor',
         // theme: {
@@ -154,13 +157,13 @@ export default {
         after: () => {
           // 编辑器初始化完成后的回调
           this.editorReady = true
-          
+
           // 如果有待设置的值，设置它
           if (this.pendingValue !== null && this.pendingValue !== undefined) {
             this.contentEditor.setValue(this.pendingValue)
             this.pendingValue = null
           }
-        }
+        },
       })
     },
   },

@@ -176,6 +176,16 @@ const router = createRouter({
           }
         },
         {
+          path: '/admin/runinfo',
+          name: 'RunInfoView',
+          component: () => import('@/views/admin/RunInfoView.vue'),
+          meta: {
+            title: '运行状态',
+            requireAuth: true,
+            requireAdmin: true
+          }
+        },
+        {
           path: '/admin/invitation',
           name: 'invitation',
           component: () => import('@/views/admin/InvitationView.vue'),

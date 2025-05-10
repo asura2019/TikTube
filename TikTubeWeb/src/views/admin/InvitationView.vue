@@ -5,7 +5,7 @@
       <v-toolbar color="red">
         <v-toolbar-title class="text-h5 font-weight-medium">邀请码管理</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn class="mr-2" prepend-icon="mdi-plus" color="white" variant="tonal" @click="create">
+        <v-btn class="mr-4" prepend-icon="mdi-plus" color="white" variant="tonal" @click="create">
           生成邀请码
         </v-btn>
       </v-toolbar>

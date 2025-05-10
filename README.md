@@ -25,19 +25,18 @@ Backend: Spring Boot, MySQL
 
 Frontend: Vue, Vuetifyjs  
 
-Most core features have been implemented, including: 
+All core features have been completed, including:  
 
-- Video upload  
-- Danmaku (commenting overlay)  
+- Video submission  
+- Danmaku (bullet comments)  
 - Video playback  
-- Watch history  
-- Favorites  
-- Comments  
-- Likes  
-- Automatic thumbnail generation  
-- Data management 
-- TOTP 2FA 
-- Configure multiple repositories, supporting S3 API-compatible object storage. Tested with: MinIO, Cloudflare R2.
+- Watch history, favorites, comments, likes  
+- Automatic cover image generation  
+- Data management  
+- Login with TOTP two-factor authentication  
+- Support for multiple storage backends, compatible with S3 API-based object storage (tested with MinIO and Cloudflare R2)  
+- Reporting and content moderation  
+- Announcements, notifications, etc.
 
 Some minor features are still being optimized.  
 
@@ -156,9 +155,9 @@ http://127.0.0.1:5173
 <img src="/img/Capture.png" title="Video Capture" alt="Video Capture">
 
 
-### User Management
+### Admin
 
-<img src="/img/admin_user.png" title="User Management" alt="User Management">
+<img src="/img/admin.png" title="Admin" alt="Admin">
 
 
 ### Question

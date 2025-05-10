@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card class="mx-auto mb-4" elevation="2">
+    <v-card class="mx-auto w-100 mb-4" elevation="2" rounded="lg">
       <v-toolbar color="red-darken-3" dark>
         <v-toolbar-title>网站基本设置</v-toolbar-title>
       </v-toolbar>

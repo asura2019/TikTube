@@ -153,6 +153,9 @@ export default {
           ],
         },
       ],
+      fullscreen: {
+        index: 10000,
+      },
       height: this.maxHeight,
       hint: {
         emojiPath: '/emoji',

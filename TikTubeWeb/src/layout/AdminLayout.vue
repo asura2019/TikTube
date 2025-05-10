@@ -116,6 +116,7 @@ export default {
     webInfo: {},
     items: [
       { icon: 'mdi-home', text: '首页', link: '/admin' },
+      { icon: 'mdi-server', text: '运行状态', link: '/admin/runinfo' },
       { icon: 'mdi-application', text: '邀请码', link: '/admin/invitation' },
       { icon: 'mdi-video', text: '待审核', link: '/admin/examine' },
       { icon:'mdi-flag', text: '举报与意见反馈', link: '/admin/opinion' },

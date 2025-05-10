@@ -6,6 +6,7 @@ import com.buguagaoshu.tiktube.schedule.CountTasks;
 import com.buguagaoshu.tiktube.schedule.DeleteTempFileTasks;
 import com.buguagaoshu.tiktube.service.AdvertisementService;
 import com.buguagaoshu.tiktube.service.ArticleService;
+import com.buguagaoshu.tiktube.service.SystemInfoService;
 import com.buguagaoshu.tiktube.utils.JwtUtil;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
 import io.jsonwebtoken.Claims;
@@ -33,15 +34,25 @@ public class SystemController {
 
     private final AdvertisementService advertisementService;
 
+    private final SystemInfoService systemInfoService;
+
     @Autowired
     public SystemController(ArticleService articleService,
                             DeleteTempFileTasks deleteTempFileTasks,
                             CountTasks countTasks,
-                            AdvertisementService advertisementService) {
+                            AdvertisementService advertisementService,
+                            SystemInfoService systemInfoService) {
         this.articleService = articleService;
         this.deleteTempFileTasks = deleteTempFileTasks;
         this.countTasks = countTasks;
         this.advertisementService = advertisementService;
+        this.systemInfoService = systemInfoService;
+    }
+
+
+    @GetMapping("/admin/system/info")
+    public ResponseDetails getSystemInfo() {
+        return ResponseDetails.ok().put("data", systemInfoService.getSystemRunInfo());
     }
 
 

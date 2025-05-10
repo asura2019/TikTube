@@ -54,7 +54,11 @@ public class FileController {
 
 
     @Autowired
-    public FileController(FileRepository fileRepository, ArticleService articleService, FileTableService fileTableService, ResourceLoader resourceLoader, FileRepositoryInOSS fileRepositoryInOSS) {
+    public FileController(FileRepository fileRepository,
+                          ArticleService articleService,
+                          FileTableService fileTableService,
+                          ResourceLoader resourceLoader,
+                          FileRepositoryInOSS fileRepositoryInOSS) {
         this.fileRepository = fileRepository;
         this.articleService = articleService;
         this.fileTableService = fileTableService;

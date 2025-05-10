@@ -12,13 +12,11 @@
       </v-row>
 
       <v-row>
-        <v-col>
-          <v-card variant="text" class="pa-3 mb-3">
-            <Vditor ref="commentVditor" :height="150" @vditor-input="getCommentText" />
-            <div class="d-flex justify-end mt-3">
-              <v-btn color="primary" @click="submitComment">发表评论</v-btn>
-            </div>
-          </v-card>
+        <v-col class="mb-4">
+          <Vditor ref="commentVditor" :height="150" @vditor-input="getCommentText" />
+          <div class="d-flex justify-end mt-3">
+            <v-btn color="primary" @click="submitComment">发表评论</v-btn>
+          </div>
         </v-col>
       </v-row>
 
@@ -49,7 +47,7 @@
       <template v-else>
         <v-row v-for="item in commentsList" :key="item.id">
           <v-col>
-            <CommentCard :author-id="authorId" :comment="item" @open="showReportDialogFun"/>
+            <CommentCard :author-id="authorId" :comment="item" @open="showReportDialogFun" />
           </v-col>
         </v-row>
       </template>
@@ -69,14 +67,14 @@
     </v-container>
 
     <v-dialog v-model="showReportDialog" width="50vh">
-        <OpinionCard 
-          :targetId="selectComment.id" 
-          :typeNum="1"
-          :target-title="selectComment.comment"  
-          :isReport="true"
-          @close="showReportDialog = false"
-        />
-      </v-dialog>
+      <OpinionCard
+        :targetId="selectComment.id"
+        :typeNum="1"
+        :target-title="selectComment.comment"
+        :isReport="true"
+        @close="showReportDialog = false"
+      />
+    </v-dialog>
 
     <v-snackbar v-model="showMessage" location="top" :timeout="3000">
       {{ message }}
@@ -98,7 +96,7 @@ export default {
   components: {
     Vditor,
     CommentCard,
-    OpinionCard
+    OpinionCard,
   },
   props: {
     count: {

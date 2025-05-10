@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-card class="mb-4">
+    <v-card class="mx-auto w-100 mb-4" elevation="2" rounded="lg">
       <v-card-title class="text-h5 font-weight-bold py-4 px-6 bg-primary text-white">
         <v-icon icon="mdi-flag" class="mr-2"></v-icon>
         举报与意见反馈管理
@@ -70,7 +70,7 @@
     </v-card>
 
     <!-- 数据表格 -->
-    <v-card>
+    <v-card class="mx-auto w-100" elevation="2" rounded="lg">
       <v-data-table-server
         :headers="headers"
         :items="opinions"
@@ -81,7 +81,6 @@
         class="elevation-0 rounded-lg"
         mobile-breakpoint="md"
         :hide-default-header="$vuetify.display.smAndDown"
-        @update:options="handleTableOptions"
       >
         <!-- 举报类型 -->
         <template #[`item.type`]="{ item }">
@@ -242,9 +241,7 @@
               <v-list-item-title class="text-subtitle-1 font-weight-medium"
                 >举报内容</v-list-item-title
               >
-              <v-list-item-subtitle class="mt-2 text-body-2 text-pre-wrap">{{
-                selectedOpinion.userOpinion || '无'
-              }}</v-list-item-subtitle>
+              <ShowMarkdown :markdown="selectedOpinion.userOpinion" :anchor="0"></ShowMarkdown>
             </v-list-item>
 
             <v-list-item>

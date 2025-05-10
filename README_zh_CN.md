@@ -21,19 +21,18 @@
 
 前端 Vue， Vuetifyjs
 
-已经完成大部分功能，比如：
+已经完成所有核心功能，比如：
 
 - 视频投稿
 - 弹幕
 - 视频播放
-- 播放历史
-- 收藏
-- 评论
-- 点赞
+- 播放历史，收藏，评论，点赞
 - 自动生成封面图
-- 数据管理等
+- 数据管理
 - 登录 TOTP 两步验证
-- 配置多存储库，支持兼容 S3 API 的对象存储已测试：MinIO，Cloudflare R2
+- 配置多存储库，支持兼容 S3 API 的对象存储已测试：MinIO，Cloudflare R2- 
+- 举报，内容审核
+- 公告，消息通知等
 
 还剩一些细节功能在逐渐优化中
 
@@ -51,6 +50,8 @@
 测试账号为：test@test.com
 
 密码：test123456test
+
+**另外，你也可以注册自己的账号体验**
 
 **另外，由于该 DEMO 套了 Cloudflare 的 CDN，国内访问速度可能较慢速，请耐心等待！如果有条件可以使用 [CloudflareSpeedTest](https://github.com/XIU2/CloudflareSpeedTest) 配置 Cloudflare 优选 IP，提升访问速度！😂😂😂**
 
@@ -113,9 +114,9 @@ TOTP密钥：JL2ZZV7W6OGXG4JYLCVXZRMDUV4XA3DDLPC3Q72IO6XB4K4EJKW4VW4IHXOMA2DCYU6
 
 <img src="/img/Capture.png" title="视频自动截图" alt="视频自动截图">
 
-### 用户管理
+### ADMIN
 
-<img src="/img/admin_user.png" title="用户管理" alt="用户管理">
+<img src="/img/admin.png" title="ADMIN" alt="ADMIN">
 
 
 

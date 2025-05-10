@@ -175,7 +175,7 @@
         <a href="https://www.buguagaoshu.com" target="_blank"><strong>不挂高数</strong> </a> ©2020 -
         {{ new Date().getFullYear() }}
       </p>
-      <p>version: 1.3.0 2025-05-09</p>
+      <p>version: 1.3.0 2025-05-10</p>
     </div>
   </v-container>
 </template>
