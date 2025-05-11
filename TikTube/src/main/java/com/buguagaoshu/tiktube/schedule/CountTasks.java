@@ -2,7 +2,6 @@ package com.buguagaoshu.tiktube.schedule;
 
 import com.buguagaoshu.tiktube.cache.AdsCountRecorder;
 import com.buguagaoshu.tiktube.cache.CountRecorder;
-import com.buguagaoshu.tiktube.cache.MailCountLimit;
 import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.dao.ArticleDao;
 import com.buguagaoshu.tiktube.dao.CommentDao;
@@ -21,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Slf4j
 public class CountTasks {
-    private final MailCountLimit mailCountLimit;
-
     private final PlayCountRecorder playCountRecorder;
 
     private final CountRecorder countRecorder;
@@ -36,12 +33,11 @@ public class CountTasks {
     private final AdvertisementService advertisementService;
 
     @Autowired
-    public CountTasks(MailCountLimit mailCountLimit, PlayCountRecorder playCountRecorder,
+    public CountTasks(PlayCountRecorder playCountRecorder,
                       CountRecorder countRecorder, ArticleDao articleDao,
                       CommentDao commentDao,
                       AdsCountRecorder adsCountRecorder,
                       AdvertisementService advertisementService) {
-        this.mailCountLimit = mailCountLimit;
         this.playCountRecorder = playCountRecorder;
         this.countRecorder = countRecorder;
         this.articleDao = articleDao;
@@ -104,7 +100,5 @@ public class CountTasks {
         playCountRecorder.clean();
         countRecorder.clear();
 
-        log.info("清除邮件发送次数！");
-        mailCountLimit.clear();
     }
 }

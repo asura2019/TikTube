@@ -18,6 +18,16 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field
+              v-model="setting.baseUrl"
+              label="网站URL"
+              variant="outlined"
+              prepend-inner-icon="mdi-web"
+              hint="设置网站的URL地址,发送邮件模板时需要，格式为 https://example.com"
+              persistent-hint
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
               v-model="setting.logoUrl"
               label="网站Logo URL"
               variant="outlined"

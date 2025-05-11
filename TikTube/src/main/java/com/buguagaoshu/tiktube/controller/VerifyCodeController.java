@@ -1,8 +1,8 @@
 package com.buguagaoshu.tiktube.controller;
 
-import com.buguagaoshu.tiktube.cache.MailCountLimit;
 import com.buguagaoshu.tiktube.entity.UserEntity;
 import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
+import com.buguagaoshu.tiktube.repository.CountLimitRepository;
 import com.buguagaoshu.tiktube.service.UserService;
 import com.buguagaoshu.tiktube.service.VerifyCodeService;
 import com.buguagaoshu.tiktube.utils.IpUtil;
@@ -35,7 +35,7 @@ public class VerifyCodeController {
 
     private final UserService userService;
 
-    private final MailCountLimit mailCountLimit;
+    private final CountLimitRepository countLimitRepository;
 
     private final IpUtil ipUtil;
 
@@ -43,10 +43,12 @@ public class VerifyCodeController {
 
     public VerifyCodeController(VerifyCodeService verifyCodeService,
                                 UserService userService,
-                                MailCountLimit mailCountLimit, IpUtil ipUtil) {
+                                CountLimitRepository countLimitRepository,
+                                IpUtil ipUtil) {
         this.verifyCodeService = verifyCodeService;
         this.userService = userService;
-        this.mailCountLimit = mailCountLimit;
+        this.countLimitRepository = countLimitRepository;
+
         this.ipUtil = ipUtil;
     }
 
@@ -76,12 +78,21 @@ public class VerifyCodeController {
      */
     @PostMapping("/api/verify/send")
     public ResponseDetails send(@RequestBody UserEntity user, HttpServletRequest request) {
-        mailCountLimit.setMailCount(ipUtil.getIpAddr(request), 1);
-        // 一段时间内最多只允许发送6次
-        if (mailCountLimit.getCount(ipUtil.getIpAddr(request)) < 6) {
-            verifyCodeService.send(user.getMail());
-            return ResponseDetails.ok();
+        String ip = ipUtil.getIpAddr(request);
+        verifyCodeService.verify(request.getSession().getId(), user.getVerifyCode());
+        // 同时限制 IP 与 邮箱地址
+        boolean resEmail = countLimitRepository.allowSendEmail(user.getMail());
+        if (!resEmail) {
+            return ResponseDetails.ok(ReturnCodeEnum.COUNT_LIMIT);
         }
-        return ResponseDetails.ok(ReturnCodeEnum.NO_POWER);
+        boolean resIP = countLimitRepository.allowSendEmail(ip);
+        if (!resIP) {
+            return ResponseDetails.ok(ReturnCodeEnum.COUNT_LIMIT);
+        }
+        countLimitRepository.recordEmailSent(user.getMail());
+        countLimitRepository.recordEmailSent(ip);
+
+        verifyCodeService.send(user.getMail());
+        return ResponseDetails.ok();
     }
 }

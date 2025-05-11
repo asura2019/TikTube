@@ -59,33 +59,6 @@
       prepend-inner-icon="mdi-ticket-outline"
       clearable
     />
-    
-    <!-- 邮箱验证码 -->
-    <v-row v-if="webInfo.openEmail == 1" class="mb-4">
-      <v-col cols="8">
-        <v-text-field
-          v-model="registerUser.emailCode"
-          label="邮箱验证码"
-          placeholder="请输入邮箱验证码"
-          :rules="[(v) => !!v || '邮箱验证码不能为空']"
-          density="comfortable"
-          prepend-inner-icon="mdi-email-check-outline"
-          clearable
-        />
-      </v-col>
-      <v-col cols="4">
-        <v-btn 
-          color="primary" 
-          :disabled="countDown > 0" 
-          @click="sendEmailVerify"
-          class="mt-2"
-          block
-        >
-          {{ countDown > 0 ? `${countDown}秒` : '发送验证码' }}
-        </v-btn>
-      </v-col>
-    </v-row>
-
     <div class="d-flex align-center mb-6">
       <v-img
         :src="verifyImageUrl"
@@ -105,6 +78,32 @@
         clearable
       />
     </div>
+
+    <!-- 邮箱验证码 -->
+    <v-row v-if="webInfo.openEmail == 1" class="mb-4">
+      <v-col cols="8">
+        <v-text-field
+          v-model="registerUser.emailCode"
+          label="邮箱验证码"
+          placeholder="请输入邮箱验证码"
+          :rules="[(v) => !!v || '邮箱验证码不能为空']"
+          density="comfortable"
+          prepend-inner-icon="mdi-email-check-outline"
+          clearable
+        />
+      </v-col>
+      <v-col cols="4">
+        <v-btn
+          color="primary"
+          :disabled="countDown > 0"
+          @click="sendEmailVerify"
+          class="mt-2"
+          block
+        >
+          {{ countDown > 0 ? `${countDown}秒` : '发送验证码' }}
+        </v-btn>
+      </v-col>
+    </v-row>
 
     <div class="text-center">
       <v-btn
@@ -140,7 +139,7 @@ export default {
         invitationCode: '',
         verifyCode: '',
         username: '',
-        emailCode: ''
+        emailCode: '',
       },
       snackbar: false,
       color: 'success',
@@ -186,11 +185,8 @@ export default {
         this.snackbar = true
         return
       }
-      
-      if (
-        this.webInfo.openEmail === 1 &&
-        this.registerUser.emailCode === ''
-      ) {
+
+      if (this.webInfo.openEmail === 1 && this.registerUser.emailCode === '') {
         this.message = '邮箱验证码不能为空'
         this.color = 'error'
         this.snackbar = true
@@ -220,27 +216,39 @@ export default {
     },
     sendEmailVerify() {
       // 验证邮箱格式
-      var re = /^(([^()[\]\\.,;:\s@]+(\.[^()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      var re =
+        /^(([^()[\]\\.,;:\s@]+(\.[^()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       if (!re.test(this.registerUser.mail)) {
         this.message = '邮箱格式错误'
         this.color = 'error'
         this.snackbar = true
         return
       }
-      
+
+      if (this.registerUser.verifyCode == '' || this.registerUser.verifyCode.length < 4) {
+        this.message = '验证码不能为空且不能小于4个字符'
+        this.color = 'error'
+        this.snackbar = true
+        return
+      }
+
       // 发送邮箱验证码
-      this.$parent.httpPost('/verify/send', {mail: this.registerUser.mail}, (json) => {
-        if (json.status === 200) {
-          this.message = '邮箱验证码发送成功，请查收'
-          this.color = 'success'
-          this.snackbar = true
-          this.startCountDown()
-        } else {
-          this.message = json.message || '邮箱验证码发送失败'
-          this.color = 'error'
-          this.snackbar = true
+      this.$parent.httpPost(
+        '/verify/send',
+        { mail: this.registerUser.mail, verifyCode: this.registerUser.verifyCode },
+        (json) => {
+          if (json.status === 200) {
+            this.message = '邮箱验证码发送成功，请查收'
+            this.color = 'success'
+            this.snackbar = true
+            this.startCountDown()
+          } else {
+            this.message = json.message || '邮箱验证码发送失败'
+            this.color = 'error'
+            this.snackbar = true
+          }
         }
-      })
+      )
     },
     startCountDown() {
       // 设置倒计时60秒

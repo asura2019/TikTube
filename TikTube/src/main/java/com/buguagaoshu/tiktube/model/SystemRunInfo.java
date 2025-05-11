@@ -6,6 +6,7 @@ import lombok.Data;
 /**
  * @author Pu Zhiwei {@literal puzhiweipuzhiwei@foxmail.com}
  * @create 2025-05-09
+ * TODO 写入数据库保存
  */
 @Data
 public class SystemRunInfo {

@@ -30,7 +30,7 @@ public class SendMessageServiceImpl implements SendMessageService {
         log.info("Send to key:[{}] with message:[{}]", key, message);
         // 发送邮箱验证码
         if (webSettingCache.getWebConfigData().getOpenEmail().equals(1)) {
-            mailService.sendMail(
+            boolean res = mailService.sendMail(
                     key,
                     webSettingCache.getWebConfigData().getName(),
                     mailService.verificationCodeInfo(message)

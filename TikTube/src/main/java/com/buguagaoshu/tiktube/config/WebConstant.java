@@ -25,7 +25,7 @@ public class WebConstant {
      * Keys.hmacShaKeyFor("你指定的密钥字节数组仅有 144 位，而对于任何 JWT HMAC - SHA 算法来说，这是不够安全的。根据 JWT JWA 规范（RFC 7518，第 3.2 节），".getBytes(StandardCharsets.UTF_8));
      * Jwts.SIG.HS512.key().build()
      * */
-    // public final static SecretKey SECRET_KEY = Keys.hmacShaKeyFor("你指定的密钥字节数组仅有 144 位，而对于任何 JWT HMAC - SHA 算法来说，这是不够安全的。根据 JWT JWA 规范（RFC 7518，第 3.2 节），".getBytes(StandardCharsets.UTF_8));
+    //public final static SecretKey SECRET_KEY = Keys.hmacShaKeyFor("你指定的密钥字节数组仅有 144 位，而对于任何 JWT HMAC - SHA 算法来说，这是不够安全的。根据 JWT JWA 规范（RFC 7518，第 3.2 节），".getBytes(StandardCharsets.UTF_8));
     public final static SecretKey SECRET_KEY = Jwts.SIG.HS512.key().build();
 
     /**
@@ -76,4 +76,15 @@ public class WebConstant {
      * OSS 对象存储访问链接有效期
      * */
     public final static int OSS_DAY_TIME = 1;
+
+    /**
+     * 账号密码错误最大次数
+     * */
+    public final static int MAX_ATTEMPTS = 3;
+
+
+    /**
+     * 锁定时间（分钟）
+     * */
+    public static final long LOCK_DURATION = 60;
 }

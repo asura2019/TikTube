@@ -22,6 +22,8 @@ public class WebConfigData {
      */
     private String name;
 
+    private String baseUrl = "";
+
     /**
      * 是否开启非vip每日观看次数限制 [0 关闭， 1 开启]
      * TODO 待实现

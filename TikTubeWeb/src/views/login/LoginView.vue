@@ -103,6 +103,25 @@
               prepend-inner-icon="mdi-email-outline"
               clearable
             />
+            <div class="d-flex align-center mb-6">
+              <v-img
+                :src="verifyImageUrl"
+                alt="验证码"
+                title="点击刷新"
+                style="cursor: pointer; max-width: 150px; height: 40px; border-radius: 4px"
+                @click="getVerifyImage"
+                class="me-3"
+              />
+              <v-text-field
+                v-model="forgotPassword.verifyCode"
+                label="验证码"
+                placeholder="验证码"
+                :rules="[(v) => !!v || '验证码不能为空']"
+                density="comfortable"
+                prepend-inner-icon="mdi-text-box-check-outline"
+                clearable
+              />
+            </div>
 
             <!-- 邮箱验证码 -->
             <v-row class="mb-4">
@@ -160,25 +179,7 @@
               clearable
             />
 
-            <div class="d-flex align-center mb-6">
-              <v-img
-                :src="verifyImageUrl"
-                alt="验证码"
-                title="点击刷新"
-                style="cursor: pointer; max-width: 150px; height: 40px; border-radius: 4px"
-                @click="getVerifyImage"
-                class="me-3"
-              />
-              <v-text-field
-                v-model="forgotPassword.verifyCode"
-                label="验证码"
-                placeholder="验证码"
-                :rules="[(v) => !!v || '验证码不能为空']"
-                density="comfortable"
-                prepend-inner-icon="mdi-text-box-check-outline"
-                clearable
-              />
-            </div>
+
           </v-form>
         </v-card-text>
 
@@ -367,8 +368,15 @@ export default {
         return
       }
 
+      if (this.forgotPassword.verifyCode == '' || this.forgotPassword.verifyCode.length < 4) {
+        this.message = '验证码不能为空且不能小于4个字符'
+        this.color = 'error'
+        this.snackbar = true
+        return
+      }
+
       // 发送邮箱验证码
-      this.httpPost('/verify/send', { mail: this.forgotPassword.mail }, (json) => {
+      this.httpPost('/verify/send', { mail: this.forgotPassword.mail, verifyCode: this.forgotPassword.verifyCode }, (json) => {
         if (json.status === 200) {
           this.message = '邮箱验证码发送成功，请查收'
           this.showMessage = true

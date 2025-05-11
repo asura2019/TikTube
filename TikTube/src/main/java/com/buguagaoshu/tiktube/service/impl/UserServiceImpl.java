@@ -9,6 +9,7 @@ import com.buguagaoshu.tiktube.entity.UserRoleEntity;
 import com.buguagaoshu.tiktube.enums.*;
 import com.buguagaoshu.tiktube.exception.NeedToCheckEmailException;
 import com.buguagaoshu.tiktube.exception.UserNotFoundException;
+import com.buguagaoshu.tiktube.repository.CountLimitRepository;
 import com.buguagaoshu.tiktube.service.*;
 import com.buguagaoshu.tiktube.utils.*;
 import com.buguagaoshu.tiktube.vo.*;
@@ -69,6 +70,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
     private final WebSettingCache webSettingCache;
 
+    private final CountLimitRepository countLimitRepository;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -81,7 +84,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
                            InvitationCodeService invitationCodeService,
                            FileTableService fileTableService,
                            TwoFactorAuthenticationServer twoFactorAuthenticationServer,
-                           WebSettingCache webSettingCache) {
+                           WebSettingCache webSettingCache,
+                           CountLimitRepository countLimitRepository) {
         this.userRoleService = userRoleService;
         this.verifyCodeService = verifyCodeService;
         this.loginLogService = loginLogService;
@@ -89,6 +93,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         this.fileTableService = fileTableService;
         this.twoFactorAuthenticationServer = twoFactorAuthenticationServer;
         this.webSettingCache = webSettingCache;
+        this.countLimitRepository = countLimitRepository;
     }
 
 
@@ -152,6 +157,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             throw new UserNotFoundException("请检查用户名或密码!");
         }
 
+        boolean b = countLimitRepository.allowLogin(userEntity.getMail());
+        if (!b) {
+            throw new UserNotFoundException("错误次数太多了，请一个小时后再试或重置密码！");
+        }
+
         if (PasswordUtil.judgePassword(loginDetails.getPassword(), userEntity.getPassword())) {
             // 如果处于被锁定状态
             if (userEntity.getStatus().equals(TypeCode.USER_LOCK)) {
@@ -193,6 +203,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
                 }
             }
         } else {
+            // 错误次数记录
+            countLimitRepository.recordFailedAttempt(userEntity.getMail());
             throw new UserNotFoundException("请检查用户名或密码!");
         }
 
@@ -212,6 +224,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
                 if (code) {
                     return loginSuccess(user1, totpLoginKey.getLoginDetails(), response, request);
                 } else {
+                    // 错误次数记录
+                    countLimitRepository.recordFailedAttempt(user1.getMail());
                     throw new UserNotFoundException("验证码错误!");
                 }
 
@@ -261,14 +275,19 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         // 写入登录日志
         loginLogService.saveLoginLog(userEntity, request);
         user.setLoginStatus(true);
+        // 重置登录次数
+        countLimitRepository.recordSuccess(user.getMail());
         return user;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReturnCodeEnum register(UserEntity userEntity, HttpServletRequest request) {
-        // 验证码校验
-        verifyCodeService.verify(request.getSession().getId(), userEntity.getVerifyCode());
+        // 验证码校验在关闭邮箱验证码时启用，启用邮箱验证码后以邮箱验证码为主
+        if (webSettingCache.getWebConfigData().getOpenEmail().equals(0)) {
+            verifyCodeService.verify(request.getSession().getId(), userEntity.getVerifyCode());
+        }
+
         if (userEntity.getPassword().length() < 6) {
             return ReturnCodeEnum.PASSWORD_TO_SHORT;
         }
@@ -618,11 +637,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 
     @Override
     public boolean forgotPassword(UserEntity user, String sessionId) {
-        verifyCodeService.verify(sessionId, user.getVerifyCode());
         verifyCodeService.verify(user.getMail(), user.getEmailCode());
         UserEntity userEntity = findUserByEmail(user.getMail());
         userEntity.setPassword(PasswordUtil.encode(user.getPassword()));
         this.updateById(userEntity);
+        countLimitRepository.recordSuccess(userEntity.getMail());
         return true;
     }
 
