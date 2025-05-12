@@ -116,7 +116,7 @@ export default {
   },
   methods: {
     save() {
-      if (this.userInfo.name.length > 50) {
+      if (this.userInfo.username.length > 50) {
         this.message = '用户名字数不能超过50字'
         this.showMessage = true
         return
