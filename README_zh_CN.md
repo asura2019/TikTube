@@ -58,9 +58,6 @@
 PS：使用 CloudflareSpeedTest 修改 HOST，除了要改 tiktube.buguagaoshu.com 的HOST 外，还需要修改 img.buguagaoshu.com 的 HOST，因为线上版本的 TikTube 文件视频文件都存储在 Cloudflare 的 R2 对象存储上
 
 
-<img src="/img/otp.png" title="otp" alt="otp">
-
-
 ## 视频演示
 
 
