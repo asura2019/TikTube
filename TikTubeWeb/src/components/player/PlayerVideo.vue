@@ -161,7 +161,7 @@ export default {
                   if (json.code == 0) {
                     return true
                   } else if (json.code == -1) {
-                    alert('弹幕发送成功，待管理员审核通过后其他观众即可看见你的弹幕！')
+                    console.log('弹幕发送成功，待管理员审核通过后其他观众即可看见你的弹幕！')
                     return true
                   } else {
                     return false
@@ -320,7 +320,7 @@ export default {
                   if (json.code == 0) {
                     return true
                   } else if (json.code == -1) {
-                    alert('弹幕发送成功，待管理员审核通过后其他观众即可看见你的弹幕！')
+                    console.log('弹幕发送成功，待管理员审核通过后其他观众即可看见你的弹幕！')
                     return true
                   } else {
                     return false

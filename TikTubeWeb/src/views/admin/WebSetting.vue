@@ -72,8 +72,8 @@
           <v-col cols="12" md="6">
             <v-switch
               v-model="setting.openInvitationRegister"
-              :false-value="0"
-              :true-value="1"
+              :false-value="false"
+              :true-value="true"
               color="red-darken-3"
               label="开启邀请码注册"
               hint="开启后用户注册需要邀请码"
@@ -83,8 +83,8 @@
           <v-col cols="12" md="6">
             <v-switch
               v-model="setting.openNoVipLimit"
-              :false-value="0"
-              :true-value="1"
+              :false-value="false"
+              :true-value="true"
               color="red-darken-3"
               label="非VIP用户观看次数限制"
               hint="开启后非VIP用户每日观看次数受限（TODO：该功能因实现不稳定，暂时移除，该配置暂不生效）"
@@ -105,8 +105,8 @@
           <v-col cols="12" md="6" v-if="setting.openNoVipLimit === 1">
             <v-switch
               v-model="setting.openUploadVideoAddViewCount"
-              :false-value="0"
-              :true-value="1"
+              :false-value="false"
+              :true-value="true"
               color="red-darken-3"
               label="上传视频增加观看次数"
               hint="开启后用户上传视频可增加每日观看次数"
@@ -116,8 +116,8 @@
           <v-col cols="12" md="6">
             <v-switch
               v-model="setting.openExamine"
-              :false-value="0"
-              :true-value="1"
+              :false-value="false"
+              :true-value="true"
               color="red-darken-3"
               label="开启内容审核"
               hint="开启后视频、文章、图片需要审核才能发布"
@@ -127,8 +127,8 @@
           <v-col cols="12" md="6">
             <v-switch
               v-model="setting.openCommentExam"
-              :false-value="0"
-              :true-value="1"
+              :false-value="false"
+              :true-value="true"
               color="red-darken-3"
               label="开启评论审核"
               hint="开启后用户提交的评论需要审核才能发布"
@@ -138,8 +138,8 @@
           <v-col cols="12" md="6">
             <v-switch
               v-model="setting.openDanmakuExam"
-              :false-value="0"
-              :true-value="1"
+              :false-value="false"
+              :true-value="true"
               color="red-darken-3"
               label="开启弹幕审核"
               hint="开启后用户发布的弹幕需要审核才能发布"
@@ -159,8 +159,8 @@
           <v-col cols="12" md="6">
             <v-switch
               v-model="setting.openEmail"
-              :false-value="0"
-              :true-value="1"
+              :false-value="false"
+              :true-value="true"
               color="red-darken-3"
               label="启用邮箱功能"
               hint="开启后系统将验证用户注册邮箱，并可通过邮箱找回密码，使用邮箱发布部分消息！"
@@ -169,7 +169,7 @@
           </v-col>
         </v-row>
         <v-expand-transition>
-          <div v-if="setting.openEmail === 1">
+          <div v-if="setting.openEmail">
             <v-divider class="my-4"></v-divider>
             <v-row>
               <v-col cols="12" md="6">
@@ -230,6 +230,78 @@
       </v-card-text>
     </v-card>
 
+        <!-- Redis配置卡片 -->
+        <!-- <v-card class="mx-auto mb-4" elevation="2">
+      <v-toolbar color="red-darken-3" dark>
+        <v-toolbar-title>Redis设置</v-toolbar-title>
+      </v-toolbar>
+      <v-card-text>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-switch
+              v-model="setting.openRedis"
+              :false-value="false"
+              :true-value="true"
+              color="red-darken-3"
+              label="启用Redis功能"
+              hint="开启后系统将使用Redis进行缓存，提高系统性能"
+              persistent-hint
+            />
+          </v-col>
+        </v-row>
+        <v-expand-transition>
+          <div v-if="setting.openRedis">
+            <v-divider class="my-4"></v-divider>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="setting.redisConfig.host"
+                  label="Redis服务器地址"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-server"
+                  hint="如: localhost, 127.0.0.1"
+                  persistent-hint
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="setting.redisConfig.port"
+                  label="Redis服务器端口"
+                  type="number"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-numeric"
+                  hint="如: 6379"
+                  persistent-hint
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="setting.redisConfig.password"
+                  label="Redis密码"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-lock"
+                  hint="Redis服务器密码，如果没有可以留空"
+                  persistent-hint
+                  type="password"
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="setting.redisConfig.database"
+                  label="Redis数据库索引"
+                  type="number"
+                  variant="outlined"
+                  prepend-inner-icon="mdi-database"
+                  hint="Redis数据库索引，默认为0"
+                  persistent-hint
+                />
+              </v-col>
+            </v-row>
+          </div>
+        </v-expand-transition>
+      </v-card-text>
+    </v-card> -->
+
     <v-card-actions class="justify-center mb-6">
       <v-btn
         color="red-darken-3"
@@ -260,7 +332,8 @@ export default {
   data() {
     return {
       setting: {
-        mailConfig: {}
+        mailConfig: {},
+        //redisConfig: {} // 添加redisConfig初始化
       },
       loading: false,
       snackbar: false,
@@ -280,9 +353,10 @@ export default {
         if (!this.setting.mailConfig) {
           this.setting.mailConfig = {}
         }
-        this.loading = false
-      }, (error) => {
-        this.showError('获取设置信息失败')
+        // 确保redisConfig存在
+        if (!this.setting.redisConfig) {
+          this.setting.redisConfig = {}
+        }
         this.loading = false
       })
     },
@@ -291,9 +365,7 @@ export default {
       this.httpPost('/admin/setting/save', this.setting, (json) => {
         this.showSuccess('设置保存成功')
         this.loading = false
-      }, (error) => {
-        this.showError('设置保存失败')
-        this.loading = false
+        console.log(json)
       })
     },
     showSuccess(message) {

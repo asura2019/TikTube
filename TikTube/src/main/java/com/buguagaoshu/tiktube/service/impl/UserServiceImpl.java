@@ -284,7 +284,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     @Transactional(rollbackFor = Exception.class)
     public ReturnCodeEnum register(UserEntity userEntity, HttpServletRequest request) {
         // 验证码校验在关闭邮箱验证码时启用，启用邮箱验证码后以邮箱验证码为主
-        if (webSettingCache.getWebConfigData().getOpenEmail().equals(0)) {
+        if (!webSettingCache.getWebConfigData().getOpenEmail()) {
             verifyCodeService.verify(request.getSession().getId(), userEntity.getVerifyCode());
         }
 
@@ -317,7 +317,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         } else {
             // 邀请码校验
             InvitationCodeEntity check = invitationCodeService.check(userEntity.getInvitationCode());
-            if (webSettingCache.getWebConfigData().getOpenEmail().equals(1)) {
+            if (webSettingCache.getWebConfigData().getOpenEmail()) {
                 verifyCodeService.verify(userEntity.getMail(), userEntity.getEmailCode());
             }
 

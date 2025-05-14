@@ -1,7 +1,9 @@
 package com.buguagaoshu.tiktube;
 
 
+import com.buguagaoshu.tiktube.cache.AdsCountRecorder;
 import com.buguagaoshu.tiktube.config.WebConstant;
+import com.buguagaoshu.tiktube.repository.RedisRepository;
 import com.buguagaoshu.tiktube.repository.impl.FileRepositoryInOSS;
 import com.buguagaoshu.tiktube.service.*;
 import com.buguagaoshu.tiktube.utils.AesUtil;
@@ -15,7 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 class TikTubeApplicationTests {
 
     @Autowired
-    private FileRepositoryInOSS fileRepositoryInOSS;
+    private AdsCountRecorder adsCountRecorder;
+
+    @Autowired
+    private RedisRepository redisRepository;
 
     @Test
     void contextLoads() {

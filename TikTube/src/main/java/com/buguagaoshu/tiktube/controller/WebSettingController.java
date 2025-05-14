@@ -6,6 +6,7 @@ import com.buguagaoshu.tiktube.config.WebConfig;
 import com.buguagaoshu.tiktube.config.WebConfigData;
 import com.buguagaoshu.tiktube.entity.OSSConfigEntity;
 import com.buguagaoshu.tiktube.entity.WebSettingEntity;
+import com.buguagaoshu.tiktube.repository.RedisRepository;
 import com.buguagaoshu.tiktube.repository.impl.FileRepositoryInOSS;
 import com.buguagaoshu.tiktube.service.WebConfigService;
 import com.buguagaoshu.tiktube.service.WebSettingService;
@@ -35,6 +36,7 @@ public class WebSettingController {
     private final OssConfigService ossConfigService;
 
     private final FileRepositoryInOSS repositoryInOSS;
+
 
     private final IpUtil ipUtil;
 

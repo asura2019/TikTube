@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
  * create          2019-11-26 17:07
  * 在内存中保存需要验证的验证码
  */
-@Repository
+@Repository("sessionVerifyCodeRepositoryImpl")
 public class SessionVerifyCodeRepositoryImpl implements VerifyCodeRepository {
 
     private static final int DEFAULT_VERIFY_CODE_LENGTH = 4;

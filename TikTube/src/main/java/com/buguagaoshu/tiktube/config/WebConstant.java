@@ -25,8 +25,8 @@ public class WebConstant {
      * Keys.hmacShaKeyFor("你指定的密钥字节数组仅有 144 位，而对于任何 JWT HMAC - SHA 算法来说，这是不够安全的。根据 JWT JWA 规范（RFC 7518，第 3.2 节），".getBytes(StandardCharsets.UTF_8));
      * Jwts.SIG.HS512.key().build()
      * */
-    public final static SecretKey SECRET_KEY = Keys.hmacShaKeyFor("你指定的密钥字节数组仅有 144 位，而对于任何 JWT HMAC - SHA 算法来说，这是不够安全的。根据 JWT JWA 规范（RFC 7518，第 3.2 节），".getBytes(StandardCharsets.UTF_8));
-    //public final static SecretKey SECRET_KEY = Jwts.SIG.HS512.key().build();
+    //public final static SecretKey SECRET_KEY = Keys.hmacShaKeyFor("你指定的密钥字节数组仅有 144 位，而对于任何 JWT HMAC - SHA 算法来说，这是不够安全的。根据 JWT JWA 规范（RFC 7518，第 3.2 节），".getBytes(StandardCharsets.UTF_8));
+    public final static SecretKey SECRET_KEY = Jwts.SIG.HS512.key().build();
 
     /**
      * AES 加密密钥

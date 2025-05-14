@@ -480,7 +480,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         }
         
         // 设置审核状态
-        if (webSettingCache.getWebConfigData().getOpenExamine().equals(1)) {
+        if (webSettingCache.getWebConfigData().getOpenExamine()) {
             article.setExamineStatus(ExamineTypeEnum.PENDING_REVIEW.getCode());
         } else {
             article.setExamineStatus(ExamineTypeEnum.SUCCESS.getCode());

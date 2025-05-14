@@ -49,7 +49,7 @@
     />
 
     <v-text-field
-      v-if="webInfo.openInvitationRegister == 1"
+      v-if="webInfo.openInvitationRegister"
       v-model="registerUser.invitationCode"
       label="邀请码"
       placeholder="邀请码"
@@ -80,7 +80,7 @@
     </div>
 
     <!-- 邮箱验证码 -->
-    <v-row v-if="webInfo.openEmail == 1" class="mb-4">
+    <v-row v-if="webInfo.openEmail" class="mb-4">
       <v-col cols="8">
         <v-text-field
           v-model="registerUser.emailCode"

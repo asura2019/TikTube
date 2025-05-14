@@ -13,10 +13,9 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * @author Pu Zhiwei {@literal puzhiweipuzhiwei@foxmail.com}
  * @create 2025-05-11
- * TODO 先采用内存，后期增加动态配置，可以在设置中选择 Redis 或者内存
  */
-@Repository
-public class CountLimitRepositoryInMemory implements CountLimitRepository {
+@Repository("countLimitRepositoryImpl")
+public class CountLimitRepositoryImpl implements CountLimitRepository {
 
     private final ConcurrentMap<String, LoginCount> loginCount = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, EmailSendCount> emailSendCount = new ConcurrentHashMap<>();

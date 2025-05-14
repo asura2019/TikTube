@@ -1,7 +1,6 @@
 package com.buguagaoshu.tiktube.config;
 
 import com.buguagaoshu.tiktube.model.MailConfigData;
-import com.buguagaoshu.tiktube.valid.ListValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -25,17 +24,16 @@ public class WebConfigData {
     private String baseUrl = "";
 
     /**
-     * 是否开启非vip每日观看次数限制 [0 关闭， 1 开启]
+     * 是否开启非vip每日观看次数限制
      * TODO 待实现
      */
-    @ListValue(value = {0, 1})
-    private Integer openNoVipLimit = 0;
+    private Boolean openNoVipLimit = false;
 
     /**
      * 非vip 每日观看次数
      * TODO 待实现
      */
-    private Integer noVipViewCount = 0;
+    private Boolean noVipViewCount = false;
 
     /**
      * 网页logo地址
@@ -43,10 +41,9 @@ public class WebConfigData {
     private String logoUrl;
 
     /**
-     * 是否开启邀请码注册 【0 关闭， 1开启】
+     * 是否开启邀请码注册
      */
-    @ListValue(value = {0, 1})
-    private Integer openInvitationRegister = 1;
+    private Boolean openInvitationRegister = false;
 
     /**
      * 网页简短的描述
@@ -54,29 +51,25 @@ public class WebConfigData {
     private String webDescribe;
 
     /**
-     * 是否开启每日上传视频增加非会员观看次数 【0 关闭， 1开启】
+     * 是否开启每日上传视频增加非会员观看次数
      * TODO 待实现
      */
-    @ListValue(value = {0, 1})
-    private Integer openUploadVideoAddViewCount = 0;
+    private Boolean openUploadVideoAddViewCount = false;
 
     /**
-     * 是否开启视频，文章，图片审核 【0 关闭， 1 开启】
+     * 是否开启视频，文章，图片审核
      */
-    @ListValue(value = {0, 1})
-    private Integer openExamine = 1;
+    private Boolean openExamine = true;
 
     /**
      * 是否开启评论审核
      * */
-    @ListValue(value = {0, 1})
-    private Integer openCommentExam = 1;
+    private Boolean openCommentExam = true;
 
     /**
      * 是否开启弹幕审核
      * */
-    @ListValue(value = {0, 1})
-    private Integer openDanmakuExam = 1;
+    private Boolean openDanmakuExam = true;
 
 
     private Integer homeMaxVideoCount;
@@ -84,11 +77,12 @@ public class WebConfigData {
     /**
      * 是否开启邮箱设置
      * */
-    @ListValue(value = {0, 1})
-    private Integer openEmail = 0;
+    private Boolean openEmail = false;
+
 
 
     private MailConfigData mailConfig;
+
 
     /**
      * 设置默认配置
@@ -96,17 +90,17 @@ public class WebConfigData {
     public static WebConfigData defaultConfig() {
         WebConfigData webConfigData = new WebConfigData();
         webConfigData.setName("TikTube");
-        webConfigData.setOpenNoVipLimit(0);
-        webConfigData.setNoVipViewCount(0);
-        webConfigData.setOpenInvitationRegister(1);
+        webConfigData.setOpenNoVipLimit(false);
+        webConfigData.setNoVipViewCount(false);
+        webConfigData.setOpenInvitationRegister(false);
         webConfigData.setWebDescribe("一个牛逼的视频网站!");
-        webConfigData.setOpenUploadVideoAddViewCount(0);
-        webConfigData.setOpenExamine(1);
+        webConfigData.setOpenUploadVideoAddViewCount(false);
+        webConfigData.setOpenExamine(true);
         webConfigData.setHomeMaxVideoCount(50);
-        webConfigData.setOpenEmail(0);
+        webConfigData.setOpenEmail(false);
         webConfigData.setLogoUrl("/favicon.jpg");
-        webConfigData.setOpenCommentExam(1);
-        webConfigData.setOpenDanmakuExam(1);
+        webConfigData.setOpenCommentExam(true);
+        webConfigData.setOpenDanmakuExam(true);
         webConfigData.setMailConfig(new MailConfigData());
         return webConfigData;
 

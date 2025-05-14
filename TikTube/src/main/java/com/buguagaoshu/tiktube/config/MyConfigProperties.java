@@ -16,12 +16,7 @@ import java.util.Objects;
 public class MyConfigProperties {
     private String ipDbPath;
 
-    private Boolean isTheProxyConfigured;
+    private Boolean isTheProxyConfigured = false;
 
-
-    public Boolean getIsTheProxyConfigured() {
-        return Objects.requireNonNullElse(this.isTheProxyConfigured, false);
-    }
-
-
+    private Boolean openRedis = false;
 }

@@ -146,7 +146,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
         commentEntity.setCity(ipUtil.getCity(ip));
         commentEntity.setComment(commentVo.getComment());
         // 如果开启评论审核
-        if (webSettingCache.getWebConfigData().getOpenCommentExam().equals(1)) {
+        if (webSettingCache.getWebConfigData().getOpenCommentExam()) {
             commentEntity.setStatus(TypeCode.EXAM);
             // 审核通过后再展示
             this.save(commentEntity);

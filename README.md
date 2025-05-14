@@ -40,9 +40,11 @@ All core features have been completed, including:
 
 Some minor features are still being optimized.  
 
-Please compile the new frontend interface using the project under "TikTubeWeb".  
 
-For ease of use and deployment, the only external dependency is the database. 
+For ease of use and deployment, the only external dependency is the database, with Redis as an optional configuration.  
+
+Enable Redis caching by setting the `open-redis` option to `true` in the `application.yml` file.  
+
 
 Regarding the Online DEMO: [https://tiktube.buguagaoshu.com/](https://tiktube.buguagaoshu.com/)
 
@@ -80,6 +82,11 @@ Bilibili：<a href="https://www.bilibili.com/video/BV1AV59z5ESV" target="_blank"
 **Run Environment: Java17+, Node 20+, Maven 3.9+，MySQL 8.0+**
 
 Creating a database, Configuring Database Addresses
+
+If you have a Redis service, you can enable Redis caching by setting the `open-redis` option to `true` in `application.yml`. In this case, the system will use Redis for caching.  
+
+This option defaults to `false`, meaning the system will use in-memory caching instead.  
+
 
 **Run back end server**
 

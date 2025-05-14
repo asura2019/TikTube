@@ -36,9 +36,9 @@
 
 还剩一些细节功能在逐渐优化中
 
-请使用 TikTubeWeb 下的前端项目编译新版前端界面
+为了使用与部署方便，唯一外部依赖只有数据库，可选配置为 Redis
 
-为了使用与部署方便，唯一外部依赖只有数据库
+通过设置 `application.yml` 中 `open-redis` 选项为 true，开启 Redis 缓存
 
 
 ## 在线体验
@@ -56,15 +56,6 @@
 **另外，由于该 DEMO 套了 Cloudflare 的 CDN，国内访问速度可能较慢速，请耐心等待！如果有条件可以使用 [CloudflareSpeedTest](https://github.com/XIU2/CloudflareSpeedTest) 配置 Cloudflare 优选 IP，提升访问速度！😂😂😂**
 
 PS：使用 CloudflareSpeedTest 修改 HOST，除了要改 tiktube.buguagaoshu.com 的HOST 外，还需要修改 img.buguagaoshu.com 的 HOST，因为线上版本的 TikTube 文件视频文件都存储在 Cloudflare 的 R2 对象存储上
-
-两步认证测试账号：test2@test.com
-
-密码：test123456test
-
-TOTP密钥：JL2ZZV7W6OGXG4JYLCVXZRMDUV4XA3DDLPC3Q72IO6XB4K4EJKW4VW4IHXOMA2DCYU6WWRMNAMKXCVO7PGUIK2PCJG7TXMDSTA2JP76XV3BGAGSJAW66LFFQQYOG2KYB
-
-
-你可以使用：如Google Authenticator、Microsoft Authenticator 或来生成验证码。
 
 
 <img src="/img/otp.png" title="otp" alt="otp">
@@ -126,6 +117,10 @@ TOTP密钥：JL2ZZV7W6OGXG4JYLCVXZRMDUV4XA3DDLPC3Q72IO6XB4K4EJKW4VW4IHXOMA2DCYU6
 
 使用 tik_tube.sql 创建数据库，配置数据库地址
 
+如果你有 Reids 服务，可以通过设置 `application.yml` 中 `open-redis` 选项为 true，此时系统将使用 Redis 缓存
+
+该选项默认为 false，使用系统缓存
+
 **运行后端服务**
 
 ```bash
@@ -164,11 +159,6 @@ http://127.0.0.1:5173
 
 
 **关闭服务器之间请先到管理后台同步缓存数据，避免数据丢失！**
-
-
-### 旧版前端无法编译
-
-如果出现 `ESLint is not a constructor` 的错误，请在 `vue.config.js` 中添加：`lintOnSave: false`
 
 
 ## 更新

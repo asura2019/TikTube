@@ -3,7 +3,9 @@ tiktube:
   # 默认 false
   is-the-proxy-configured: false
   # IP地址数据库
-  ip-db-path: E:\\Spring\\PornTube\\TikTube\\ip2region.xdb
+  ip-db-path: C:\\data\\code\\Spring\\PornTube\\TikTube\\ip2region.xdb
+  # 是否启用 redis 缓存，默认 false，开启后需在配置文件中增加 redis 配置项目
+  open-redis: false
 
 server:
   port: 8080
@@ -32,6 +34,24 @@ spring:
       enabled: true
       max-file-size: 100000000MB
       max-request-size: 1024000000MB
+  data:
+    redis:
+      host: 192.168.0.100
+      port: 6379
+      password: 123456
+      # 连接超时时间
+      timeout: 10000
+      lettuce:
+        pool:
+          # 连接池最大连接数
+          max-active: 8
+          # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: -1
+          # 连接池中的最大空闲连接
+          max-idle: 8
+          # 连接池中的最小空闲连接
+          min-idle: 0
+
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

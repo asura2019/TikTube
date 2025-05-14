@@ -12,6 +12,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 /**
  * @author Pu Zhiwei {@literal puzhiweipuzhiwei@foxmail.com}
  * @create 2025-04-22
@@ -57,37 +59,41 @@ public class CountTasks {
 
             articleDao.batchUpdateCount("view_count", playCountRecorder.getPlayMap());
         }
-
-        if (!countRecorder.getArticleCommentCount().isEmpty()) {
-            articleDao.batchUpdateCount("comment_count", countRecorder.getArticleCommentCount());
+        Map<Long, Long> articleCommentCountMap = countRecorder.getArticleCommentCountMap();
+        if (!articleCommentCountMap.isEmpty()) {
+            articleDao.batchUpdateCount("comment_count", articleCommentCountMap);
+        }
+        Map<Long, Long> articleLikeCountMap = countRecorder.getArticleLikeCountMap();
+        if (!articleLikeCountMap.isEmpty()) {
+            articleDao.batchUpdateCount("like_count", articleLikeCountMap);
         }
 
-        if (!countRecorder.getArticleLikeCount().isEmpty()) {
-            articleDao.batchUpdateCount("like_count", countRecorder.getArticleLikeCount());
+        Map<Long, Long> articleFavoriteCountMap = countRecorder.getArticleFavoriteCountMap();
+        if (!articleFavoriteCountMap.isEmpty()) {
+            articleDao.batchUpdateCount("favorite_count", articleFavoriteCountMap);
+        }
+        Map<Long, Long> articleDislikeCountMap = countRecorder.getArticleDislikeCountMap();
+        if (!articleDislikeCountMap.isEmpty()) {
+            articleDao.batchUpdateCount("dislike_count", articleDislikeCountMap);
         }
 
-        if (!countRecorder.getArticleFavoriteCount().isEmpty()) {
-            articleDao.batchUpdateCount("favorite_count", countRecorder.getArticleFavoriteCount());
+        Map<Long, Long> danmakuCountMap = countRecorder.getDanmakuCountMap();
+        if (!danmakuCountMap.isEmpty()) {
+            articleDao.batchUpdateCount("danmaku_count", danmakuCountMap);
         }
 
-        if (!countRecorder.getArticleDislikeCount().isEmpty()) {
-            articleDao.batchUpdateCount("dislike_count", countRecorder.getArticleDislikeCount());
+        Map<Long, Long> commentCountMap = countRecorder.getCommentCountMap();
+        if (!commentCountMap.isEmpty()) {
+            commentDao.batchUpdateCount("comment_count", commentCountMap);
         }
 
-        if (!countRecorder.getDanmakuCount().isEmpty()) {
-            articleDao.batchUpdateCount("danmaku_count", countRecorder.getDanmakuCount());
+        Map<Long, Long> commentLikeCountMap = countRecorder.getCommentLikeCountMap();
+        if (!commentLikeCountMap.isEmpty()) {
+            commentDao.batchUpdateCount("like_count", commentLikeCountMap);
         }
-
-        if (!countRecorder.getCommentCount().isEmpty()) {
-            commentDao.batchUpdateCount("comment_count", countRecorder.getCommentCount());
-        }
-
-        if (!countRecorder.getCommentLikeCount().isEmpty()) {
-            commentDao.batchUpdateCount("like_count", countRecorder.getCommentLikeCount());
-        }
-
-        if (!countRecorder.getCommentDislikeCount().isEmpty()) {
-            commentDao.batchUpdateCount("dislike_count", countRecorder.getCommentDislikeCount());
+        Map<Long, Long> commentDislikeCountMap = countRecorder.getCommentDislikeCountMap();
+        if (!commentDislikeCountMap.isEmpty()) {
+            commentDao.batchUpdateCount("dislike_count", commentDislikeCountMap);
         }
 
         if (adsCountRecorder.getSize() > 0) {

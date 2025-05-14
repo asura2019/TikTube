@@ -115,7 +115,7 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
         // 将十六进制字符串转换为十进制整数
         danmakuEntity.setColorDec(Long.parseLong(cleanHex, 16));
         // 如果开启弹幕审核
-        if (webSettingCache.getWebConfigData().getOpenDanmakuExam().equals(1)) {
+        if (webSettingCache.getWebConfigData().getOpenDanmakuExam()) {
             danmakuEntity.setStatus(TypeCode.EXAM);
             this.save(danmakuEntity);
             countRecorder.recordDanmaku(fileTableEntity.getArticleId(), 1L);

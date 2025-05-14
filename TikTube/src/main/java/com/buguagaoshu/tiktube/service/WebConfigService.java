@@ -3,6 +3,7 @@ package com.buguagaoshu.tiktube.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.buguagaoshu.tiktube.cache.WebSettingCache;
+import com.buguagaoshu.tiktube.config.WebConfig;
 import com.buguagaoshu.tiktube.config.WebConfigData;
 import com.buguagaoshu.tiktube.dao.WebConfigDao;
 import com.buguagaoshu.tiktube.entity.WebConfigEntity;
@@ -22,11 +23,14 @@ public class WebConfigService  extends ServiceImpl<WebConfigDao, WebConfigEntity
 
     private final MailService mailService;
 
+    private final WebConfig webConfig;
+
     @Autowired
     public WebConfigService(WebSettingCache webSettingCache,
-                            MailService mailService) {
+                            MailService mailService, WebConfig webConfig) {
         this.webSettingCache = webSettingCache;
         this.mailService = mailService;
+        this.webConfig = webConfig;
     }
 
     /**
@@ -66,9 +70,11 @@ public class WebConfigService  extends ServiceImpl<WebConfigDao, WebConfigEntity
         this.save(webConfigEntity);
         // 更新缓存
         webSettingCache.update(webConfigData);
-        if (webConfigData.getOpenEmail().equals(1)) {
+        if (webConfigData.getOpenEmail()) {
             mailService.initMainConfig();
         }
         return webConfigData;
     }
+    
+
 }

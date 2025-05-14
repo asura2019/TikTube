@@ -88,7 +88,7 @@ const router = createRouter({
           path: '/playlist',
           name: 'Playlist',
           component: () => import('@/views/home/PlayListView.vue'),
-          meta: { title: '稍后再看' }
+          meta: { title: '我的收藏' }
         },
         {
           path: '/settings',

@@ -2,13 +2,9 @@ package com.buguagaoshu.tiktube.config;
 
 import com.buguagaoshu.tiktube.cache.CategoryCache;
 import com.buguagaoshu.tiktube.cache.WebSettingCache;
-import com.buguagaoshu.tiktube.entity.OSSConfigEntity;
-import com.buguagaoshu.tiktube.repository.impl.FileRepositoryInOSS;
 import com.buguagaoshu.tiktube.service.CategoryService;
 import com.buguagaoshu.tiktube.service.MailService;
 import com.buguagaoshu.tiktube.service.WebConfigService;
-import com.buguagaoshu.tiktube.service.WebSettingService;
-import com.buguagaoshu.tiktube.service.impl.OssConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -19,7 +15,6 @@ import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -38,6 +33,8 @@ public class WebConfig implements WebMvcConfigurer {
     private final AdminInterceptor adminInterceptor;
 
     private final VipInterceptor vipInterceptor;
+    
+    private final MyConfigProperties myConfigProperties;
 
     /**
      * 默认文件保存位置 0 为 本地
@@ -49,10 +46,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     public WebConfig(LoginInterceptor loginInterceptor,
                      AdminInterceptor adminInterceptor,
-                     VipInterceptor vipInterceptor) {
+                     VipInterceptor vipInterceptor,
+                     MyConfigProperties myConfigProperties) {
         this.loginInterceptor = loginInterceptor;
         this.adminInterceptor = adminInterceptor;
         this.vipInterceptor = vipInterceptor;
+        this.myConfigProperties = myConfigProperties;
     }
 
     @Bean
@@ -74,8 +73,15 @@ public class WebConfig implements WebMvcConfigurer {
                 webSettingCache.update(webConfigData);
                 log.info("设置获取完成！");
                 // 如果开启了邮箱服务，初始化邮件信息
-                if (webConfigData.getOpenEmail().equals(1)) {
+                if (webConfigData.getOpenEmail()) {
                     mailService.initMainConfig();
+                }
+                
+                // 输出Redis状态信息
+                if (myConfigProperties.getOpenRedis()) {
+                    log.info("Redis缓存已启用");
+                } else {
+                    log.info("Redis缓存未启用，系统将使用内存缓存");
                 }
             }
         };
@@ -139,4 +145,5 @@ public class WebConfig implements WebMvcConfigurer {
             factory.addErrorPages(error404Page);
         };
     }
+
 }
