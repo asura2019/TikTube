@@ -1,5 +1,22 @@
 # 更新日志
 
+## 2025-05-17
+
+实现 AI 内容审核
+
+新增：`ai_config` 表保存大模型配置
+
+评论表与弹幕表增加以下三个字段
+
+  `ai_examine_message` 
+  `ai_examine_token` 
+  `ai_examine_id` 
+
+用来保存 AI 审核结果
+
+优化评论卡片显示效果
+
+
 ## 2025-05-14
 
 增加可选配置 Redis 缓存

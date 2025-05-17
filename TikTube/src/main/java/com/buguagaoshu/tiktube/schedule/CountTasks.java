@@ -3,8 +3,10 @@ package com.buguagaoshu.tiktube.schedule;
 import com.buguagaoshu.tiktube.cache.AdsCountRecorder;
 import com.buguagaoshu.tiktube.cache.CountRecorder;
 import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
+import com.buguagaoshu.tiktube.dao.AiConfigDao;
 import com.buguagaoshu.tiktube.dao.ArticleDao;
 import com.buguagaoshu.tiktube.dao.CommentDao;
+import com.buguagaoshu.tiktube.service.AIConfigServer;
 import com.buguagaoshu.tiktube.service.AdvertisementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,18 +37,22 @@ public class CountTasks {
 
     private final AdvertisementService advertisementService;
 
+    private final AiConfigDao aiConfigDao;
+
     @Autowired
     public CountTasks(PlayCountRecorder playCountRecorder,
                       CountRecorder countRecorder, ArticleDao articleDao,
                       CommentDao commentDao,
                       AdsCountRecorder adsCountRecorder,
-                      AdvertisementService advertisementService) {
+                      AdvertisementService advertisementService,
+                      AiConfigDao aiConfigDao) {
         this.playCountRecorder = playCountRecorder;
         this.countRecorder = countRecorder;
         this.articleDao = articleDao;
         this.commentDao = commentDao;
         this.adsCountRecorder = adsCountRecorder;
         this.advertisementService = advertisementService;
+        this.aiConfigDao = aiConfigDao;
     }
 
     /**
@@ -100,6 +107,13 @@ public class CountTasks {
             log.info("开始同步广告访问数据！");
             advertisementService.syncCount();
         }
+
+        Map<Long, Long> aiToken = countRecorder.getAiModelTokenCountMap();
+        if (!aiToken.isEmpty()) {
+            log.info("开始同步 AI Token 数据！");
+            aiConfigDao.batchUpdateCount("use_tokens", aiToken);
+        }
+
 
         log.info("数据同步完成！");
 

@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="flat" class="pa-3 my-2" color="grey-lighten-5">
+  <v-card variant="flat" class="pa-3 my-2" color="grey-lighten-5" rounded="lg">
     <a :name="comment.id" />
     <v-row>
       <v-col cols="12" class="pb-0">

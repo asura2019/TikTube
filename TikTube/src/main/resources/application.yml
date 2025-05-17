@@ -5,7 +5,7 @@ tiktube:
   # IP地址数据库
   ip-db-path: C:\\data\\code\\Spring\\PornTube\\TikTube\\ip2region.xdb
   # 是否启用 redis 缓存，默认 false，开启后需在配置文件中增加 redis 配置项目
-  open-redis: false
+  open-redis: true
 
 server:
   port: 8080

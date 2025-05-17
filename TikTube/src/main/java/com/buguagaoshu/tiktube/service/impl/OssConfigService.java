@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.buguagaoshu.tiktube.dao.OSSConfigDao;
 import com.buguagaoshu.tiktube.entity.OSSConfigEntity;
+import com.buguagaoshu.tiktube.entity.WebConfigEntity;
 import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
@@ -108,7 +109,9 @@ public class OssConfigService extends ServiceImpl<OSSConfigDao, OSSConfigEntity>
      * @return OSS配置列表
      */
     public List<OSSConfigEntity> listAllOssConfigs() {
-        return this.list();
+        QueryWrapper<OSSConfigEntity> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("update_time");
+        return this.list(wrapper);
     }
 
 

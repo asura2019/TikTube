@@ -17,20 +17,17 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class WebConfigService  extends ServiceImpl<WebConfigDao, WebConfigEntity> {
+public class WebConfigService extends ServiceImpl<WebConfigDao, WebConfigEntity> {
 
     private final WebSettingCache webSettingCache;
 
     private final MailService mailService;
 
-    private final WebConfig webConfig;
-
     @Autowired
     public WebConfigService(WebSettingCache webSettingCache,
-                            MailService mailService, WebConfig webConfig) {
+                            MailService mailService) {
         this.webSettingCache = webSettingCache;
         this.mailService = mailService;
-        this.webConfig = webConfig;
     }
 
     /**

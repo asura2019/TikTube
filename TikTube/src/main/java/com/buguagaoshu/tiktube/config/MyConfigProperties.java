@@ -19,4 +19,9 @@ public class MyConfigProperties {
     private Boolean isTheProxyConfigured = false;
 
     private Boolean openRedis = false;
+
+    // Redis发布订阅的频道名称
+    private String commentChannelName = "comment_examine_channel";
+
+    private String danmakuChannelName = "danmaku_examine_channel";
 }

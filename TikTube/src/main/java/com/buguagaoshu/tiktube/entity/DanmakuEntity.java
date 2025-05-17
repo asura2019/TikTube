@@ -62,4 +62,8 @@ public class DanmakuEntity {
 
 	private String city;
 
+	private String aiExamineMessage;
+	private Long aiExamineToken;
+	private Integer aiExamineId;
+
 }

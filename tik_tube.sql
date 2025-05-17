@@ -80,6 +80,9 @@ CREATE TABLE `comment`  (
   `ua` varchar(999),
   `ip` varchar(255),
   `city` varchar(255),
+  `ai_examine_message` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `ai_examine_token` bigint NULL DEFAULT NULL,
+  `ai_examine_id` int NULL DEFAULT NULL COMMENT '使用的模型ID',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_comment_by_artice`(`article_id`) USING BTREE,
   INDEX `find_comment_by_user`(`user_id`) USING BTREE,
@@ -105,6 +108,9 @@ CREATE TABLE `danmaku`  (
   `ua` varchar(999),
   `ip` varchar(255),
   `city` varchar(255),
+  `ai_examine_message` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `ai_examine_token` bigint NULL DEFAULT NULL,
+  `ai_examine_id` int NULL DEFAULT NULL COMMENT '使用的模型ID',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `find_danmaku_by_vido_id`(`video_id`) USING BTREE,
   INDEX `find_danmaku_by_userID`(`video_id`) USING BTREE
@@ -464,6 +470,27 @@ CREATE TABLE `opinion_table`  (
   INDEX `find_opinion_type`(`type`) USING BTREE,
   INDEX `find_opinion_status`(`status`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '举报以及意见反馈表' ROW_FORMAT = Dynamic;
+
+
+-- ----------------------------
+-- 大模型API配置
+-- ----------------------------
+CREATE TABLE `ai_config`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `api_url` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `api_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `model` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `prompt` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '评论与弹幕审核使用暂时只能使用默认Prompt',
+  `type` int NULL DEFAULT NULL COMMENT '0 默认， 1，评论弹幕审核',
+  `create_time` bigint NOT NULL,
+  `create_user` bigint NOT NULL,
+  `update_time` bigint NOT NULL,
+  `update_user` bigint NOT NULL,
+  `status` int NOT NULL DEFAULT 0 COMMENT '启用状态，0未启用，1启用',
+  `use_tokens` bigint NOT NULL DEFAULT 0 COMMENT '该配置已经使用的token数量',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 
 SET FOREIGN_KEY_CHECKS = 1;

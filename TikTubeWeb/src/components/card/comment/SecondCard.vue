@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="flat" class="pa-3 my-2" color="grey-lighten-4">
+  <v-card variant="flat" class="pa-3 my-2" color="grey-lighten-4" rounded="lg">
     <v-row>
       <v-col cols="12" class="pb-0">
         <v-row no-gutters>

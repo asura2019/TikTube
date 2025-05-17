@@ -31,7 +31,7 @@
 - 数据管理
 - 登录 TOTP 两步验证
 - 配置多存储库，支持兼容 S3 API 的对象存储已测试：MinIO，Cloudflare R2- 
-- 举报，内容审核
+- 举报，内容审核（配置大模型后可以实现AI自动内容审核）
 - 公告，消息通知等
 
 还剩一些细节功能在逐渐优化中
@@ -106,6 +106,9 @@ PS：使用 CloudflareSpeedTest 修改 HOST，除了要改 tiktube.buguagaoshu.c
 
 <img src="/img/admin.png" title="ADMIN" alt="ADMIN">
 
+### AI 大模型自动内容审核
+
+<img src="/img/ai.png" title="AI 大模型自动内容审核" alt="AI 大模型自动内容审核">
 
 
 ## 快速运行

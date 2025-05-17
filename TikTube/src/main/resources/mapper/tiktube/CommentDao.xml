@@ -22,6 +22,9 @@
         <result property="ip" column="ip"/>
         <result property="city" column="city"/>
         <result property="commentId" column="comment_id"/>
+        <result property="aiExamineMessage" column="ai_examine_message"/>
+        <result property="aiExamineToken" column="ai_examine_token"/>
+        <result property="aiExamineId" column="ai_examine_id"/>
     </resultMap>
     
     <update id="addCount">

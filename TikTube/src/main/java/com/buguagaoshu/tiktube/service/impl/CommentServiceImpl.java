@@ -6,6 +6,7 @@ import com.buguagaoshu.tiktube.entity.ArticleEntity;
 import com.buguagaoshu.tiktube.entity.UserEntity;
 import com.buguagaoshu.tiktube.enums.*;
 import com.buguagaoshu.tiktube.model.CustomPage;
+import com.buguagaoshu.tiktube.pipe.AiExaminePipe;
 import com.buguagaoshu.tiktube.service.ArticleService;
 import com.buguagaoshu.tiktube.service.NotificationService;
 import com.buguagaoshu.tiktube.service.UserService;
@@ -49,19 +50,22 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
     private final IpUtil ipUtil;
 
+    private final AiExaminePipe aiExaminePipe;
+
     @Autowired
     public CommentServiceImpl(ArticleService articleService,
                               UserService userService,
                               NotificationService notificationService,
                               WebSettingCache webSettingCache,
                               CountRecorder countRecorder,
-                              IpUtil ipUtil) {
+                              IpUtil ipUtil, AiExaminePipe aiExaminePipe) {
         this.articleService = articleService;
         this.userService = userService;
         this.notificationService = notificationService;
         this.webSettingCache = webSettingCache;
         this.countRecorder = countRecorder;
         this.ipUtil = ipUtil;
+        this.aiExaminePipe = aiExaminePipe;
     }
 
 
@@ -150,6 +154,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
             commentEntity.setStatus(TypeCode.EXAM);
             // 审核通过后再展示
             this.save(commentEntity);
+            // 是否开启AI审核
+            if (webSettingCache.getWebConfigData().getOpenAIConfig()) {
+                aiExaminePipe.submitComment(commentEntity);
+            }
             countRecorder.recordArticleComment(articleEntity.getId(), 1L);
             return commentEntity;
         } else {

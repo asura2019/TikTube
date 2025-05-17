@@ -97,4 +97,10 @@ public class TypeCode {
      * 轮播新闻
      * */
     public final static int AD_TYPE_NEWS = 3;
+
+
+    /**
+     * 评论与弹幕审核采用的 AI API
+     * */
+    public final static int AI_TYPE_EXAMINE_COMMENT = 1;
 }

@@ -36,6 +36,7 @@ All core features have been completed, including:
 - Login with TOTP two-factor authentication  
 - Support for multiple storage backends, compatible with S3 API-based object storage (tested with MinIO and Cloudflare R2)  
 - Reporting and content moderation  
+- AI Content Review
 - Announcements, notifications, etc.
 
 Some minor features are still being optimized.  
@@ -165,6 +166,10 @@ http://127.0.0.1:5173
 ### Admin
 
 <img src="/img/admin.png" title="Admin" alt="Admin">
+
+### AI Examine
+
+<img src="/img/ai.png" title="AI Examine" alt="AI Examine">
 
 
 ### Question

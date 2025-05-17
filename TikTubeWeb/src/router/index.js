@@ -176,6 +176,16 @@ const router = createRouter({
           }
         },
         {
+          path: '/admin/ai',
+          name: 'AIControl',
+          component: () => import('@/views/admin/AIConfigView.vue'),
+          meta: {
+            title: 'AI模型管理',
+            requireAuth: true,
+            requireAdmin: true
+          }
+        },
+        {
           path: '/admin/runinfo',
           name: 'RunInfoView',
           component: () => import('@/views/admin/RunInfoView.vue'),

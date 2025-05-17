@@ -79,6 +79,10 @@ public class WebConfigData {
      * */
     private Boolean openEmail = false;
 
+    /**
+     * 是否开启 AI 配置
+     * */
+    private Boolean openAIConfig = false;
 
 
     private MailConfigData mailConfig;
@@ -101,6 +105,7 @@ public class WebConfigData {
         webConfigData.setLogoUrl("/favicon.jpg");
         webConfigData.setOpenCommentExam(true);
         webConfigData.setOpenDanmakuExam(true);
+        webConfigData.setOpenAIConfig(false);
         webConfigData.setMailConfig(new MailConfigData());
         return webConfigData;
 
@@ -121,6 +126,7 @@ public class WebConfigData {
      * */
     public WebConfigData clean() {
         this.mailConfig = null;
+        this.openAIConfig = null;
         return this;
     }
 

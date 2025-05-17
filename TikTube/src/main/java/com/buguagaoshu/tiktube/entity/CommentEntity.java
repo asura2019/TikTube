@@ -90,6 +90,13 @@ public class CommentEntity {
 
 	private String city;
 
+	//   `ai_examine_message` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+	//  `ai_examine_token` bigint NULL DEFAULT NULL,
+	//  `ai_examine_id` int NULL DEFAULT NULL COMMENT '使用的模型ID',
+	private String aiExamineMessage;
+	private Long aiExamineToken;
+	private Integer aiExamineId;
+
 
 	public void initComment() {
 		long time = System.currentTimeMillis();

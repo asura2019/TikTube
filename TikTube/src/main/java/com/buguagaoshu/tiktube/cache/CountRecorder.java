@@ -30,6 +30,7 @@ public class CountRecorder {
     private static final String COMMENT_DISLIKE_COUNT_KEY_PREFIX = "count:comment:dislike:";
     private static final String COMMENT_COUNT_KEY_PREFIX = "count:comment:count:";
     private static final String DANMAKU_COUNT_KEY_PREFIX = "count:danmaku:";
+    private static final String AI_MODEL_TOKEN_COUNT_KEY_PREFIX = "count:ai:token:";
     
     private final CountStorage countStorage;
 
@@ -167,6 +168,18 @@ public class CountRecorder {
     public Map<Long, Long> getCommentDislikeCountMap() {
         return countStorage.getCommentDislikeCountMap();
     }
+
+    public void recordAiModelToken(Long modelId, long count) {
+        countStorage.recordAiModelToken(modelId, count);
+    }
+
+    public long getAiModelTokenCount(Long modelId) {
+        return countStorage.getAiModelTokenCount(modelId);
+    }
+
+    public Map<Long, Long> getAiModelTokenCountMap() {
+        return countStorage.getAiModelTokenCountMap();
+    }
     
     // 计数存储接口
     private interface CountStorage {
@@ -212,6 +225,11 @@ public class CountRecorder {
         void recordCommentDislike(long commentId, long count);
         long getCommentDislikeCount(long commentId);
         Map<Long, Long> getCommentDislikeCountMap();
+        
+        // AI大模型token计数
+        void recordAiModelToken(Long modelId, long count);
+        long getAiModelTokenCount(Long modelId);
+        Map<Long, Long> getAiModelTokenCountMap();
     }
     
     // 内存存储实现
@@ -224,6 +242,8 @@ public class CountRecorder {
         private final ConcurrentMap<Long, Long> commentDislikeCount = new ConcurrentHashMap<>();
         private final ConcurrentMap<Long, Long> commentCount = new ConcurrentHashMap<>();
         private final ConcurrentMap<Long, Long> danmakuCount = new ConcurrentHashMap<>();
+
+        private final ConcurrentMap<Long, Long> aiModelTokenCount = new ConcurrentHashMap<>();
         
         @Override
         public void clear() {
@@ -235,6 +255,7 @@ public class CountRecorder {
             commentDislikeCount.clear();
             commentCount.clear();
             danmakuCount.clear();
+            aiModelTokenCount.clear();
         }
         
         // 文章评论计数
@@ -364,6 +385,22 @@ public class CountRecorder {
         public Map<Long, Long> getCommentDislikeCountMap() {
             return commentDislikeCount;
         }
+
+        // AI大模型token计数
+        @Override
+        public void recordAiModelToken(Long modelId, long count) {
+            aiModelTokenCount.compute(modelId, (k, v) -> v == null ? count : v + count);
+        }
+
+        @Override
+        public long getAiModelTokenCount(Long modelId) {
+            return aiModelTokenCount.getOrDefault(modelId, 0L);
+        }
+
+        @Override
+        public Map<Long, Long> getAiModelTokenCountMap() {
+            return aiModelTokenCount;
+        }
     }
     
     // Redis存储实现
@@ -385,6 +422,7 @@ public class CountRecorder {
             clearKeysByPrefix(COMMENT_DISLIKE_COUNT_KEY_PREFIX);
             clearKeysByPrefix(COMMENT_COUNT_KEY_PREFIX);
             clearKeysByPrefix(DANMAKU_COUNT_KEY_PREFIX);
+            clearKeysByPrefix(AI_MODEL_TOKEN_COUNT_KEY_PREFIX);
         }
         
         private void clearKeysByPrefix(String prefix) {
@@ -530,6 +568,23 @@ public class CountRecorder {
         @Override
         public Map<Long, Long> getCommentDislikeCountMap() {
             return getCountMapByPrefix(COMMENT_DISLIKE_COUNT_KEY_PREFIX);
+        }
+
+
+        @Override
+        public void recordAiModelToken(Long modelId, long count) {
+            redisRepository.incr(AI_MODEL_TOKEN_COUNT_KEY_PREFIX + modelId, count);
+        }
+
+        @Override
+        public long getAiModelTokenCount(Long modelId) {
+            Object count = redisRepository.get(AI_MODEL_TOKEN_COUNT_KEY_PREFIX + modelId);
+            return count != null ? Long.parseLong(count.toString()) : 0L;
+        }
+
+        @Override
+        public Map<Long, Long> getAiModelTokenCountMap() {
+            return getCountMapByPrefix(AI_MODEL_TOKEN_COUNT_KEY_PREFIX);
         }
         
         // 通用方法：根据前缀获取计数映射

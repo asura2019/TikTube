@@ -353,6 +353,17 @@
               }}</v-list-item-subtitle>
             </v-list-item>
 
+<!-- AI 审核信息 -->
+            <v-list-item v-if="selectedItem?.aiExamineMessage">
+              <template #prepend>
+                <v-icon color="indigo">mdi-robot</v-icon>
+              </template>
+              <v-list-item-title>AI审核状态</v-list-item-title>
+              <div>
+                AI审核意见：{{ selectedItem.aiExamineMessage }} | 消耗 TOKEN: {{ selectedItem.aiExamineToken  }}
+              </div>
+            </v-list-item>
+
             <v-list-item>
               <template #prepend>
                 <v-icon color="indigo">mdi-clock</v-icon>
@@ -466,6 +477,7 @@ export default {
         { title: '类型', key: 'type', align: 'center', sortable: false, width: '100px' },
         { title: '出现时间', key: 'time', align: 'center', sortable: false, width: '120px' },
         { title: 'IP信息', key: 'ipInfo', align: 'center', sortable: false },
+        { title: 'AI 审核意见', key: 'aiExamineMessage', align: 'center', sortable: false, width: '100px' },
         { title: '状态', key: 'status', align: 'center', sortable: false, width: '100px' },
         { title: '创建时间', key: 'createTime', align: 'center', sortable: false, width: '180px' },
         { title: '操作', key: 'actions', align: 'center', sortable: false, width: '120px' },

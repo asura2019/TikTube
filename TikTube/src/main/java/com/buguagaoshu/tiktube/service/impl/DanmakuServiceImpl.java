@@ -8,6 +8,7 @@ import com.buguagaoshu.tiktube.enums.ArticleStatusEnum;
 import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
 import com.buguagaoshu.tiktube.enums.TypeCode;
 import com.buguagaoshu.tiktube.exception.UserNotLoginException;
+import com.buguagaoshu.tiktube.pipe.AiExaminePipe;
 import com.buguagaoshu.tiktube.service.ArticleService;
 import com.buguagaoshu.tiktube.service.FileTableService;
 import com.buguagaoshu.tiktube.utils.*;
@@ -44,17 +45,20 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
 
     private final IpUtil ipUtil;
 
+    private final AiExaminePipe aiExaminePipe;
+
     @Autowired
     public DanmakuServiceImpl(ArticleService articleService,
                               FileTableService fileTableService,
                               CountRecorder countRecorder,
                               WebSettingCache webSettingCache,
-                              IpUtil ipUtil) {
+                              IpUtil ipUtil, AiExaminePipe aiExaminePipe) {
         this.articleService = articleService;
         this.fileTableService = fileTableService;
         this.countRecorder = countRecorder;
         this.webSettingCache = webSettingCache;
         this.ipUtil = ipUtil;
+        this.aiExaminePipe = aiExaminePipe;
     }
 
     @Override
@@ -118,6 +122,9 @@ public class DanmakuServiceImpl extends ServiceImpl<DanmakuDao, DanmakuEntity> i
         if (webSettingCache.getWebConfigData().getOpenDanmakuExam()) {
             danmakuEntity.setStatus(TypeCode.EXAM);
             this.save(danmakuEntity);
+            if (webSettingCache.getWebConfigData().getOpenAIConfig()) {
+                aiExaminePipe.submitDanmaku(danmakuEntity);
+            }
             countRecorder.recordDanmaku(fileTableEntity.getArticleId(), 1L);
             return ReturnCodeEnum.NEED_EXAM;
         } else {
