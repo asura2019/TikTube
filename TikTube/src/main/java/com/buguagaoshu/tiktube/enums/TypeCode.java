@@ -103,4 +103,9 @@ public class TypeCode {
      * 评论与弹幕审核采用的 AI API
      * */
     public final static int AI_TYPE_EXAMINE_COMMENT = 1;
+
+    /**
+     * 文本稿件摘要生成
+     * */
+    public final static int AI_TYPE_TEXT_ABSTRACT = 2;
 }

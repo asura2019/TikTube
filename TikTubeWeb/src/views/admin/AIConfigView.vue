@@ -28,8 +28,9 @@
 
       <v-alert type="info" variant="tonal" border="start" density="comfortable" class="ma-4">
         AI配置可以同时启用多个，不同类型的AI配置用于不同的功能，请根据需要进行配置。
-        启用AI功能后系统将使用AI进行内容审核，请确保配置正确，由于 TOKEN 计算暂不准确，请以 API 服务商数据为准。
+        启用AI功能后系统将使用AI进行内容审核，请确保配置正确，由于 TOKEN 计算不一定准确，请以 API 服务商数据为准。
         prompt 审核规则可以随意修改，但是请不要修改输出结果部分提示信息，否则将造成AI审核功能无法正常使用。
+        当已用Token超过最大可用Token时，系统将自动切换到下一个可用配置。
       </v-alert>
 
       <!-- 配置列表 -->
@@ -39,6 +40,7 @@
           :items="aiConfigList"
           :loading="loading"
           mobile-breakpoint="md"
+          hide-default-footer
           :hide-default-header="$vuetify.display.smAndDown"
           hover
           class="elevation-0 rounded-lg"
@@ -66,8 +68,8 @@
 
           <!-- 使用Token列 -->
           <template #[`item.useTokens`]="{ item }">
-            <v-chip color="blue-lighten-4" size="small">
-              {{ item.useTokens || 0 }}
+            <v-chip :color="item.useTokens && item.maxTokens && item.useTokens >= item.maxTokens ? 'error' : 'blue-lighten-4'" size="small">
+              {{ item.useTokens || 0 }} / {{ item.maxTokens || '无限制' }}
             </v-chip>
           </template>
 
@@ -106,7 +108,7 @@
                 </template>
               </v-tooltip>
 
-              <v-tooltip location="top" text="测试">
+              <!-- <v-tooltip location="top" text="测试">
                 <template #activator="{ props }">
                   <v-btn
                     v-bind="props"
@@ -119,7 +121,7 @@
                     <v-icon>mdi-check-circle</v-icon>
                   </v-btn>
                 </template>
-              </v-tooltip>
+              </v-tooltip> -->
             </div>
           </template>
 
@@ -233,6 +235,29 @@
                     prepend-inner-icon="mdi-toggle-switch"
                   ></v-select>
                 </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="editedItem.maxTokens"
+                    label="最大可用Token"
+                    type="number"
+                    hint="设置为0表示无限制"
+                    persistent-hint
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-counter"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="editedItem.useTokens"
+                    label="已用Token"
+                    hint="由于系统统计数据不一定准确，你可以通过修改这个值来校准使用情况"
+                    type="number"
+                    variant="outlined"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-counter"
+                  ></v-text-field>
+                </v-col>
               </v-row>
             </v-container>
           </v-form>
@@ -270,7 +295,7 @@ export default {
       { title: '类型', key: 'type', align: 'center', sortable: false },
       { title: 'API地址', key: 'apiUrl', align: 'start', sortable: false },
       { title: '模型', key: 'model', align: 'start', sortable: false },
-      { title: '已用Token', key: 'useTokens', align: 'center', sortable: false },
+      { title: 'Token使用情况', key: 'useTokens', align: 'center', sortable: false },
       { title: '状态', key: 'status', align: 'center', sortable: false },
       { title: '操作', key: 'actions', align: 'center', sortable: false },
     ],
@@ -285,6 +310,7 @@ export default {
       type: 0,
       status: 1,
       useTokens: 0,
+      maxTokens: 0,
     },
     defaultItem: {
       id: null,
@@ -296,6 +322,7 @@ export default {
       type: 0,
       status: 1,
       useTokens: 0,
+      maxTokens: 0,
     },
     snackbar: {
       show: false,
@@ -305,6 +332,7 @@ export default {
     typeOptions: [
       { title: '默认', value: 0 },
       { title: '评论弹幕审核', value: 1 },
+      { title: '文本稿件摘要生成', value: 2 },
     ],
     promptMap: {},
     promptHint: '',

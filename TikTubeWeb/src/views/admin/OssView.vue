@@ -32,6 +32,7 @@
           :headers="headers"
           :items="ossList"
           :loading="loading"
+          hide-default-footer
           mobile-breakpoint="md"
           :hide-default-header="$vuetify.display.smAndDown"
           hover

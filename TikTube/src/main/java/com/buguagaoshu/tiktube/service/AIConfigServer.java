@@ -152,14 +152,9 @@ public class AIConfigServer extends ServiceImpl<AiConfigDao, AiConfigEntity> {
     public AiExamineCommentAndDanmakuResult aiExamineCommentAndDanmaku(String message) {
         log.info("开始AI审核内容：");
         // 读取配置
-        AiConfigEntity aiConfigEntity = AIConfigCache.getTypeConfig(TypeCode.AI_TYPE_EXAMINE_COMMENT);
+        AiConfigEntity aiConfigEntity = AIConfigCache.getTypeConfig(TypeCode.AI_TYPE_EXAMINE_COMMENT, countRecorder.getAiModelTokenCountMap());
         if (aiConfigEntity == null) {
-            var a = new AiExamineCommentAndDanmakuResult();
-            a.setAiConfigId(0L);
-            a.setResult(false);
-            a.setMessage("为配置AI服务，需要人工审核！");
-            a.setToken(0L);
-            return a;
+            return null;
         }
         // 构造客户端
         OpenAIClient client = OpenAIOkHttpClient.builder()

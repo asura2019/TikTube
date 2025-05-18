@@ -81,4 +81,6 @@ public class AiConfigEntity {
      * 该配置已经使用的token数量
      */
     private Long useTokens;
+
+    private Long maxTokens;
 }

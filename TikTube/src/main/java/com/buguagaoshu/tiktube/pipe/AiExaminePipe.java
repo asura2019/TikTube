@@ -5,11 +5,14 @@ import com.buguagaoshu.tiktube.dao.CommentDao;
 import com.buguagaoshu.tiktube.dao.DanmakuDao;
 import com.buguagaoshu.tiktube.entity.CommentEntity;
 import com.buguagaoshu.tiktube.entity.DanmakuEntity;
+import com.buguagaoshu.tiktube.enums.NotificationType;
 import com.buguagaoshu.tiktube.enums.TypeCode;
 import com.buguagaoshu.tiktube.model.AiExamineCommentAndDanmakuResult;
 import com.buguagaoshu.tiktube.service.AIConfigServer;
 import com.buguagaoshu.tiktube.service.CommentService;
 import com.buguagaoshu.tiktube.service.DanmakuService;
+import com.buguagaoshu.tiktube.service.NotificationService;
+import com.buguagaoshu.tiktube.utils.MyStringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -35,6 +38,7 @@ public class AiExaminePipe {
     private final AIConfigServer aiConfigServer;
     private final CommentDao commentDao;
     private final DanmakuDao danmakuDao;
+    private final NotificationService notificationService;
 
     // 记录 TOKEN 消耗
     private final CountRecorder countRecorder;
@@ -54,10 +58,13 @@ public class AiExaminePipe {
     @Autowired
     public AiExaminePipe(AIConfigServer aiConfigServer,
                          CommentDao commentDao,
-                         DanmakuDao danmakuDao, CountRecorder countRecorder) {
+                         DanmakuDao danmakuDao,
+                         NotificationService notificationService,
+                         CountRecorder countRecorder) {
         this.aiConfigServer = aiConfigServer;
         this.commentDao = commentDao;
         this.danmakuDao = danmakuDao;
+        this.notificationService = notificationService;
         this.countRecorder = countRecorder;
     }
 
@@ -146,6 +153,7 @@ public class AiExaminePipe {
                         comment.setStatus(TypeCode.NORMAL);
                     } else {
                         comment.setStatus(TypeCode.DELETE);
+                        // TODO 增加消息通知，用户可以提交管理员复审
                     }
 
                     // 更新评论
@@ -153,7 +161,7 @@ public class AiExaminePipe {
                     countRecorder.recordAiModelToken(result.getAiConfigId(), result.getToken());
                     log.info("评论审核完成, ID: {}, 结果: {}", comment.getId(), result.getResult());
                 } else {
-                    log.warn("评论审核失败, AI返回结果为空, ID: {}", comment.getId());
+                    log.warn("评论审核失败, AI返回结果为空,需要人工审核 ID: {}", comment.getId());
                 }
             } catch (InterruptedException e) {
                 log.warn("评论处理线程被中断", e);
@@ -196,7 +204,7 @@ public class AiExaminePipe {
                     countRecorder.recordAiModelToken(result.getAiConfigId(), result.getToken());
                     log.info("弹幕审核完成, ID: {}, 结果: {}", danmaku.getId(), result.getResult());
                 } else {
-                    log.warn("弹幕审核失败, AI返回结果为空, ID: {}", danmaku.getId());
+                    log.warn("评论审核失败, AI返回结果为空,需要人工审核 ID：: {}", danmaku.getId());
                 }
             } catch (InterruptedException e) {
                 log.warn("弹幕处理线程被中断", e);

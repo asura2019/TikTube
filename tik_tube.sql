@@ -489,6 +489,7 @@ CREATE TABLE `ai_config`  (
   `update_user` bigint NOT NULL,
   `status` int NOT NULL DEFAULT 0 COMMENT '启用状态，0未启用，1启用',
   `use_tokens` bigint NOT NULL DEFAULT 0 COMMENT '该配置已经使用的token数量',
+  `max_tokens` bigint NOT NULL DEFAULT 0 COMMENT '最大可用token',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 

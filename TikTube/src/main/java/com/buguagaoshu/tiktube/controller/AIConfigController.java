@@ -2,6 +2,7 @@ package com.buguagaoshu.tiktube.controller;
 
 import com.buguagaoshu.tiktube.config.AIPromptConfig;
 import com.buguagaoshu.tiktube.entity.AiConfigEntity;
+import com.buguagaoshu.tiktube.enums.TypeCode;
 import com.buguagaoshu.tiktube.service.AIConfigServer;
 import com.buguagaoshu.tiktube.utils.IpUtil;
 import com.buguagaoshu.tiktube.utils.JwtUtil;
@@ -46,7 +47,8 @@ public class AIConfigController {
     public ResponseDetails getPrompt() {
         Map<Integer, String> map = new HashMap<>();
         map.put(0, "");
-        map.put(1, AIPromptConfig.EXAMINE_COMMENT_AND_DANMAKU);
+        map.put(TypeCode.AI_TYPE_EXAMINE_COMMENT, AIPromptConfig.EXAMINE_COMMENT_AND_DANMAKU);
+        map.put(TypeCode.AI_TYPE_TEXT_ABSTRACT, AIPromptConfig.TEXT_ABSTRACT);
         return ResponseDetails.ok().put("data", map);
     }
 
