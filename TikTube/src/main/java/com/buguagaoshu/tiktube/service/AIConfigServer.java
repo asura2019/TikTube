@@ -113,6 +113,13 @@ public class AIConfigServer extends ServiceImpl<AiConfigDao, AiConfigEntity> {
         QueryWrapper<AiConfigEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("status", 1);
         List<AiConfigEntity> list = this.list(queryWrapper);
+
+        if (list.isEmpty()) {
+            log.info("未发现可用 AI 配置！系统将关闭 AI 服务！");
+            webSettingCache.getWebConfigData().setOpenAIConfig(false);
+            return;
+        }
+
         Map<Long, AiConfigEntity> map = new HashMap<>();
         Map<Long, List<AiConfigEntity>> typeAICache = new HashMap<>();
         list.forEach(aiConfigEntity -> {
@@ -127,12 +134,7 @@ public class AIConfigServer extends ServiceImpl<AiConfigDao, AiConfigEntity> {
         AIConfigCache.aiConfigCache = map;
         // 将分类后的配置保存到缓存
         AIConfigCache.typeAICache = typeAICache;
-
-        if (AIConfigCache.aiConfigCache.isEmpty()) {
-            log.info("未发现可用 AI 配置！");
-        } else {
-            log.info("AI 配置读取完成");
-        }
+        log.info("AI 配置读取完成");
     }
 
 

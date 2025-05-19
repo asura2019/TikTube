@@ -39,13 +39,16 @@ public class CountTasks {
 
     private final AiConfigDao aiConfigDao;
 
+    private final AIConfigServer aiConfigServer;
+
     @Autowired
     public CountTasks(PlayCountRecorder playCountRecorder,
                       CountRecorder countRecorder, ArticleDao articleDao,
                       CommentDao commentDao,
                       AdsCountRecorder adsCountRecorder,
                       AdvertisementService advertisementService,
-                      AiConfigDao aiConfigDao) {
+                      AiConfigDao aiConfigDao,
+                      AIConfigServer aiConfigServer) {
         this.playCountRecorder = playCountRecorder;
         this.countRecorder = countRecorder;
         this.articleDao = articleDao;
@@ -53,6 +56,7 @@ public class CountTasks {
         this.adsCountRecorder = adsCountRecorder;
         this.advertisementService = advertisementService;
         this.aiConfigDao = aiConfigDao;
+        this.aiConfigServer = aiConfigServer;
     }
 
     /**
@@ -112,6 +116,8 @@ public class CountTasks {
         if (!aiToken.isEmpty()) {
             log.info("开始同步 AI Token 数据！");
             aiConfigDao.batchUpdateCount("use_tokens", aiToken);
+            // 同步缓存数据 TOKEN
+            aiConfigServer.setCacheConfig();
         }
 
 
