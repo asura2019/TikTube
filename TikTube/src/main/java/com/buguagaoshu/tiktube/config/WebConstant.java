@@ -91,4 +91,14 @@ public class WebConstant {
      * 锁定时间（分钟）
      * */
     public static final long LOCK_DURATION = 60;
+
+
+    /**
+     * 一个简单的接口限流配置
+     * 对稿件，评论，弹幕发布接口进行限流
+     * 避免被统一用户向数据库大量写入数据
+     * */
+    public final static int SIMPLE_CURRENT_LIMITING_TYPE_ARTICLE = 1;
+    public final static int SIMPLE_CURRENT_LIMITING_TYPE_COMMENT = 2;
+    public final static int SIMPLE_CURRENT_LIMITING_TYPE_DANMAKU = 3;
 }

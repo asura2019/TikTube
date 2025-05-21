@@ -3,9 +3,13 @@ package com.buguagaoshu.tiktube.controller;
 import com.buguagaoshu.tiktube.cache.CountRecorder;
 import com.buguagaoshu.tiktube.cache.HotCache;
 import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
+import com.buguagaoshu.tiktube.config.WebConstant;
 import com.buguagaoshu.tiktube.dto.VideoArticleDto;
 import com.buguagaoshu.tiktube.entity.ArticleEntity;
+import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
+import com.buguagaoshu.tiktube.repository.APICurrentLimitingRepository;
 import com.buguagaoshu.tiktube.service.ArticleService;
+import com.buguagaoshu.tiktube.utils.JwtUtil;
 import com.buguagaoshu.tiktube.vo.ArticleViewData;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +30,14 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-    private final CountRecorder countRecorder;
+    private final APICurrentLimitingRepository apiCurrentLimitingRepository;
 
-    private final PlayCountRecorder playCountRecorder;
 
     @Autowired
     public ArticleController(ArticleService articleService,
-                             CountRecorder countRecorder,
-                             PlayCountRecorder playCountRecorder) {
+                             APICurrentLimitingRepository apiCurrentLimitingRepository) {
         this.articleService = articleService;
-        this.countRecorder = countRecorder;
-        this.playCountRecorder = playCountRecorder;
+        this.apiCurrentLimitingRepository = apiCurrentLimitingRepository;
     }
 
 
@@ -62,7 +63,10 @@ public class ArticleController {
     @PostMapping("/api/article/video")
     public ResponseDetails videoPost(@Valid @RequestBody VideoArticleDto videoArticleDto,
                                      HttpServletRequest request) {
-        return ResponseDetails.ok(articleService.saveVideo(videoArticleDto, request));
+        if (apiCurrentLimitingRepository.hasVisit(WebConstant.SIMPLE_CURRENT_LIMITING_TYPE_ARTICLE, JwtUtil.getUserId(request))) {
+            return ResponseDetails.ok(articleService.saveVideo(videoArticleDto, request));
+        }
+        return ResponseDetails.ok(ReturnCodeEnum.COUNT_LIMIT);
     }
 
     @PostMapping("/api/article/video/update")

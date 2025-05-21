@@ -6,6 +6,7 @@ import com.buguagaoshu.tiktube.cache.PlayCountRecorder;
 import com.buguagaoshu.tiktube.dao.AiConfigDao;
 import com.buguagaoshu.tiktube.dao.ArticleDao;
 import com.buguagaoshu.tiktube.dao.CommentDao;
+import com.buguagaoshu.tiktube.repository.APICurrentLimitingRepository;
 import com.buguagaoshu.tiktube.service.AIConfigServer;
 import com.buguagaoshu.tiktube.service.AdvertisementService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,8 @@ public class CountTasks {
 
     private final AIConfigServer aiConfigServer;
 
+    private final APICurrentLimitingRepository apiCurrentLimitingRepository;
+
     @Autowired
     public CountTasks(PlayCountRecorder playCountRecorder,
                       CountRecorder countRecorder, ArticleDao articleDao,
@@ -48,7 +51,8 @@ public class CountTasks {
                       AdsCountRecorder adsCountRecorder,
                       AdvertisementService advertisementService,
                       AiConfigDao aiConfigDao,
-                      AIConfigServer aiConfigServer) {
+                      AIConfigServer aiConfigServer,
+                      APICurrentLimitingRepository apiCurrentLimitingRepository) {
         this.playCountRecorder = playCountRecorder;
         this.countRecorder = countRecorder;
         this.articleDao = articleDao;
@@ -57,6 +61,7 @@ public class CountTasks {
         this.advertisementService = advertisementService;
         this.aiConfigDao = aiConfigDao;
         this.aiConfigServer = aiConfigServer;
+        this.apiCurrentLimitingRepository = apiCurrentLimitingRepository;
     }
 
     /**
@@ -125,6 +130,6 @@ public class CountTasks {
 
         playCountRecorder.clean();
         countRecorder.clear();
-
+        apiCurrentLimitingRepository.clearAllRecords();
     }
 }

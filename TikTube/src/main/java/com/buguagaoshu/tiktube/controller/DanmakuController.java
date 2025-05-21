@@ -1,9 +1,12 @@
 package com.buguagaoshu.tiktube.controller;
 
+import com.buguagaoshu.tiktube.config.WebConstant;
 import com.buguagaoshu.tiktube.dto.ArtDanmakuDto;
 import com.buguagaoshu.tiktube.entity.DanmakuEntity;
 import com.buguagaoshu.tiktube.enums.ReturnCodeEnum;
+import com.buguagaoshu.tiktube.repository.APICurrentLimitingRepository;
 import com.buguagaoshu.tiktube.service.DanmakuService;
+import com.buguagaoshu.tiktube.utils.JwtUtil;
 import com.buguagaoshu.tiktube.vo.ResponseDetails;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +28,13 @@ public class DanmakuController {
 
     private final DanmakuService danmakuService;
 
+    private final APICurrentLimitingRepository currentLimitingRepository;
+
     @Autowired
-    public DanmakuController(DanmakuService danmakuService) {
+    public DanmakuController(DanmakuService danmakuService,
+                             APICurrentLimitingRepository currentLimitingRepository) {
         this.danmakuService = danmakuService;
+        this.currentLimitingRepository = currentLimitingRepository;
     }
 
 
@@ -39,14 +46,17 @@ public class DanmakuController {
     @PostMapping("/api/danmaku/v1")
     public ResponseDetails saveArt(@Valid @RequestBody ArtDanmakuDto danmakuDto,
                                    HttpServletRequest request) {
-        ReturnCodeEnum codeEnum = danmakuService.saveArtDanmaku(danmakuDto, request);
-        if (codeEnum.equals(ReturnCodeEnum.NO_LOGIN)) {
-            return ResponseDetails.ok(codeEnum).put("code", 1);
+        if (currentLimitingRepository.hasVisit(WebConstant.SIMPLE_CURRENT_LIMITING_TYPE_DANMAKU, JwtUtil.getUserId(request))) {
+            ReturnCodeEnum codeEnum = danmakuService.saveArtDanmaku(danmakuDto, request);
+            if (codeEnum.equals(ReturnCodeEnum.NO_LOGIN)) {
+                return ResponseDetails.ok(codeEnum).put("code", 1);
+            }
+            if (codeEnum.equals(ReturnCodeEnum.SUCCESS)) {
+                return ResponseDetails.ok(codeEnum).put("code", 0);
+            }
+            return ResponseDetails.ok(codeEnum).put("code", -1);
         }
-        if (codeEnum.equals(ReturnCodeEnum.SUCCESS)) {
-            return ResponseDetails.ok(codeEnum).put("code", 0);
-        }
-        return ResponseDetails.ok(codeEnum).put("code", -1);
+        return ResponseDetails.ok(ReturnCodeEnum.COUNT_LIMIT).put("code", 1);
     }
 
     /**
