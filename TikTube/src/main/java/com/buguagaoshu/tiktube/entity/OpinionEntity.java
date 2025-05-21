@@ -30,7 +30,7 @@ public class OpinionEntity {
     private Long targetId;
 
     /**
-     * 举报人
+     * 举报申诉人
      */
     private Long userId;
 
@@ -44,13 +44,18 @@ public class OpinionEntity {
     /**
      * 举报类型 0 稿件 1 评论 2 弹幕
      */
-    @ListValue(value = {0,1,2,10})
+    @ListValue(value = {0,1,2,3,4,5,10})
     private Integer type;
 
     /**
      * 状态 0 未处理，1已处理,2不予受理
      */
     private Integer status;
+
+    /**
+     * 申诉处理状态，0 恢复， 1 不恢复
+     * */
+    private Integer appealStatus;
 
     /**
      * 处理意见

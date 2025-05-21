@@ -175,15 +175,17 @@
     <v-dialog v-model="detailDialog" max-width="700">
       <v-card>
         <v-card-title class="text-h5 font-weight-bold py-4 px-6 bg-primary text-white">
-          <v-icon icon="mdi-flag" class="mr-2"></v-icon>
-          举报详情
-          <v-spacer></v-spacer>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            color="white"
-            @click="detailDialog = false"
-          ></v-btn>
+          <v-row class="mt-1 mb-1">
+            <v-icon icon="mdi-flag" class="mr-2"></v-icon>
+            举报详情
+            <v-spacer></v-spacer>
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              color="white"
+              @click="detailDialog = false"
+            ></v-btn>
+          </v-row>
         </v-card-title>
         <v-card-text class="pa-4">
           <v-list>
@@ -326,13 +328,27 @@
             class="mr-2"
           ></v-icon>
           {{ handleStatus === 1 ? '受理举报' : '不予受理' }}
+          <span v-if="isAppealType(selectedOpinion.type)">
+            {{ handleStatus === 1 ? '(申诉处理)' : '(申诉驳回)' }}
+          </span>
         </v-card-title>
         <v-card-text class="pa-4 pt-6">
+          <!-- 申诉处理结果选择 -->
+          <v-select
+            v-if="isAppealType(selectedOpinion.type) && handleStatus === 1"
+            v-model="appealStatus"
+            label="申诉处理结果"
+            :items="appealStatusOptions"
+            variant="outlined"
+            density="comfortable"
+            class="mb-4"
+          ></v-select>
+
           <!-- 将v-textarea替换为Vditor组件 -->
           <Vditor
             ref="opinionVditor"
             :idname="`opinion-editor-${selectedOpinion.id || 'new'}`"
-            :placeholder="handleStatus === 1 ? '请输入处理意见...' : '请输入不予受理的原因...'"
+            :placeholder="getPlaceholderText()"
             :height="250"
             :hide="false"
             :cache="false"
@@ -436,12 +452,18 @@ export default {
         { title: '稿件举报', value: '0' },
         { title: '评论举报', value: '1' },
         { title: '弹幕举报', value: '2' },
+        { title: '稿件申诉', value: '3' },
+        { title: '评论申诉', value: '4' },
+        { title: '弹幕申诉', value: '5' },
         { title: '意见反馈', value: '10' },
       ],
       typeMap: {
         0: { text: '稿件举报', color: 'error' },
         1: { text: '评论举报', color: 'warning' },
         2: { text: '弹幕举报', color: 'orange' },
+        3: { text: '稿件申诉', color: 'error' },
+        4: { text: '评论申诉', color: 'warning' },
+        5: { text: '弹幕申诉', color: 'orange' },
         10: { text: '意见反馈', color: 'blue' },
       },
       statusMap: {
@@ -449,6 +471,11 @@ export default {
         1: { text: '已处理', color: 'success', icon: 'mdi-check-circle' },
         2: { text: '不予受理', color: 'error', icon: 'mdi-close-circle' },
       },
+      appealStatus: 0,
+      appealStatusOptions: [
+        { title: '申诉成功', value: 0 },
+        { title: '申诉失败', value: 1 },
+      ],
     }
   },
   created() {
@@ -515,6 +542,7 @@ export default {
       this.selectedOpinion = { ...item }
       this.handleStatus = status
       this.handleOpinion = ''
+      this.appealStatus = 0 // 重置申诉状态
       this.handleDialog = true
 
       // 在对话框打开后，需要重置编辑器内容
@@ -523,6 +551,26 @@ export default {
           this.$refs.opinionVditor.setTextValue('')
         }
       })
+    },
+
+    // 判断是否为申诉类型
+    isAppealType(type) {
+      return type === 3 || type === 4 || type === 5
+    },
+
+    // 获取输入框提示文本
+    getPlaceholderText() {
+      if (!this.isAppealType(this.selectedOpinion.type)) {
+        return this.handleStatus === 1 ? '请输入处理意见...' : '请输入不予受理的原因...'
+      }
+
+      if (this.handleStatus === 1) {
+        return this.appealStatus === 0
+          ? '请输入申诉成功的处理意见...'
+          : '请输入申诉失败的处理意见...'
+      } else {
+        return '请输入申诉驳回的原因...'
+      }
     },
 
     // 处理Vditor输入
@@ -545,11 +593,27 @@ export default {
         opinion: this.handleOpinion,
       }
 
+      // 如果是申诉类型，添加申诉处理结果
+      if (this.isAppealType(this.selectedOpinion.type)) {
+        data.appealStatus = this.appealStatus
+      }
+
       this.httpPost('/admin/opinion/acceptance', data, (json) => {
         this.submitting = false
 
         if (json.status === 200) {
-          this.showSuccessMessage(this.handleStatus === 1 ? '举报已受理' : '举报已拒绝')
+          let successMessage = this.handleStatus === 1 ? '举报已受理' : '举报已拒绝'
+
+          // 如果是申诉类型，显示对应的成功消息
+          if (this.isAppealType(this.selectedOpinion.type)) {
+            if (this.handleStatus === 1) {
+              successMessage = this.appealStatus === 0 ? '申诉已通过' : '申诉已驳回'
+            } else {
+              successMessage = '申诉已拒绝处理'
+            }
+          }
+
+          this.showSuccessMessage(successMessage)
           this.handleDialog = false
           this.fetchOpinions()
         } else {

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
       <v-col cols="12">
         <v-card class="notification-card">
@@ -208,7 +208,7 @@
                               class="mr-2"
                               rounded
                             >
-                              查看举报结果
+                              查看举报\申诉结果
                             </v-btn>
                           </template>
 
@@ -304,7 +304,7 @@
       <v-card>
         <v-card-title class="text-h5 bg-warning text-white d-flex align-center">
           <v-icon class="mr-2">mdi-flag</v-icon>
-          举报处理结果
+          举报\申诉处理结果
           <v-spacer></v-spacer>
           <v-btn icon="mdi-close" variant="text" color="white" @click="reportDialog = false"></v-btn>
         </v-card-title>
@@ -328,7 +328,7 @@
                   <v-icon color="blue" class="mr-2">mdi-comment-text-outline</v-icon>
                 </template>
                 <v-list-item-title class="text-subtitle-1 font-weight-medium">举报内容</v-list-item-title>
-                <v-list-item-subtitle>{{ nowOpinion.userOpinion || '无' }}</v-list-item-subtitle>
+                {{ nowOpinion.userOpinion || '无' }}
               </v-list-item>
               
               <v-list-item>
@@ -346,9 +346,9 @@
                   <v-icon color="primary" class="mr-2">mdi-account-check</v-icon>
                 </template>
                 <v-list-item-title class="text-subtitle-1 font-weight-medium">处理意见</v-list-item-title>
-                <v-list-item-subtitle>
+          
                   <ShowMarkdown :markdown="nowOpinion.opinion" :anchor="0"></ShowMarkdown>
-                </v-list-item-subtitle>
+           
               </v-list-item>
               
               <v-list-item v-if="nowOpinion.status !== 0">
@@ -420,7 +420,7 @@ export default {
         2: { text: '帖子点赞', icon: 'mdi-thumb-up', color: 'pink' },
         3: { text: '评论点赞', icon: 'mdi-thumb-up-outline', color: 'pink-lighten-2' },
         10: { text: '系统通知', icon: 'mdi-bell', color: 'green' },
-        11: { text: '举报或意见反馈', icon: 'mdi-flag', color: 'red' },
+        11: { text: '举报\\意见反馈\\申诉', icon: 'mdi-flag', color: 'red' },
       },
       replyDialog: false,
       currentNotification: null,
@@ -438,6 +438,9 @@ export default {
         0: '稿件举报',
         1: '评论举报',
         2: '弹幕举报',
+        3: '稿件申诉',
+        4: '评论申诉',
+        5: '弹幕申诉',
         10: '意见反馈'
       },
       reportStatusMap: {

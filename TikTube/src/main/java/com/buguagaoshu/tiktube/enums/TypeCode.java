@@ -51,6 +51,21 @@ public class TypeCode {
 
 
     /**
+     * 稿件申诉
+     * */
+    public final static int APPEAL_TYPE_ARTICLE = 3;
+
+    /**
+     * 评论申诉
+     * */
+    public final static int APPEAL_TYPE_COMMENT = 4;
+
+    /**
+     * 弹幕申诉
+     * */
+    public final static int APPEAL_TYPE_DANMAKU = 5;
+
+    /**
      * 意见反馈
      * */
     public final static int OPINION_TYPE_FEEDBACK = 10;
@@ -104,8 +119,15 @@ public class TypeCode {
      * */
     public final static int AI_TYPE_EXAMINE_COMMENT = 1;
 
+
     /**
      * 文本稿件摘要生成
      * */
     public final static int AI_TYPE_TEXT_ABSTRACT = 2;
+
+
+    /**
+     * 图片审核
+     * */
+    public final static int AI_TYPE_IMAGE = 3;
 }

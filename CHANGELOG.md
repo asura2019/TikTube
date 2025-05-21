@@ -1,5 +1,9 @@
 # 更新日志
 
+## 2025-05-21
+
+`opinion_table` 表新增 `appeal_status` 字段，用来记录申诉处理状态 
+
 ## 2025-05-18
 
 `ai_config` 表新增 `max_tokens` 字段，限制大模型 token 使用

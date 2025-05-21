@@ -94,7 +94,13 @@ const router = createRouter({
           path: '/settings',
           name: 'Setting',
           component: () => import('@/views/home/SettingView.vue'),
-          meta: { title: '设置' }
+          meta: { title: '设置',  requireAuth: true }
+        },
+        {
+          path: '/appeal',
+          name: 'AppealView',
+          component: () => import('@/views/appeal/AppealView.vue'),
+          meta: { title: '申诉',  requireAuth: true }
         },
         {
           path: '/about',

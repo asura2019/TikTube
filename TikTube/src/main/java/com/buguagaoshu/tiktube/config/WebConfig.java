@@ -74,18 +74,17 @@ public class WebConfig implements WebMvcConfigurer {
                 WebConfigData webConfigData = webConfigService.initConfig();
                 webSettingCache.update(webConfigData);
                 log.info("设置获取完成！");
-                aiConfigServer.setCacheConfig();
                 // 如果开启了邮箱服务，初始化邮件信息
                 if (webConfigData.getOpenEmail()) {
                     mailService.initMainConfig();
                 }
-                
                 // 输出Redis状态信息
                 if (myConfigProperties.getOpenRedis()) {
                     log.info("Redis缓存已启用");
                 } else {
                     log.info("Redis缓存未启用，系统将使用内存缓存");
                 }
+                aiConfigServer.setCacheConfig();
             }
         };
     }

@@ -11,6 +11,7 @@
         <result property="userOpinion" column="user_opinion"/>
         <result property="type" column="type"/>
         <result property="status" column="status"/>
+        <result property="appealStatus" column="appeal_status"/>
         <result property="opinion" column="opinion"/>
         <result property="opinionUser" column="opinion_user"/>
         <result property="createTime" column="create_time"/>

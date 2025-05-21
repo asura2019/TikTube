@@ -119,7 +119,7 @@ export default {
       { icon: 'mdi-server', text: '运行状态', link: '/admin/runinfo' },
       { icon: 'mdi-application', text: '邀请码', link: '/admin/invitation' },
       { icon: 'mdi-video', text: '待审核', link: '/admin/examine' },
-      { icon:'mdi-flag', text: '举报与意见反馈', link: '/admin/opinion' },
+      { icon:'mdi-flag', text: '举报\\意见反馈\\申诉', link: '/admin/opinion' },
       { icon: 'mdi-filmstrip-box-multiple', text: '投稿列表', link: '/admin/article/list' },
       { icon: 'mdi-file', text: '文件列表', link: '/admin/file/list' },
       { icon: 'mdi-account-multiple', text: '用户列表', link: '/admin/userlist' },

@@ -10,6 +10,7 @@ import com.buguagaoshu.tiktube.enums.TypeCode;
 import com.buguagaoshu.tiktube.model.AiExamineCommentAndDanmakuResult;
 import com.buguagaoshu.tiktube.service.AIConfigServer;
 import com.buguagaoshu.tiktube.service.NotificationService;
+import com.buguagaoshu.tiktube.utils.MyStringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -150,7 +151,21 @@ public class AiExaminePipe {
                         comment.setStatus(TypeCode.NORMAL);
                     } else {
                         comment.setStatus(TypeCode.DELETE);
-                        // TODO 增加消息通知，用户可以提交管理员复审
+                        notificationService.sendNotification(
+                                0,
+                                comment.getUserId(),
+                                comment.getArticleId(),
+                                comment.getParentCommentId(),
+                                comment.getId(),
+                                "评论被删除",
+                                "",
+                                "你好，你的评论："
+                                        + MyStringUtils.extractString(comment.getComment(), 50)
+                                        + "因为" + comment.getAiExamineMessage()
+                                        + "已被删除，请遵相关法律法规及社区规定。"
+                                        + "如有异议，请 【<a href='/appeal?id=" + comment.getId() + "&type=comment'>点击此处</a>】 进行申诉。",
+                                NotificationType.SYSTEM
+                        );
                     }
 
                     // 更新评论
@@ -194,6 +209,21 @@ public class AiExaminePipe {
                         danmaku.setStatus(TypeCode.NORMAL);
                     } else {
                         danmaku.setStatus(TypeCode.DELETE);
+                        notificationService.sendNotification(
+                                0,
+                                danmaku.getAuthor(),
+                                danmaku.getVideoId(),
+                                danmaku.getVideoId(),
+                                danmaku.getId(),
+                                "弹幕被删除",
+                                "",
+                                "你好，你的弹幕："
+                                        + MyStringUtils.extractString(danmaku.getText(), 50)
+                                        + "因为" + danmaku.getAiExamineMessage()
+                                        + "已被删除，请遵相关法律法规及社区规定。"
+                                        + "如有异议，请 【<a href='/appeal?id=" + danmaku.getId() + "&type=danmaku'>点击此处</a>】 进行申诉。",
+                                NotificationType.SYSTEM
+                        );
                     }
 
                     // 更新弹幕
