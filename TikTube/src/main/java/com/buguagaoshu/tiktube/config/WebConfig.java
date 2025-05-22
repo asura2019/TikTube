@@ -126,18 +126,18 @@ public class WebConfig implements WebMvcConfigurer {
                 );
 
 
-//        registry.addInterceptor(vipInterceptor)
-//                .addPathPatterns(
-//                        // 发布视频接口
-//                        "/api/article/video",
-//                        // 更新视频接口
-//                        "/api/article/video/update",
-//                        // 删除视频接口
-//                        "/api/studio/article/delete",
-//                        // 用户状态更新接口
-//                        "/api/upload/video",
-//                        "/api/upload/photo"
-//                );
+        // registry.addInterceptor(vipInterceptor)
+        //         .addPathPatterns(
+        //                 // 发布视频接口
+        //                 "/api/article/video",
+        //                 // 更新视频接口
+        //                 "/api/article/video/update",
+        //                 // 删除视频接口
+        //                 "/api/studio/article/delete",
+        //                 // 用户状态更新接口
+        //                 "/api/upload/video",
+        //                 "/api/upload/photo"
+        //         );
     }
 
     @Bean

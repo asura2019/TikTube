@@ -154,6 +154,13 @@ export default {
         return
       }
 
+      if (this.opinionData.userOpinion.trim() === '') {
+        this.messageType = 'error'
+        this.message = this.isReport? '请填写举报原因' : '请填写反馈内容'
+        this.showMessage = true
+        return
+      }
+
       this.loading = true
       
       // 设置目标ID

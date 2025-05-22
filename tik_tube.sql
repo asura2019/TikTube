@@ -457,6 +457,7 @@ CREATE TABLE `opinion_table`  (
   `type` int NOT NULL COMMENT '举报类型 0 稿件 1 评论 2 弹幕',
   `status` int NOT NULL COMMENT '状态 0 未处理，1已处理',
   `opinion` varchar(999) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '处理意见',
+  `appeal_status` int COMMENT '申诉处理意见,0通过 1 不通过',
   `opinion_user` bigint NULL DEFAULT NULL COMMENT '处理人',
   `create_time` bigint NULL DEFAULT NULL COMMENT '举报时间',
   `opinion_time` bigint NULL DEFAULT NULL COMMENT '处理日期',
