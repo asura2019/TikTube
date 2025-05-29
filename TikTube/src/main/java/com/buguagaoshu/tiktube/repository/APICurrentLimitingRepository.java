@@ -14,6 +14,14 @@ public interface APICurrentLimitingRepository {
      * @return 是否有访问权限
      */
     boolean hasVisit(int type, long userId);
+
+    /**
+     * 检查是否有接口访问权限
+     * @param type 接口类型
+     * @param key 限制类型
+     * @return 是否有访问权限
+     */
+    boolean hasVisit(int type, String key);
     
     /**
      * 获取剩余等待时间

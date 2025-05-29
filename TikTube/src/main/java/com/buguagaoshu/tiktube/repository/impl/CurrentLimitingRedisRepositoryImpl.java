@@ -34,11 +34,21 @@ public class CurrentLimitingRedisRepositoryImpl implements APICurrentLimitingRep
     @Override
     public boolean hasVisit(int type, long userId) {
         String key = VISIT_RECORD_KEY_PREFIX + userId + "_" + type;
+        return hasVisitByKey(key);
+    }
+
+    @Override
+    public boolean hasVisit(int type, String key) {
+        String s = VISIT_RECORD_KEY_PREFIX + key + "_" + type;
+        return hasVisitByKey(s);
+    }
+
+    public boolean hasVisitByKey(String key) {
         long currentTime = System.currentTimeMillis() / 1000;
-        
+
         // 获取上次访问时间
         Object lastVisitTimeObj = redisRepository.get(key);
-        
+
         // 如果是首次访问或者已经超过限制时间，则允许访问
         if (lastVisitTimeObj == null) {
             // 更新访问时间并设置过期时间
@@ -55,7 +65,7 @@ public class CurrentLimitingRedisRepositoryImpl implements APICurrentLimitingRep
         redisRepository.set(key, String.valueOf(currentTime), TIME_LIMIT);
         return false;
     }
-    
+
     @Override
     public int getRemainingTime(int type, long userId) {
         String key = VISIT_RECORD_KEY_PREFIX + userId + "_" + type;

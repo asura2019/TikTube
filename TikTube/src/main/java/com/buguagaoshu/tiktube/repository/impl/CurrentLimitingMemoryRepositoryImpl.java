@@ -32,11 +32,21 @@ public class CurrentLimitingMemoryRepositoryImpl implements APICurrentLimitingRe
     @Override
     public boolean hasVisit(int type, long userId) {
         String key = userId + "_" + type;
+        return hasVisitByKey(key);
+    }
+
+    @Override
+    public boolean hasVisit(int type, String key) {
+        String s = key + "_" + type;
+        return hasVisitByKey(s);
+    }
+
+    public boolean hasVisitByKey(String key) {
         long currentTime = System.currentTimeMillis() / 1000;
-        
+
         // 获取上次访问时间
         Long lastVisitTime = visitRecords.get(key);
-        
+
         // 如果是首次访问或者已经超过限制时间，则允许访问
         if (lastVisitTime == null || (currentTime - lastVisitTime) >= TIME_LIMIT) {
             // 更新访问时间
@@ -46,7 +56,7 @@ public class CurrentLimitingMemoryRepositoryImpl implements APICurrentLimitingRe
         visitRecords.put(key, currentTime);
         return false;
     }
-    
+
     @Override
     public int getRemainingTime(int type, long userId) {
         String key = userId + "_" + type;

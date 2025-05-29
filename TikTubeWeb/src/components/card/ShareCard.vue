@@ -91,6 +91,9 @@ export default {
     // 确保article对象有id属性
     if (this.article && this.article.id) {
       this.url = `${window.location.origin}/video/${this.article.id}`
+      if (this.article.type === 2) {
+        this.url = `${window.location.origin}/text/${this.article.id}`
+      }
       this.$nextTick(() => {
         this.createQrCode()
       })

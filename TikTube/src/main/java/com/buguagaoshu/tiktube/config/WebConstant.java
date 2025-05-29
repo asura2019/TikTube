@@ -101,4 +101,5 @@ public class WebConstant {
     public final static int SIMPLE_CURRENT_LIMITING_TYPE_ARTICLE = 1;
     public final static int SIMPLE_CURRENT_LIMITING_TYPE_COMMENT = 2;
     public final static int SIMPLE_CURRENT_LIMITING_TYPE_DANMAKU = 3;
+    public final static int SIMPLE_CURRENT_LIMITING_TYPE_ARTICLE_PASSWORD = 4;
 }

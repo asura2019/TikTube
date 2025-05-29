@@ -230,7 +230,7 @@
 
       <!-- 分享卡片弹窗 -->
       <v-dialog max-width="600" v-model="shareDialog">
-        <ShareCard :article="{ id: id, title: textData.title }" />
+        <ShareCard :article="textData" />
       </v-dialog>
     </v-container>
   </div>
