@@ -179,7 +179,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             }
 
             // 判断是否开启了两步认证
-            if (userEntity.getOtp().equals(TwoFactorAuthenticationType.COLOS)) {
+            if (userEntity.getOtp().equals(TwoFactorAuthenticationType.ClOSE)) {
                 return loginSuccess(userEntity, loginDetails, response, request);
             } else {
                 // 处理两步认证
@@ -574,7 +574,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         }
         boolean code = twoFactorAuthenticationServer.verifyTOTPCode(userId, user.getOtpSecret(), twoFactorData.getCode());
         if (code) {
-            user.setOtp(TwoFactorAuthenticationType.COLOS);
+            user.setOtp(TwoFactorAuthenticationType.ClOSE);
             user.setOtpRecovery(null);
             user.setOtpRecovery(null);
             this.updateById(user);

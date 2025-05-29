@@ -192,7 +192,8 @@ CREATE TABLE `file_table`  (
   INDEX `find_file_by_userid`(`upload_user_id`) USING BTREE,
   INDEX `find_file_by_type`(`type`) USING BTREE,
   INDEX `find_file_suffix`(`suffix_name`) USING BTREE,
-  INDEX `find_file_save_location`(`save_location`)
+  INDEX `find_file_save_location`(`save_location`),
+  INDEX `find_file_new_name`(`file_new_name`),
 ) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
@@ -494,6 +495,28 @@ CREATE TABLE `ai_config`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
+
+
+-- ----------------------------
+-- Table structure for article_text
+-- 保存与稿件关联的文章信息
+-- ----------------------------
+DROP TABLE IF EXISTS `article_text`;
+CREATE TABLE `article_text`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `article_id` bigint NOT NULL COMMENT '关联的文章信息',
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文本内容',
+  `user_id` bigint NOT NULL COMMENT '作者',
+  `type` int NOT NULL DEFAULT 0 COMMENT '文章类型0 普通文章，1回复可见，2加密文章',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '加密文章密码',
+  `create_time` bigint NOT NULL COMMENT '发布时间',
+  `update_time` bigint NOT NULL COMMENT '更新时间',
+  `sort` int NOT NULL DEFAULT 0 COMMENT '段落顺序，越小越靠前',
+  `status` int NOT NULL DEFAULT 0 COMMENT '状态0 正常，1删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `find_article_text_by_article_id`(`article_id`) USING BTREE,
+  INDEX `find_article_text_by_user_id`(`user_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '保存与稿件关联的文章' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
 

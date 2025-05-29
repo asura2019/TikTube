@@ -73,7 +73,7 @@
                ) AS hot_score
         FROM article
         WHERE status = 0
-          AND examine_status = 1
+          AND examine_status = 1 AND type = #{type}
           <if test="startTime > 0">
               AND update_time >= #{startTime}
           </if>

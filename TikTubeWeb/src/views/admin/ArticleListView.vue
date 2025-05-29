@@ -138,12 +138,25 @@
               <v-tooltip location="top" text="预览">
                 <template #activator="{ props }">
                   <v-btn
+                    v-if="item.type == 0"
                     v-bind="props"
                     icon
                     size="small"
                     color="primary"
                     class="mr-1"
                     :href="`/video/${item.id}`"
+                    target="_blank"
+                  >
+                    <v-icon>mdi-eye</v-icon>
+                  </v-btn>
+                  <v-btn
+                    v-if="item.type == 2"
+                    v-bind="props"
+                    icon
+                    size="small"
+                    color="primary"
+                    class="mr-1"
+                    :href="`/text/${item.id}`"
                     target="_blank"
                   >
                     <v-icon>mdi-eye</v-icon>

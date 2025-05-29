@@ -40,7 +40,7 @@ public interface ArticleDao extends BaseMapper<ArticleEntity> {
      * @param limit 限制数量
      * @return 热门文章列表
      */
-    List<ArticleEntity> findHotArticlesWithScore(@Param("startTime") long startTime, @Param("limit") int limit);
+    List<ArticleEntity> findHotArticlesWithScore(@Param("startTime") long startTime, @Param("limit") int limit, @Param("type") int type);
     
     /**
      * 查询最新发布的文章并计算热度值

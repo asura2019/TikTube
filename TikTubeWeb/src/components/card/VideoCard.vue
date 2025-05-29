@@ -113,12 +113,12 @@ export default {
 .video-card {
   transition: all 0.2s ease-in-out;
   cursor: pointer;
-  /*padding-bottom: 8px;*/
+  /*padding-bottom: 0.5em;*/
 }
 
 .video-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-0.125em);
+  box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.1);
 }
 
 .play-overlay {
@@ -140,12 +140,12 @@ export default {
 }
 
 .video-info {
-  min-height: 80px;
+  min-height: 5em;
 }
 
 .video-title {
-  height: 48px; /* 固定高度，适合两行文字 */
-  margin-bottom: 8px;
+  height: 3em; /* 固定高度，适合两行文字 */
+  margin-bottom: 0.5em;
   overflow: hidden;
 }
 
@@ -160,7 +160,7 @@ export default {
 }
 
 .video-meta {
-  height: 60px; /* 固定高度 */
+  height: 3.75em; /* 固定高度 */
   overflow: hidden;
   line-height: 1.4;
 }

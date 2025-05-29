@@ -25,6 +25,12 @@ const router = createRouter({
           meta: { title: '播放' }
         },
         {
+          path: '/text/:id',
+          name: 'Text',
+          component: () => import('@/views/player/TextView.vue'),
+          meta: { title: '文章' }
+        },
+        {
           path: '/v/:id',
           name: 'CategoryView',
           component: () => import('@/views/category/CategoryView.vue'),
@@ -107,6 +113,12 @@ const router = createRouter({
           name: 'About',
           component: () => import('@/views/home/AboutView.vue'),
           meta: { title: '关于' }
+        },
+        {
+          path: '/articles',
+          name: 'Articles',
+          component: () => import('@/views/home/ArticlesView.vue'),
+          meta: { title: '文章列表' }
         },
       ],
     },

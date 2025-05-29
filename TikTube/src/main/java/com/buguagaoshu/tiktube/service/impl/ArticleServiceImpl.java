@@ -90,6 +90,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<ArticleEntity> wrapper = createNormalArticleWrapper();
         String search = (String) params.get("search");
+        String type = (String) params.get("type");
+        if (type != null) {
+            wrapper.eq("type", type);
+        }
         if (search != null && !search.isEmpty()) {
             wrapper.like("title", search);
             // wrapper.or().like("description", search);
@@ -528,6 +532,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         QueryWrapper<ArticleEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("id", id);
         wrapper.eq("status", ArticleStatusEnum.NORMAL.getCode());
+        wrapper.eq("type", FileTypeEnum.VIDEO.getCode());
         
         // 判断是否为管理员
         boolean isAdmin = false;
@@ -774,14 +779,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         long ago = currentTime - ONE_DAY_MILLIS;
 
         // 直接从数据库获取已经计算好热度值并排序的文章列表
-        List<ArticleEntity> list = this.baseMapper.findHotArticlesWithScore(ago, num);
+        List<ArticleEntity> list = this.baseMapper.findHotArticlesWithScore(ago, num, FileTypeEnum.VIDEO.getCode());
 
         // 如果24小时内的文章不足，获取最新发布的num条内容计算热度
         if (list.size() < num) {
             // 构造查询条件
             Map<String, Object> conditions = Map.of(
                     "status", ArticleStatusEnum.NORMAL.getCode(),
-                    "examine_status", ExamineTypeEnum.SUCCESS.getCode()
+                    "examine_status", ExamineTypeEnum.SUCCESS.getCode(),
+                    "type", FileTypeEnum.VIDEO.getCode()
             );
             QueryWrapper<ArticleEntity> wrapper = createQueryWrapper(conditions, true);
             wrapper.last("LIMIT " + num);

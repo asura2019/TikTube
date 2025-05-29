@@ -130,4 +130,22 @@ public class TypeCode {
      * 图片审核
      * */
     public final static int AI_TYPE_IMAGE = 3;
+
+
+    /**
+     * 正常文章
+     * */
+    public final static int ARTICLE_TEXT_NORMAL = 0;
+
+
+    /**
+     * 评论可见
+     * */
+    public final static int ARTICLE_TEXT_COMMENT = 1;
+
+
+    /**
+     * 密码
+     * */
+    public final static int ARTICLE_TEXT_PASSWORD = 2;
 }

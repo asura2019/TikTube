@@ -50,6 +50,33 @@
       </v-row>
     </v-container>
     <v-col> &nbsp; </v-col>
+    <!-- 文章卡片 -->
+    <v-row>
+      <v-col cols="12">
+        <v-row class="d-flex align-center">
+          <v-col>
+            <h2 class="text-h5">文章</h2>
+          </v-col>
+          <v-col class="text-right">
+            <v-btn
+              variant="text"
+              color="primary"
+              prepend-icon="mdi-arrow-right"
+              @click="goToArticleList"
+            >
+              查看更多
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col v-for="item in textList" :key="item.id">
+        <TextInfoCard :text="item" />
+      </v-col>
+    </v-row>
+
+
 
     <!-- 引入弹窗广告组件 -->
     <NoticeDialogCard
@@ -63,15 +90,18 @@
 <script>
 import VideoCared from '@/components/card/VideoCard.vue'
 import NoticeDialogCard from '@/components/card/NoticeDialogCard.vue'
+import TextInfoCard from '@/components/card/TextInfoCard.vue'
 
 export default {
   components: {
     VideoCared,
-    NoticeDialogCard
+    NoticeDialogCard,
+    TextInfoCard
   },
   data() {
     return {
       videoList: [],
+      textList: [],
       page: 1,
       size: 24,
       length: 0,
@@ -91,6 +121,7 @@ export default {
     }
     this.getCategory()
     this.getVideoList()
+    this.getTextList()
     this.getSystemNotice()
     this.getPopupNotice()
   },
@@ -138,10 +169,15 @@ export default {
       this.$router.push(`/v/${value.id}`)
     },
     getVideoList() {
-      this.httpGet(`/article/home/list?page=${this.page}&limit=${this.size}`, (json) => {
+      this.httpGet(`/article/home/list?page=${this.page}&limit=${this.size}&type=0`, (json) => {
         this.videoList = json.data.list
         this.page = json.data.currPage
         this.length = json.data.totalPage
+      })
+    },
+    getTextList() {
+      this.httpGet(`/article/home/list?page=1&limit=15&type=2`, (json) => {
+        this.textList = json.data.list
       })
     },
     pageChange(value) {
@@ -152,6 +188,10 @@ export default {
         top: 0,
         behavior: 'smooth',
       })
+    },
+        // 跳转到文章列表页面
+    goToArticleList() {
+      this.$router.push('/articles')
     },
   },
 }

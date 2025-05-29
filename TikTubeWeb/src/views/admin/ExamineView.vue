@@ -89,6 +89,7 @@
           <template #[`item.actions`]="{ item }">
             <div class="d-flex align-center">
               <v-btn
+                v-if="item.type == 0"
                 :href="`/video/${item.id}`"
                 target="_blank"
                 icon
@@ -98,7 +99,17 @@
               >
                 <v-icon>mdi-video</v-icon>
               </v-btn>
-
+              <v-btn
+                v-if="item.type == 2"
+                :href="`/text/${item.id}`"
+                target="_blank"
+                icon
+                color="primary"
+                size="small"
+                class="mr-2"
+              >
+                <v-icon>mdi-text</v-icon>
+              </v-btn>
               <v-tooltip location="top">
                 <template #activator="{ props }">
                   <v-btn icon v-bind="props" color="warning" size="small" @click="examine(item)">

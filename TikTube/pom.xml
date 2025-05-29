@@ -24,6 +24,7 @@
         <totp.version>1.7.1</totp.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <openai.version>1.6.1</openai.version>
+        <commonmark.version>0.24.0</commonmark.version>
     </properties>
 
     <repositories>
@@ -73,6 +74,11 @@
             <groupId>org.lionsoul</groupId>
             <artifactId>ip2region</artifactId>
             <version>${ip2region.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>${commonmark.version}</version>
         </dependency>
         <dependency>
             <groupId>dev.samstevens.totp</groupId>

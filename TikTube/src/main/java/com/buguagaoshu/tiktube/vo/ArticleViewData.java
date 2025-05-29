@@ -1,6 +1,7 @@
 package com.buguagaoshu.tiktube.vo;
 
 
+import com.buguagaoshu.tiktube.entity.ArticleTextEntity;
 import com.buguagaoshu.tiktube.entity.CategoryEntity;
 import com.buguagaoshu.tiktube.entity.FileTableEntity;
 import lombok.Data;
@@ -131,6 +132,7 @@ public class ArticleViewData {
 
     private List<FileTableEntity> video;
 
+    private List<ArticleTextEntity> text;
 
     private List<ArticleViewData> similar;
 }
