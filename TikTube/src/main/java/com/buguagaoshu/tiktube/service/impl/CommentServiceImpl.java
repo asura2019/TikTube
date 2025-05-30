@@ -309,6 +309,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
         return true;
     }
 
+    @Override
+    public boolean hasUserCommentInArticle(long id, long userId) {
+        QueryWrapper<CommentEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("article_id", id);
+        wrapper.eq("user_id", userId);
+        List<CommentEntity> list = this.list(wrapper);
+        return list != null && !list.isEmpty();
+    }
+
     public void commentCountController(CommentEntity comment, long count) {
         if (comment.getType().equals(CommentType.SECOND_COMMENT)) {
             // 更新父级评论数量与目标评论数量

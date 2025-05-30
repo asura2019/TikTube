@@ -1,10 +1,17 @@
 <template>
   <v-card class="favorite-card rounded-lg" :elevation="0" @click="video ? navigateToVideo() : null">
     <v-row no-gutters>
-      <!-- 左侧视频封面区域 -->
+      <!-- 左侧区域 -->
       <v-col cols="12">
-        <div class="video-thumbnail position-relative">
-          <template v-if="video">
+        <template v-if="video.type == 2">
+          <!-- 文本描述模式 -->
+          <div class="text-description text-body-2 text-medium-emphasis pa-4">
+            <span class="description-text">{{ video.describes }}</span>
+          </div>
+        </template>
+        <template v-else-if="video.type == 0">
+          <!-- 视频封面模式 -->
+          <div class="video-thumbnail position-relative">
             <v-img :src="video.imgUrl" :aspect-ratio="16 / 9" class="rounded-lg">
               <!-- 视频时长 -->
               <div class="video-duration">
@@ -15,14 +22,14 @@
                 <v-icon size="48" color="white">mdi-play-circle</v-icon>
               </div>
             </v-img>
-          </template>
-          <template v-else>
-            <div class="deleted-video-thumbnail rounded-lg">
-              <v-icon size="64" color="white">mdi-video-off</v-icon>
-              <div class="deleted-text">视频已删除</div>
-            </div>
-          </template>
-        </div>
+          </div>
+        </template>
+        <template v-else>
+          <div class="deleted-video-thumbnail rounded-lg">
+            <v-icon size="64" color="white">mdi-video-off</v-icon>
+            <div class="deleted-text">稿件已删除</div>
+          </div>
+        </template>
       </v-col>
 
       <!-- 右侧视频信息区域 -->
@@ -111,8 +118,10 @@ export default {
       })
     },
     navigateToVideo() {
-      if (this.video) {
+      if (this.video.type == 0) {
         this.$router.push(`/video/${this.video.id}`)
+      } else if (this.video.type == 2) {
+        this.$router.push(`/text/${this.video.id}`)
       }
     },
     removeFavorite() {
@@ -204,5 +213,22 @@ export default {
   .favorite-card {
     margin-bottom: 16px;
   }
+}
+
+.text-description {
+  height: 100%;
+  min-height: 5em;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.description-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  line-height: 1.5;
 }
 </style>

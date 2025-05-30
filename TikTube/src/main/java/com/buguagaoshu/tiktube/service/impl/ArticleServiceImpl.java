@@ -550,7 +550,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         }
         
         // 如果不是管理员，且视频未通过审核
-        if (!isAdmin && articleEntity.getExamineStatus() != ExamineTypeEnum.SUCCESS.getCode() && !articleEntity.getUserId().equals(articleEntity.getUserId())) {
+        if (!isAdmin
+                && articleEntity.getExamineStatus() != ExamineTypeEnum.SUCCESS.getCode()
+                && !articleEntity.getUserId().equals(userId)) {
             return createHiddenArticleView();
         }
         
@@ -742,7 +744,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
                     -1,
                     "你的稿件已通过审核，现在所有人都能看见你的稿件了",
                     NotificationType.createExamineLink(articleEntity.getTitle(), articleEntity.getId()),
-                    NotificationType.createExamineContent(articleEntity.getTitle(), examineDto.getType(), examineDto.getMessage()),
+                    "你的稿件 《" + articleEntity.getTitle() + "》 已通过审核，现在所有人都能看见你的稿件了",
                     NotificationType.SYSTEM
             );
         } else {
@@ -920,6 +922,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleDao, ArticleEntity> i
         
         // 根据父分类或子分类筛选
         applyCategoryFilter(wrapper, categoryEntity);
+
+        String type = (String) params.get("type");
+        if (type != null) {
+            wrapper.eq("type", type);
+        }
         
         // 使用排序和分页优化数据库查询
         wrapper.orderByDesc("create_time");

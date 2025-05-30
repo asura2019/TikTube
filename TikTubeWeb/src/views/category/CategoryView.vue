@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height pa-6">
+  <v-container fluid>
     <!-- 当前分区信息 -->
     <v-card flat class="mb-4 pa-3 rounded-lg">
       <v-row align="center">
@@ -141,7 +141,7 @@ export default {
     },
     getVideoList() {
       this.httpGet(
-        `/article/category/${this.categoryId}?page=${this.page}&limit=${this.size}`,
+        `/article/category/${this.categoryId}?page=${this.page}&limit=${this.size}&type=0`,
         (json) => {
           if (json.data == null) {
             this.videoList = []

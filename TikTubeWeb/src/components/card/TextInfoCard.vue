@@ -32,7 +32,7 @@
 
         <!-- 描述 -->
         <div class="text-description text-body-2 text-medium-emphasis mt-1">
-          <span class="description-text">{{ textInfo.description }}</span>
+          <span class="description-text">{{ textInfo.describes }}</span>
         </div>
 
         <!-- 元数据 -->

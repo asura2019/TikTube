@@ -111,7 +111,7 @@
             <v-divider></v-divider>
             <v-card-text>
               <!-- 根据文本类型显示不同内容 -->
-              <div v-if="textContent && textContent.type === 0">
+              <div v-if="textContent && (textContent.type === 0 || textContent.content)">
                 <ShowMarkdown :markdown="textContent.content" :speech="true" :anchor="1" />
               </div>
               <div v-else-if="textContent && textContent.type === 1" class="text-center py-4">

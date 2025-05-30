@@ -45,6 +45,9 @@ public interface CommentService extends IService<CommentEntity> {
     boolean toggleCommentStatus(long id);
 
 
+    boolean hasUserCommentInArticle(long id, long userId);
+
+
 
     void addCount(String col, long commentId, long count);
 

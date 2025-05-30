@@ -45,6 +45,7 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
     private final CountRecorder countRecorder;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final PlayCountRecorder playCountRecorder;
+    private final CommentService commentService;
 
     @Autowired
     public ArticleTextService(ArticleService articleService,
@@ -52,8 +53,10 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
                               WebSettingCache webSettingCache,
                               FileTableService fileTableService,
                               UserService userService,
-                              IpUtil ipUtil, CountRecorder countRecorder,
-                              PlayCountRecorder playCountRecorder) {
+                              IpUtil ipUtil,
+                              CountRecorder countRecorder,
+                              PlayCountRecorder playCountRecorder,
+                              CommentService commentService) {
         this.articleService = articleService;
         this.categoryCache = categoryCache;
         this.webSettingCache = webSettingCache;
@@ -62,21 +65,25 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         this.ipUtil = ipUtil;
         this.countRecorder = countRecorder;
         this.playCountRecorder = playCountRecorder;
+        this.commentService = commentService;
     }
 
 
     public ArticleViewData getText(long id, HttpServletRequest request) {
+
         // 获取用户ID，未登录用户为-1
         long userId = -1;
         try {
             userId = JwtUtil.getUserId(request);
-        } catch (UserNotLoginException ignored) {}
+        } catch (UserNotLoginException ignored) {
+        }
 
         // 构建查询条件
         QueryWrapper<ArticleEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("id", id);
         wrapper.eq("status", ArticleStatusEnum.NORMAL.getCode());
         wrapper.eq("type", FileTypeEnum.ARTICLE.getCode());
+
 
         // 判断是否为管理员
         boolean isAdmin = false;
@@ -94,14 +101,16 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         }
 
         // 如果不是管理员，且视频未通过审核
-        if (!isAdmin && articleEntity.getExamineStatus() != ExamineTypeEnum.SUCCESS.getCode() && !articleEntity.getUserId().equals(articleEntity.getUserId())) {
+        if (!isAdmin
+                && articleEntity.getExamineStatus() != ExamineTypeEnum.SUCCESS.getCode()
+                && !articleEntity.getUserId().equals(userId)) {
             return createHiddenArticleView();
         }
 
-        return buildArticleViewData(articleEntity, userId);
+        return buildArticleViewData(articleEntity, userId, ipUtil.getIpAddr(request), isAdmin);
     }
 
-    private ArticleViewData buildArticleViewData(ArticleEntity article, long userId) {
+    private ArticleViewData buildArticleViewData(ArticleEntity article, long userId, String ip, boolean isAdmin) {
         ArticleViewData viewData = new ArticleViewData();
         countRecorder.syncArticleCount(article);
 
@@ -120,8 +129,15 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         // 获取文章内容
         List<ArticleTextEntity> articleTextByArticleId = findArticleTextByArticleId(article.getId());
         for (ArticleTextEntity articleTextEntity : articleTextByArticleId) {
-            if(articleTextEntity.getType() != TypeCode.ARTICLE_TEXT_NORMAL) {
-                articleTextEntity.setContent("");
+            if (!isAdmin && article.getUserId() != userId) {
+                if (articleTextEntity.getType() == TypeCode.ARTICLE_TEXT_PASSWORD) {
+                    articleTextEntity.setContent(null);
+                } else if (articleTextEntity.getType() == TypeCode.ARTICLE_TEXT_COMMENT) {
+                    boolean b = commentService.hasUserCommentInArticle(article.getId(), userId);
+                    if (!b) {
+                        articleTextEntity.setContent(null);
+                    }
+                }
                 articleTextEntity.setPassword("");
             }
         }
@@ -141,6 +157,7 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
 
         viewData.setIsShow(true);
         // 增加播放量
+        playCountRecorder.recordPlay(viewData.getId(), ip);
         viewData.setViewCount(viewData.getViewCount() + playCountRecorder.getPlayCount(article.getId()));
         return viewData;
     }
@@ -174,6 +191,8 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         return null;
     }
 
+
+
     /**
      * 创建隐藏的文章视图（无权查看时返回）
      */
@@ -188,40 +207,39 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
      */
     @Transactional(rollbackFor = Exception.class)
     public ReturnCodeEnum saveText(TextArticleDto textArticleDto,
-                                  HttpServletRequest request) {
+                                   HttpServletRequest request) {
         // 获取用户ID
         long userId = JwtUtil.getUserId(request);
-        
+
 
         // 验证分类是否存在
         CategoryEntity categoryEntity = categoryCache.getCategoryEntityMap().get(textArticleDto.getCategory());
         if (categoryEntity == null) {
             return ReturnCodeEnum.CATEGORY_NOT_FOUND;
         }
-        
 
-        
+
         // 构建文章实体
         ArticleEntity articleEntity = buildArticleEntity(textArticleDto, userId, null);
-        
+
         // 设置IP和UA信息
         String ip = ipUtil.getIpAddr(request);
         articleEntity.setIp(ip);
         articleEntity.setUa(ipUtil.getUa(request));
         articleEntity.setCity(ipUtil.getCity(ip));
-        
+
         // 保存文章基本信息
         articleService.save(articleEntity);
-        
+
         // 更新用户最后发布时间
         userService.updateLastPublishTime(System.currentTimeMillis(), userId);
 
         // 保存文章内容
         saveArticleTextList(textArticleDto.getTextList(), articleEntity.getId(), userId);
-        
+
         return ReturnCodeEnum.SUCCESS;
     }
-    
+
     /**
      * 构建文章实体
      */
@@ -233,11 +251,11 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         // article.setImgUrl(imageFile.getFileUrl());
         article.setUserId(userId);
 
-        
+
         long time = System.currentTimeMillis();
         article.setCreateTime(time);
         article.setUpdateTime(time);
-        
+
         // 设置初始计数
         article.setViewCount(0L);
         article.setLikeCount(0L);
@@ -245,31 +263,31 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         article.setDislikeCount(0L);
         article.setCommentCount(0L);
         article.setDanmakuCount(0L);
-        
+
         // 设置标签
         try {
             article.setTag(OBJECT_MAPPER.writeValueAsString(dto.getTag()));
         } catch (JsonProcessingException e) {
             log.warn("用户 {} 添加的文章标签序列化失败", userId);
         }
-        
+
         // 设置审核状态
         if (webSettingCache.getWebConfigData().getOpenExamine()) {
             article.setExamineStatus(ExamineTypeEnum.PENDING_REVIEW.getCode());
         } else {
             article.setExamineStatus(ExamineTypeEnum.SUCCESS.getCode());
         }
-        
+
         // 设置文章类型
         article.setType(FileTypeEnum.ARTICLE.getCode());
         article.setStatus(ArticleStatusEnum.NORMAL.getCode());
         if (dto.getImgUrl() == null || dto.getImgUrl().isEmpty()) {
             article.setImgUrl("");
         }
-        
+
         return article;
     }
-    
+
 
     /**
      * 保存文章内容列表
@@ -296,7 +314,7 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
 
             saveList.add(text);
         }
-        
+
         // 批量保存文章内容
         this.saveBatch(saveList);
 
@@ -305,12 +323,12 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
             analyzeAndUpdateFileReferences(linkList, userId, articleId);
         }
     }
-    
+
     /**
      * 分析链接并更新文件引用状态
-     * 
-     * @param linkList 链接列表
-     * @param userId 用户ID
+     *
+     * @param linkList  链接列表
+     * @param userId    用户ID
      * @param articleId 文章ID
      */
     private void analyzeAndUpdateFileReferences(List<String> linkList, Long userId, Long articleId) {
@@ -322,12 +340,12 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
                 fileNames.add(fileName);
             }
         }
-        
+
         // 如果没有有效的文件名，直接返回
         if (fileNames.isEmpty()) {
             return;
         }
-        
+
         // 使用IN查询一次性获取所有匹配的文件
         QueryWrapper<FileTableEntity> wrapper =
                 new QueryWrapper<>();
@@ -336,24 +354,24 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         wrapper.eq("upload_user_id", userId);
         // 只查询未使用的文件
         wrapper.ne("status", FileStatusEnum.USED.getCode());
-        
+
         List<FileTableEntity> files = fileTableService.list(wrapper);
-        
+
         // 更新文件状态
         if (!files.isEmpty()) {
             for (FileTableEntity file : files) {
                 file.setStatus(FileStatusEnum.USED.getCode());
                 file.setArticleId(articleId); // 关联到当前文章
             }
-            
+
             // 批量更新文件状态
             fileTableService.updateBatchById(files);
         }
     }
-    
+
     /**
      * 从链接中提取文件名
-     * 
+     *
      * @param link 链接地址
      * @return 文件名
      */
@@ -361,13 +379,13 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         if (link == null || link.isEmpty()) {
             return null;
         }
-        
+
         // 处理形如 /ddd/ddd/dddd.mp4 的链接
         int lastSlashIndex = link.lastIndexOf('/');
         if (lastSlashIndex >= 0 && lastSlashIndex < link.length() - 1) {
             return link.substring(lastSlashIndex + 1);
         }
-        
+
         return link; // 如果没有斜杠，则返回整个链接作为文件名
     }
 }

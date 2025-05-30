@@ -12,7 +12,7 @@
     
     <!-- 文章卡片 -->
     <v-row>
-      <v-col v-for="item in textList" :key="item.id">
+      <v-col cols="12" v-for="item in textList" :key="item.id">
         <TextInfoCard :text="item" />
       </v-col>
     </v-row>
