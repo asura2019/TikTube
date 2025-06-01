@@ -134,47 +134,35 @@
             <!-- Markdown编辑器 -->
             <v-row>
               <v-col cols="12">
-                <h3 class="text-h6 font-weight-medium mb-3">
-                  <v-icon icon="mdi-file-document-edit-outline" class="mr-2"></v-icon>
-                  文章内容
-                </h3>
+                <div class="d-flex justify-space-between align-center mb-3">
+                  <h3 class="text-h6 font-weight-medium">
+                    <v-icon icon="mdi-file-document-edit-outline" class="mr-2"></v-icon>
+                    文章内容
+                  </h3>
+                  <v-btn
+                    v-if="articleSegments.length < 3"
+                    color="primary"
+                    variant="outlined"
+                    prepend-icon="mdi-plus"
+                    @click="addNewSegment"
+                  >
+                    添加段落
+                  </v-btn>
+                </div>
                 
-                <!-- 文章类型选择 -->
-                <v-row class="mb-4">
-                  <v-col cols="12" md="6">
-                    <v-select
-                      v-model="articleType"
-                      :items="articleTypeOptions"
-                      label="文章类型"
-                      variant="outlined"
-                      density="comfortable"
-                      prepend-inner-icon="mdi-format-list-text"
-                      @update:model-value="handleArticleTypeChange"
-                    ></v-select>
-                  </v-col>
-                  
-                  <!-- 加密文章密码输入框 -->
-                  <v-col cols="12" md="6" v-if="articleType === 2">
-                    <v-text-field
-                      v-model="articlePassword"
-                      label="访问密码"
-                      variant="outlined"
-                      density="comfortable"
-                      prepend-inner-icon="mdi-lock"
-                      placeholder="请设置文章访问密码"
-                      :rules="[(v) => !!v || '密码不能为空']"
-                      type="password"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-                
-                <ArticleTextEdit
-                  ref="markdownEditor"
-                  idname="articleEditor"
-                  :height="500"
-                  placeholder="在这里编写你的文章内容..."
-                  @vditor-input="updateMarkdownContent"
-                />
+                <!-- 文章段落列表 -->
+                <article-segment
+                  v-for="(segment, index) in articleSegments"
+                  :key="index"
+                  :segment="segment"
+                  :index="index"
+                  :segments="articleSegments"
+                  :article-type-options="articleTypeOptions"
+                  @update-content="updateSegmentContent"
+                  @update-type="updateSegmentType"
+                  @remove-segment="removeSegment"
+                  :ref="`segment${index}`"
+                ></article-segment>
               </v-col>
             </v-row>
 
@@ -236,11 +224,11 @@
 </template>
 
 <script>
-import ArticleTextEdit from '@/components/vditor/ArticleTextEdit.vue'
+import ArticleSegment from '@/components/upload/ArticleSegment.vue'
 
 export default {
   components: {
-    ArticleTextEdit
+    ArticleSegment
   },
   data() {
     return {
@@ -254,6 +242,14 @@ export default {
         imageId: '',
         textList: []
       },
+      articleSegments: [
+        {
+          content: '',
+          type: 0, // 默认为普通文章
+          password: '', // 加密文章密码
+          sort: 0 // 排序值从0开始
+        }
+      ],
       markdownContent: '',
       articleType: 0, // 默认为普通文章
       articlePassword: '', // 加密文章密码
@@ -295,7 +291,8 @@ export default {
         this.article.title &&
         this.article.tag.length > 0 &&
         this.article.category !== -1 &&
-        this.markdownContent.trim() !== ''
+        this.articleSegments.every(segment => segment.content && segment.content.trim() !== '') &&
+        !this.articleSegments.some(segment => segment.type === 2 && !segment.password)
       )
     },
   },
@@ -309,8 +306,50 @@ export default {
     }
   },
   methods: {
+    // 添加新段落
+    addNewSegment() {
+      if (this.articleSegments.length >= 3) {
+        this.showErrorMessage('最多只能添加3个段落')
+        return
+      }
+      
+      // 找出当前最大的sort值
+      const maxSort = Math.max(...this.articleSegments.map(segment => segment.sort))
+      
+      this.articleSegments.push({
+        content: '',
+        type: 0,
+        password: '',
+        sort: maxSort + 1 // 使用最大sort值+1，确保递增
+      })
+    },
+    
+    // 更新段落内容
+    updateSegmentContent(index, content) {
+      this.articleSegments[index].content = content
+    },
+    
+    // 更新段落类型
+    updateSegmentType(index, type) {
+      this.articleSegments[index].type = type
+      // 如果不是加密文章，清空密码
+      if (type !== 2) {
+        this.articleSegments[index].password = ''
+      }
+    },
+    
+    // 删除段落
+    removeSegment(index) {
+      this.articleSegments.splice(index, 1)
+      // 更新排序值
+      this.articleSegments.forEach((segment, idx) => {
+        segment.sort = idx
+      })
+    },
+    
+    // 修改编辑文章方法
     editArticle() {
-      this.httpGet(`/article/edit/${this.editCode}`, (json) => {
+      this.httpGet(`/article/text/${this.editCode}`, (json) => {
         if (json.data != null) {
           // 回显数据
           const editData = json.data
@@ -343,19 +382,24 @@ export default {
 
           // 加载文章内容
           if (editData.textList && editData.textList.length > 0) {
-            // 设置文章类型和密码
-            if (editData.textList[0].type !== undefined) {
-              this.articleType = editData.textList[0].type
-              if (this.articleType === 2 && editData.textList[0].password) {
-                this.articlePassword = editData.textList[0].password
-              }
-            }
+            // 清空默认段落
+            this.articleSegments = []
+            
+            // 添加所有段落
+            editData.textList.forEach((item, index) => {
+              this.articleSegments.push({
+                content: item.content,
+                type: item.type !== undefined ? item.type : 0,
+                password: item.password || '',
+                sort: item.sort !== undefined ? item.sort : index
+              })
+            })
             
             // 设置Markdown编辑器内容
             this.$nextTick(() => {
-              const content = editData.textList.map(item => item.content).join('\n\n')
-              this.$refs.markdownEditor.setTextValue(content)
-              this.markdownContent = content
+              this.articleSegments.forEach((segment, index) => {
+                this.$refs[`segment${index}`][0].setTextValue(segment.content)
+              })
             })
           }
 
@@ -366,42 +410,44 @@ export default {
         }
       })
     },
-
-    updateMarkdownContent(content) {
-      this.markdownContent = content
-    },
-
+    
+    // 修改发布文章方法
     publishArticle() {
       if (
         this.article.title === '' ||
         this.article.tag.length === 0 ||
-        this.article.category === -1 ||
-        !this.markdownContent.trim()
+        this.article.category === -1
       ) {
-        this.showErrorMessage('标题、标签、分区和文章内容不能为空')
+        this.showErrorMessage('标题、标签和分区不能为空')
         return
       }
-      if (this.article.tag.length > 6) {
-        this.showErrorMessage('标签不能超过6个')
+      
+      // 检查是否有内容为空的段落
+      const emptySegments = this.articleSegments.filter(segment => !segment.content.trim())
+      if (emptySegments.length > 0) {
+        this.showErrorMessage('文章段落内容不能为空')
         return
       }
       
       // 检查加密文章是否设置了密码
-      if (this.articleType === 2 && !this.articlePassword) {
-        this.showErrorMessage('加密文章必须设置访问密码')
+      const encryptedSegmentsWithoutPassword = this.articleSegments.filter(
+        segment => segment.type === 2 && !segment.password
+      )
+      if (encryptedSegmentsWithoutPassword.length > 0) {
+        this.showErrorMessage('加密段落必须设置访问密码')
+        return
+      }
+      
+      if (this.article.tag.length > 6) {
+        this.showErrorMessage('标签不能超过6个')
         return
       }
 
       this.isSubmitting = true
 
       // 准备文章内容
-      this.article.textList = [{
-        content: this.markdownContent,
-        type: this.articleType, // 使用选择的文章类型
-        password: this.articleType === 2 ? this.articlePassword : '', // 仅加密文章设置密码
-        sort: 0  // 排序值
-      }]
-      console.log(this.article)
+      this.article.textList = this.articleSegments
+      
       // 根据是否为编辑模式选择不同的API端点
       const apiEndpoint =
         this.editCode && this.editCode !== -1 ? `/article/text/update` : '/article/text'

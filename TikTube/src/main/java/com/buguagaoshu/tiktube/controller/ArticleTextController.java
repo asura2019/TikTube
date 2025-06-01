@@ -58,6 +58,13 @@ public class ArticleTextController {
     }
 
 
+    @PostMapping("/article/text/update")
+    public ResponseDetails updateText(@Valid @RequestBody TextArticleDto textArticleDto,
+                                      HttpServletRequest request) {
+        return ResponseDetails.ok(articleTextService.updateText(textArticleDto, request));
+    }
+
+
     @PostMapping("/article/text")
     public ResponseDetails saveText(@Valid @RequestBody TextArticleDto textArticleDto,
                                     HttpServletRequest request) {

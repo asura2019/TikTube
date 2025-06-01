@@ -196,10 +196,12 @@
     <v-dialog v-model="dialog" max-width="800px" persistent>
       <v-card>
         <v-card-title class="text-h5 bg-primary text-white">
-          <v-icon class="mr-2">{{ isEdit ? 'mdi-pencil' : 'mdi-plus-circle' }}</v-icon>
-          {{ isEdit ? '编辑广告公告' : '新增广告公告' }}
-          <v-spacer></v-spacer>
-          <v-btn icon="mdi-close" variant="text" color="white" @click="closeDialog"></v-btn>
+          <v-row class="mt-1 mb-1">
+            <v-icon class="mr-2">{{ isEdit ? 'mdi-pencil' : 'mdi-plus-circle' }}</v-icon>
+            {{ isEdit ? '编辑广告公告' : '新增广告公告' }}
+            <v-spacer></v-spacer>
+            <v-btn icon="mdi-close" variant="text" color="white" @click="closeDialog"></v-btn>
+          </v-row>
         </v-card-title>
         <v-card-text class="pt-4">
           <v-form ref="form" v-model="valid">

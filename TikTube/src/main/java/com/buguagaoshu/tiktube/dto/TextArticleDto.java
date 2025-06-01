@@ -39,6 +39,7 @@ public class TextArticleDto {
     @NotNull(message = "至少要有一个标签")
     private List<String> tag;
 
+    @Size(max = 3)
     @NotNull(message = "正文不能为空")
     private List<ArticleTextEntity> textList;
 }

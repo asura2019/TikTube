@@ -32,12 +32,14 @@
       >
         <template #[`item.imgUrl`]="{ item }">
           <v-img
+            v-if="item.type == 0"
             :src="item.imgUrl"
             height="120px"
             width="213px"
             class="rounded-lg elevation-1 my-2 mx-auto"
             :aspect-ratio="16 / 9"
           />
+          <span v-text="item.describes" v-if="item.type == 2"> </span>
         </template>
 
         <template #[`item.title`]="{ item }">
@@ -113,7 +115,7 @@
             <v-tooltip location="top" text="预览">
               <template #activator="{ props }">
                 <v-btn
-                  v-if="item.type==0"
+                  v-if="item.type == 0"
                   v-bind="props"
                   icon
                   size="small"
@@ -125,7 +127,7 @@
                   <v-icon>mdi-eye</v-icon>
                 </v-btn>
                 <v-btn
-                  v-if="item.type==2"
+                  v-if="item.type == 2"
                   v-bind="props"
                   icon
                   size="small"
@@ -230,14 +232,14 @@ export default {
       categoryMap: {},
       headers: [
         {
-          title: '封面',
+          title: '封面/简介',
           align: 'center',
           key: 'imgUrl',
           width: '220px',
           sortable: false,
         },
         {
-          title: '视频信息',
+          title: '稿件信息',
           align: 'start',
           key: 'title',
           sortable: false,
@@ -406,7 +408,11 @@ export default {
     },
     editItem(item) {
       // 跳转到编辑页面
-      this.$router.push(`/studio/upload?edit=${item.id}`)
+      if (item.type == 0) {
+        this.$router.push(`/studio/upload?show=0&edit=${item.id}`)
+      } else if (item.type == 2) {
+        this.$router.push(`/studio/upload?show=2&edit=${item.id}`)
+      }
     },
     confirmDelete(item) {
       this.selectedItem = item

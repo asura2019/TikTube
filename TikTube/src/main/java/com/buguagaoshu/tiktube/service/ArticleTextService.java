@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -141,7 +142,9 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
                 articleTextEntity.setPassword("");
             }
         }
-
+        // 对 articleTextByArticleId 进行排序，依据sort值，从小到大
+        articleTextByArticleId.sort(Comparator.comparing(ArticleTextEntity::getSort));
+        
         viewData.setText(articleTextByArticleId);
         // 添加标签
         try {
@@ -289,6 +292,97 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
     }
 
 
+
+    @Transactional(rollbackFor = Exception.class)
+    public ReturnCodeEnum updateText(TextArticleDto textArticleDto,
+                                     HttpServletRequest request) {
+        // 获取用户ID
+        long userId = JwtUtil.getUserId(request);
+
+        // 获取原始文章信息
+        ArticleEntity originalArticle = articleService.getById(textArticleDto.getId());
+        if (originalArticle == null) {
+            return ReturnCodeEnum.NOO_FOUND;
+        }
+
+        // 验证权限（只有作者或管理员可以修改）
+        if (!hasEditPermission(originalArticle, userId, request)) {
+            return ReturnCodeEnum.NO_POWER;
+        }
+
+        // 验证分类是否存在
+        CategoryEntity categoryEntity = categoryCache.getCategoryEntityMap().get(textArticleDto.getCategory());
+        if (categoryEntity == null) {
+            return ReturnCodeEnum.CATEGORY_NOT_FOUND;
+        }
+
+        // 更新文章基本信息
+        updateArticleEntity(originalArticle, textArticleDto, request);
+        articleService.updateById(originalArticle);
+
+        // 更新文章内容（不删除原有内容，直接更新）
+        updateArticleTextList(textArticleDto.getTextList(), originalArticle.getId(), userId);
+        return ReturnCodeEnum.SUCCESS;
+    }
+
+    /**
+     * 更新文章实体
+     */
+    private void updateArticleEntity(ArticleEntity article, TextArticleDto dto, HttpServletRequest request) {
+        // 更新基本信息
+        article.setTitle(dto.getTitle());
+        article.setDescribes(dto.getDescribe());
+        article.setCategory(dto.getCategory());
+        article.setUpdateTime(System.currentTimeMillis());
+
+        // 设置IP和UA信息
+        String ip = ipUtil.getIpAddr(request);
+        article.setUa(ipUtil.getUa(request));
+        article.setIp(ip);
+        article.setCity(ipUtil.getCity(ip));
+        
+        // 更新图片URL（如果提供）
+        if (dto.getImgUrl() != null && !dto.getImgUrl().isEmpty()) {
+            article.setImgUrl(dto.getImgUrl());
+        }
+        
+        // 设置审核状态
+        // 内容更新后需要重新审核
+        if (webSettingCache.getWebConfigData().getOpenExamine()) {
+            article.setExamineStatus(ExamineTypeEnum.PENDING_REVIEW.getCode());
+        } else {
+            article.setExamineStatus(ExamineTypeEnum.SUCCESS.getCode());
+        }
+
+        // 设置标签
+        try {
+            article.setTag(OBJECT_MAPPER.writeValueAsString(dto.getTag()));
+        } catch (JsonProcessingException e) {
+            log.warn(e.getMessage());
+        }
+    }
+
+    /**
+     * 检查是否有编辑权限
+     */
+    private boolean hasEditPermission(ArticleEntity article, long userId, HttpServletRequest request) {
+        // 作者可以修改自己的文章
+        if (article.getUserId().equals(userId)) {
+            return true;
+        }
+
+        // 管理员可以修改所有文章
+        try {
+            if (RoleTypeEnum.ADMIN.getRole().equals(JwtUtil.getRole(request))) {
+                return true;
+            }
+        } catch (Exception ignored) {
+        }
+
+        return false;
+    }
+
+
     /**
      * 保存文章内容列表
      */
@@ -322,6 +416,79 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
         if (!linkList.isEmpty()) {
             analyzeAndUpdateFileReferences(linkList, userId, articleId);
         }
+    }
+
+    /**
+     * 更新文章内容列表
+     */
+    private void updateArticleTextList(List<ArticleTextEntity> textList, Long articleId, Long userId) {
+        long currentTime = System.currentTimeMillis();
+        
+        // 获取原有的文章内容
+        QueryWrapper<ArticleTextEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("article_id", articleId);
+        List<ArticleTextEntity> existingTextList = this.list(queryWrapper);
+        
+        // 用来收集链接
+        List<String> linkList = new ArrayList<>();
+        
+        // 处理新的文章内容
+        for (int i = 0; i < textList.size(); i++) {
+            ArticleTextEntity text = textList.get(i);
+            text.setArticleId(articleId);
+            text.setUserId(userId);
+            text.setUpdateTime(currentTime);
+            text.setStatus(ArticleStatusEnum.NORMAL.getCode()); // 设置状态为正常
+            text.setSort(i); // 设置排序
+            
+            // 提取链接
+            List<String> strings = MarkdownUtils.extractLinks(text.getContent());
+            linkList.addAll(strings);
+            
+            // 如果没有设置类型，默认为普通文章
+            if (text.getType() == null) {
+                text.setType(TypeCode.ARTICLE_TEXT_NORMAL);
+            }
+        }
+        
+        // 如果原有内容为空，直接保存新内容
+        if (existingTextList.isEmpty()) {
+            for (ArticleTextEntity text : textList) {
+                text.setCreateTime(currentTime);
+            }
+            this.saveBatch(textList);
+        } else {
+            // 删除多余的旧内容
+            if (existingTextList.size() > textList.size()) {
+                List<Long> idsToRemove = new ArrayList<>();
+                for (int i = textList.size(); i < existingTextList.size(); i++) {
+                    idsToRemove.add(existingTextList.get(i).getId());
+                }
+                if (!idsToRemove.isEmpty()) {
+                    this.removeByIds(idsToRemove);
+                }
+            }
+            
+            // 更新或新增内容
+            for (int i = 0; i < textList.size(); i++) {
+                ArticleTextEntity newText = textList.get(i);
+                
+                // 如果索引在现有列表范围内，更新现有内容
+                if (i < existingTextList.size()) {
+                    ArticleTextEntity existingText = existingTextList.get(i);
+                    newText.setId(existingText.getId());
+                    newText.setCreateTime(existingText.getCreateTime());
+                    this.updateById(newText);
+                } else {
+                    // 否则添加新内容
+                    newText.setCreateTime(currentTime);
+                    this.save(newText);
+                }
+            }
+        }
+        
+        // 分析链接内容并更新文件引用
+        analyzeAndUpdateFileReferences(linkList, userId, articleId);
     }
 
     /**

@@ -110,39 +110,50 @@
             <v-card-title>文章内容</v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <!-- 根据文本类型显示不同内容 -->
-              <div v-if="textContent && (textContent.type === 0 || textContent.content)">
-                <ShowMarkdown :markdown="textContent.content" :speech="true" :anchor="1" />
-              </div>
-              <div v-else-if="textContent && textContent.type === 1" class="text-center py-4">
-                <v-icon size="large" color="warning" class="mb-2">mdi-comment-alert</v-icon>
-                <p class="text-h6">回复后可见</p>
-                <p class="text-body-2 text-grey">评论本文章后即可查看全部内容</p>
-              </div>
-              <div v-else-if="textContent && textContent.type === 2" class="text-center py-4">
-                <v-icon size="large" color="warning" class="mb-2">mdi-lock</v-icon>
-                <p class="text-h6">密码保护</p>
-                <p class="text-body-2 text-grey mb-4">此内容已被作者加密，请输入密码查看</p>
+              <!-- 循环展示所有段落内容 -->
+              <div v-for="(segment, index) in textData.text" :key="index" class="mb-6">
+                <!-- 如果有多个段落，显示段落标题 -->
+                <!-- <div v-if="textData.text.length > 1" class="text-subtitle-1 font-weight-medium mb-2">
+                  第 {{ index + 1 }} 段
+                </div> -->
+                
+                <!-- 根据文本类型显示不同内容 -->
+                <div v-if="segment.type === 0 || segment.content">
+                  <ShowMarkdown :markdown="segment.content" :speech="true" :anchor="index + 1" />
+                </div>
+                <div v-else-if="segment.type === 1" class="text-center py-4">
+                  <v-icon size="large" color="warning" class="mb-2">mdi-comment-alert</v-icon>
+                  <p class="text-h6">回复后可见</p>
+                  <p class="text-body-2 text-grey">评论本文章后即可查看全部内容</p>
+                </div>
+                <div v-else-if="segment.type === 2" class="text-center py-4">
+                  <v-icon size="large" color="warning" class="mb-2">mdi-lock</v-icon>
+                  <p class="text-h6">密码保护</p>
+                  <p class="text-body-2 text-grey mb-4">此内容已被作者加密，请输入密码查看</p>
 
-                <v-form @submit.prevent="checkPassword">
-                  <v-row justify="center">
-                    <v-col cols="12" sm="8" md="6">
-                      <v-text-field
-                        v-model="password"
-                        label="请输入密码"
-                        variant="outlined"
-                        :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-                        :type="showPassword ? 'text' : 'password'"
-                        @click:append-inner="showPassword = !showPassword"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-btn color="primary" type="submit" class="mt-2">确认</v-btn>
-                </v-form>
-              </div>
-              <div v-else class="text-center py-4">
-                <v-icon size="large" color="error" class="mb-2">mdi-alert-circle</v-icon>
-                <p class="text-body-1">内容不可用</p>
+                  <v-form @submit.prevent="checkPassword(segment, index)">
+                    <v-row justify="center">
+                      <v-col cols="12" sm="8" md="6">
+                        <v-text-field
+                          v-model="passwordInputs[index]"
+                          label="请输入密码"
+                          variant="outlined"
+                          :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                          :type="showPassword ? 'text' : 'password'"
+                          @click:append-inner="showPassword = !showPassword"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-btn color="primary" type="submit" class="mt-2">确认</v-btn>
+                  </v-form>
+                </div>
+                <div v-else class="text-center py-4">
+                  <v-icon size="large" color="error" class="mb-2">mdi-alert-circle</v-icon>
+                  <p class="text-body-1">内容不可用</p>
+                </div>
+                
+                <!-- 如果有多个段落且不是最后一个，添加分隔线 -->
+                <v-divider v-if="textData.text.length > 1 && index < textData.text.length - 1" class="my-4"></v-divider>
               </div>
             </v-card-text>
           </v-card>
@@ -258,7 +269,8 @@ export default {
       TimeUtil,
       id: 0,
       textData: null,
-      textContent: null,
+      textContent: null,  // 保留这个变量以兼容现有代码
+      passwordInputs: [], // 存储每个段落的密码输入
       windowSize: {},
       colsWidth: 12,
       isLiked: false,
@@ -297,7 +309,10 @@ export default {
       this.httpGet(`/article/text/${this.id}`, (json) => {
         if (json.status === 200 && json.data.isShow) {
           this.textData = json.data
+          // 保留textContent以兼容现有代码
           this.textContent = this.textData.text.length > 0 ? this.textData.text[0] : null
+          // 初始化密码输入数组
+          this.passwordInputs = new Array(this.textData.text.length).fill('')
           document.title = json.data.title
           // 假设数据中包含点赞和点踩数量，如果没有则使用默认值
           this.likeCount = json.data.likeCount || 0
@@ -313,25 +328,25 @@ export default {
       })
     },
     // 检查密码
-    checkPassword() {
-      if (!this.password) {
+    checkPassword(segment, index) {
+      if (!this.passwordInputs[index]) {
         this.showMessage('请输入密码', 'warning')
         return
       }
 
       // 准备发送到服务器的数据
       const passwordData = {
-        ...this.textContent,
-        password: this.password,
+        ...segment,
+        password: this.passwordInputs[index],
       }
 
       // 发送密码验证请求
       this.httpPost('/article/text/password', passwordData, (json) => {
         if (json.status === 200 && json.data) {
           // 密码正确，服务器返回了包含content的完整内容
-          this.textContent = json.data
+          this.textData.text[index] = json.data
           // 更改类型为0以显示内容
-          this.textContent.type = 0
+          this.textData.text[index].type = 0
           this.showMessage('密码正确，已显示内容', 'success')
         } else {
           // 密码错误或请求失败

@@ -44,11 +44,13 @@
         >
           <template #[`item.imgUrl`]="{ item }">
             <v-img
+              v-if="item.type == 0"
               :src="item.imgUrl"
               max-height="120px"
               max-width="213px"
               class="rounded-lg elevation-1 my-2"
             />
+            <span v-text="item.describes" v-if="item.type == 2"> </span>
           </template>
 
           <template #[`item.info`]="{ item }">
@@ -336,7 +338,7 @@ export default {
       categoryList: {},
       categoryMap: {},
       headers: [
-        { title: '封面', key: 'imgUrl', align: 'center', sortable: false, width: '220px' },
+        { title: '封面/简介', key: 'imgUrl', align: 'center', sortable: false, width: '220px' },
         { title: '稿件信息', key: 'info', align: 'start', sortable: false },
         { title: '用户', key: 'userId', align: 'center', sortable: false },
         { title: '分区', key: 'category', align: 'center', sortable: false },

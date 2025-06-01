@@ -223,7 +223,7 @@ export default {
       videoList: [],
       headers: [
         {
-          title: '视频ID',
+          title: '稿件ID',
           align: 'start',
           sortable: false,
           key: 'id',

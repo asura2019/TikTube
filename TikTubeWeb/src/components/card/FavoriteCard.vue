@@ -3,13 +3,13 @@
     <v-row no-gutters>
       <!-- 左侧区域 -->
       <v-col cols="12">
-        <template v-if="video.type == 2">
+        <template v-if="video && video.type == 2">
           <!-- 文本描述模式 -->
           <div class="text-description text-body-2 text-medium-emphasis pa-4">
             <span class="description-text">{{ video.describes }}</span>
           </div>
         </template>
-        <template v-else-if="video.type == 0">
+        <template v-else-if="video && video.type == 0">
           <!-- 视频封面模式 -->
           <div class="video-thumbnail position-relative">
             <v-img :src="video.imgUrl" :aspect-ratio="16 / 9" class="rounded-lg">
@@ -188,7 +188,7 @@ export default {
 
 .text-truncate-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
