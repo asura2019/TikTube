@@ -52,6 +52,8 @@
         :ref="`markdownEditor${index}`"
         :idname="`articleEditor${index}`"
         :height="400"
+        :uploadurl="`/api/upload/article`"
+        :markdown="segment.content"
         :placeholder="`在这里编写段落${index + 1}的内容...`"
         @vditor-input="updateContent"
       />
@@ -84,6 +86,8 @@ export default {
       type: Array,
       required: true
     }
+  },
+  created() {
   },
   methods: {
     updateContent(content) {

@@ -2,7 +2,13 @@
   <!-- padding-left: 10px; padding-right: 10px; 100vh style="width: 100vh"-->
   <div class="video-card rounded-lg">
     <router-link :to="`/video/${videoInfo.id}`">
-      <v-img :alt="videoInfo.title" :src="videoInfo.imgUrl" :aspect-ratio="16 / 9" class="rounded" height="100%">
+      <v-img
+        :alt="videoInfo.title"
+        :src="videoInfo.imgUrl"
+        :aspect-ratio="16 / 9"
+        class="rounded"
+        height="100%"
+      >
         <div class="d-flex fill-height align-end">
           <v-chip
             style="background-color: rgba(0, 0, 0, 50%)"
@@ -32,14 +38,10 @@
       </v-col>
       <v-col>
         <div class="video-title">
-          <v-tooltip
-            :text="videoInfo.title"
-            location="top"
-            open-delay="500"
-          >
+          <v-tooltip :text="videoInfo.title" location="top" open-delay="500">
             <template v-slot:activator="{ props }">
               <router-link :to="`/video/${videoInfo.id}`" class="text-decoration-none">
-                <span 
+                <span
                   v-bind="props"
                   class="text-subtitle-1 font-weight-medium text-black title-text"
                 >
@@ -73,14 +75,14 @@
           <span class="mx-1">•</span>
           <span v-text="TimeUtil.timeToNowStrning(videoInfo.createTime)" />
           <v-chip
-              v-if="videoInfo.pixelsNumber >= 2073600"
-              class="ml-2"
-              color="orange"
-              size="x-small"
-              text-color="white"
-            >
-              {{ StringUtils.clarityDisplay(videoInfo.pixelsNumber) }}
-            </v-chip>
+            v-if="videoInfo.pixelsNumber >= 2073600"
+            class="ml-2"
+            color="orange"
+            size="x-small"
+            text-color="white"
+          >
+            {{ StringUtils.clarityDisplay(videoInfo.pixelsNumber) }}
+          </v-chip>
         </div>
       </v-col>
     </v-row>
@@ -150,17 +152,18 @@ export default {
 }
 
 .title-text {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+  /* 约两行文字的高度 */
   overflow: hidden;
-  word-break: break-word;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  /* 限制最多显示2行 */
+  -webkit-box-orient: vertical;
   line-height: 1.2;
 }
 
 .video-meta {
-  height: 3.75em; /* 固定高度 */
+  height: 4.5em; /* 固定高度 */
   overflow: hidden;
   line-height: 1.4;
 }

@@ -142,21 +142,21 @@
         },
         // minHeight: this.minHeight,
         placeholder: this.placeholder, // '请自觉遵守互联网相关的政策法规，严禁发布色情、暴力、反动的言论。',
-        // upload: {
-        //   max: this.uploadsize,
-        //   withCredentials: true,
-        //   headers: {
-        //     'X-XSRF-TOKEN': this.$cookies.get('XSRF-TOKEN')
-        //   },
-        //   accept: 'image/*, .wav, .mp4, .zip, .rar, .7z, .docx, .dox, .ppt, .pptx, .xls, .xlsx, .pdf, .apk, .mp3, .txt',
-        //   url: this.uploadurl,
+        upload: {
+          max: this.uploadsize,
+          withCredentials: true,
+          headers: {
+            
+          },
+          accept: 'image/*, .wav, .mp4, .zip, .rar, .7z, .docx, .dox, .ppt, .pptx, .xls, .xlsx, .pdf, .apk, .mp3, .txt',
+          url: this.uploadurl,
   
-        //   filename(name) {
-        //     return name.replace(/[^(a-zA-Z0-9\u4e00-\u9fa5\.)]/g, '')
-        //       .replace(/[\?\\/:|<>\*\[\]\(\)\$%\{\}@~]/g, '')
-        //       .replace('/\\s/g', '')
-        //   }
-        // },
+          filename(name) {
+            return name.replace(/[^(a-zA-Z0-9\u4e00-\u9fa5\.)]/g, '')
+              .replace(/[\?\\/:|<>\*\[\]\(\)\$%\{\}@~]/g, '')
+              .replace('/\\s/g', '')
+          }
+        },
         after: () => {
           this.contentEditor.setValue(this.markdownStr)
           this.$emit('after', true)

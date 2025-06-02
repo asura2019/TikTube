@@ -40,9 +40,8 @@ public enum NotificationType {
         return "你发布的稿件《" +
                 title +
                 "》因为：" +
-                ExamineTypeEnum.getMsg(type) +
-                " 未通过审核，建议您：" +
-                message;
+                ExamineTypeEnum.getMsg(type) + "," + message +
+                " 未通过审核，建议您：修改后再发布。";
     }
 
 

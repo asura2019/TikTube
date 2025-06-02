@@ -2,7 +2,7 @@
   <v-card class="text-card rounded-lg elevation-1 h-100" variant="elevated">
     <!-- 卡片内容 -->
     <v-row class="text-info pa-3" no-gutters>
-      <v-col cols="auto" class="mr-3">
+      <v-col v-if="textInfo.avatarUrl != null" cols="auto" class="mr-3">
         <router-link :to="`/user/${textInfo.userId}`">
           <v-avatar size="48" class="elevation-1">
             <v-img :alt="textInfo.username" :src="textInfo.avatarUrl" cover />

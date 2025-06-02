@@ -66,8 +66,8 @@ public class FileController {
         this.fileRepositoryInOSS = fileRepositoryInOSS;
     }
 
-    //@PostMapping("/api/upload/article")
-    //@ResponseBody
+    @PostMapping("/api/upload/article")
+    @ResponseBody
     public VditorFiles save(@RequestParam(value = "file[]") MultipartFile[] files,
                             HttpServletRequest request) {
         long userId = JwtUtil.getUserId(request);

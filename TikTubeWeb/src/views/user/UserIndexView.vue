@@ -110,7 +110,7 @@
         </v-col>
       </v-row>
       <v-tabs>
-        <v-tab @click="setType(0)">首页</v-tab>
+        <v-tab @click="setType(-1)">首页</v-tab>
         <v-tab @click="setType(0)">视频</v-tab>
         <v-tab @click="setType(2)">讨论</v-tab>
         <v-tab @click="setType(4)">简介</v-tab>
@@ -141,7 +141,8 @@
       </div>
       <v-row v-if="type != 4">
         <v-col v-for="item in videoList" :key="item.id" cols="12">
-          <VideoListView :video="item" />
+          <VideoListView v-if="item.type==0" :video="item" />
+          <TextInfoCard v-if="item.type==2" :text="item" />
         </v-col>
       </v-row>
       <v-row justify="center" style="padding-top: 12px; padding-bottom: 12px">
@@ -171,10 +172,13 @@ import TimeUtil from '@/utils/time-util.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useWebInfoStore } from '@/stores/webInfoStore'
 import VideoListView from '@/components/player/VideoList.vue'
+import TextInfoCard from '@/components/card/TextInfoCard.vue'
+
 export default {
   name: 'UserHome',
   components: {
     VideoListView,
+    TextInfoCard
   },
   data() {
     return {
@@ -187,7 +191,7 @@ export default {
       size: 20,
       length: 1,
       totalCount: 0,
-      type: 0,
+      type: -1,
       loginUser: useUserStore().userData,
       isFollowed: false, // 是否已关注
       snackbar: {

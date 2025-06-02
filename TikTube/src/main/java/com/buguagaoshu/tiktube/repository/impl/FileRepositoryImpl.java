@@ -33,6 +33,8 @@ import java.util.Map;
 @Repository
 @Slf4j
 public class FileRepositoryImpl implements FileRepository {
+    // 定义最大文件大小为20MB（字节单位）
+    private static final long MAX_SIZE = 20 * 1024 * 1024; // 20MB
 
     private final Path location;
     private final FileTableService fileTableService;
@@ -55,6 +57,20 @@ public class FileRepositoryImpl implements FileRepository {
         VditorFiles vditorFiles = new VditorFiles();
         Map<String, Object> succMap = new HashMap<>(files.length);
         List<String> errFiles = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            if (file.getSize() > MAX_SIZE) {
+                errFiles.add(file.getOriginalFilename());
+                Map<String, Object> data = new HashMap<>(2);
+                vditorFiles.setCode(0);
+                vditorFiles.setMsg("上传失败，文件大小超过 20M");
+                data.put("succMap", succMap);
+                data.put("errFiles", errFiles);
+                vditorFiles.setData(data);
+                return vditorFiles;
+            }
+        }
+
         
         for (MultipartFile file : files) {
             if (file.isEmpty()) {
@@ -103,11 +119,10 @@ public class FileRepositoryImpl implements FileRepository {
                         file.getSize(), 
                         file.getOriginalFilename(), 
                         userId, 
-                        FileTypeEnum.getFileType(suffix).getCode(),
+                        FileTypeEnum.ARTICLE.getCode(),
                         WebConfig.FILE_SAVE_LOCATION
                 );
-                //fileTableEntity.setFileUrl(fileUrl);
-                succMap.put(file.getOriginalFilename(), fileUrl);
+                succMap.put(file.getOriginalFilename(), fileTableEntity.getFileUrl());
                 fileTableService.save(fileTableEntity);
             } catch (Exception e) {
                 log.error("文件保存失败: {}", e.getMessage());

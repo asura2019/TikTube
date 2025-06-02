@@ -243,12 +243,7 @@ export default {
         textList: []
       },
       articleSegments: [
-        {
-          content: '',
-          type: 0, // 默认为普通文章
-          password: '', // 加密文章密码
-          sort: 0 // 排序值从0开始
-        }
+        
       ],
       markdownContent: '',
       articleType: 0, // 默认为普通文章
@@ -303,6 +298,15 @@ export default {
 
     if (this.editCode && this.editCode !== -1) {
       this.editArticle()
+    } else {
+      this.articleSegments.push(
+        {
+          content: '',
+          type: 0, // 默认为普通文章
+          password: '', // 加密文章密码
+          sort: 0 // 排序值从0开始
+        }
+      )
     }
   },
   methods: {
@@ -381,12 +385,12 @@ export default {
           }
 
           // 加载文章内容
-          if (editData.textList && editData.textList.length > 0) {
+          if (editData.text && editData.text.length > 0) {
             // 清空默认段落
             this.articleSegments = []
             
             // 添加所有段落
-            editData.textList.forEach((item, index) => {
+            editData.text.forEach((item, index) => {
               this.articleSegments.push({
                 content: item.content,
                 type: item.type !== undefined ? item.type : 0,
@@ -396,11 +400,11 @@ export default {
             })
             
             // 设置Markdown编辑器内容
-            this.$nextTick(() => {
-              this.articleSegments.forEach((segment, index) => {
-                this.$refs[`segment${index}`][0].setTextValue(segment.content)
-              })
-            })
+            // this.$nextTick(() => {
+            //   this.articleSegments.forEach((segment, index) => {
+            //     this.$refs[`segment${index}`][0].setTextValue(segment.content)
+            //   })
+            // })
           }
 
           this.showSuccessMessage('文章数据加载成功，可以进行编辑')

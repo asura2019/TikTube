@@ -414,7 +414,7 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
 
         // 分析链接内容
         if (!linkList.isEmpty()) {
-            analyzeAndUpdateFileReferences(linkList, userId, articleId);
+            analyzeAndUpdateFileReferencesForUpdate(linkList, userId, articleId);
         }
     }
 
@@ -487,52 +487,66 @@ public class ArticleTextService extends ServiceImpl<ArticleTextDao, ArticleTextE
             }
         }
         
-        // 分析链接内容并更新文件引用
-        analyzeAndUpdateFileReferences(linkList, userId, articleId);
+        // 分析链接内容并更新文件引用（使用专门的更新方法）
+        analyzeAndUpdateFileReferencesForUpdate(linkList, userId, articleId);
     }
 
     /**
-     * 分析链接并更新文件引用状态
+     * 分析链接并更新文件引用状态（用于更新文章时）
      *
-     * @param linkList  链接列表
-     * @param userId    用户ID
-     * @param articleId 文章ID
+     * @param newLinkList 新的链接列表
+     * @param userId      用户ID
+     * @param articleId   文章ID
      */
-    private void analyzeAndUpdateFileReferences(List<String> linkList, Long userId, Long articleId) {
-        // 先从所有链接中提取文件名
-        List<String> fileNames = new ArrayList<>();
-        for (String link : linkList) {
+    private void analyzeAndUpdateFileReferencesForUpdate(List<String> newLinkList, Long userId, Long articleId) {
+        // 1. 获取文章当前关联的所有文件
+        QueryWrapper<FileTableEntity> currentFilesWrapper = new QueryWrapper<>();
+        currentFilesWrapper.eq("article_id", articleId);
+        currentFilesWrapper.eq("upload_user_id", userId);
+        currentFilesWrapper.eq("status", FileStatusEnum.USED.getCode());
+        List<FileTableEntity> currentFiles = fileTableService.list(currentFilesWrapper);
+        
+        // 2. 从新链接中提取文件名
+        List<String> newFileNames = new ArrayList<>();
+        for (String link : newLinkList) {
             String fileName = extractFileNameFromLink(link);
             if (fileName != null && !fileName.isEmpty()) {
-                fileNames.add(fileName);
+                newFileNames.add(fileName);
             }
         }
-
-        // 如果没有有效的文件名，直接返回
-        if (fileNames.isEmpty()) {
-            return;
-        }
-
-        // 使用IN查询一次性获取所有匹配的文件
-        QueryWrapper<FileTableEntity> wrapper =
-                new QueryWrapper<>();
-        wrapper.in("file_new_name", fileNames);
-        // 只查询属于当前用户的文件
-        wrapper.eq("upload_user_id", userId);
-        // 只查询未使用的文件
-        wrapper.ne("status", FileStatusEnum.USED.getCode());
-
-        List<FileTableEntity> files = fileTableService.list(wrapper);
-
-        // 更新文件状态
-        if (!files.isEmpty()) {
-            for (FileTableEntity file : files) {
-                file.setStatus(FileStatusEnum.USED.getCode());
-                file.setArticleId(articleId); // 关联到当前文章
+        
+        // 3. 找出需要取消引用的文件（在当前文件中但不在新文件名列表中）
+        List<FileTableEntity> filesToUnreference = new ArrayList<>();
+        for (FileTableEntity file : currentFiles) {
+            if (!newFileNames.contains(file.getFileNewName())) {
+                file.setStatus(FileStatusEnum.NOT_USE_FILE.getCode());
+                file.setArticleId(null); // 取消与文章的关联
+                filesToUnreference.add(file);
             }
-
-            // 批量更新文件状态
-            fileTableService.updateBatchById(files);
+        }
+        
+        // 4. 批量更新取消引用的文件
+        if (!filesToUnreference.isEmpty()) {
+            fileTableService.updateBatchById(filesToUnreference);
+        }
+        
+        // 5. 找出需要新增引用的文件（在新文件名列表中但当前未被引用）
+        if (!newFileNames.isEmpty()) {
+            // 获取所有匹配的未使用文件
+            QueryWrapper<FileTableEntity> newFilesWrapper = new QueryWrapper<>();
+            newFilesWrapper.in("file_new_name", newFileNames);
+            newFilesWrapper.eq("upload_user_id", userId);
+            newFilesWrapper.ne("status", FileStatusEnum.USED.getCode());
+            List<FileTableEntity> filesToReference = fileTableService.list(newFilesWrapper);
+            
+            // 更新这些文件的状态为已使用
+            if (!filesToReference.isEmpty()) {
+                for (FileTableEntity file : filesToReference) {
+                    file.setStatus(FileStatusEnum.USED.getCode());
+                    file.setArticleId(articleId);
+                }
+                fileTableService.updateBatchById(filesToReference);
+            }
         }
     }
 

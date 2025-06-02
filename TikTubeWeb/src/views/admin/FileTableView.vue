@@ -206,15 +206,17 @@
     <v-dialog v-model="previewDialog" max-width="800px">
       <v-card>
         <v-card-title class="text-h5 bg-primary text-white">
-          <v-icon class="mr-2">mdi-eye</v-icon>
-          文件预览
-          <v-spacer></v-spacer>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            color="white"
-            @click="previewDialog = false"
-          ></v-btn>
+          <v-row class="mt-1 mb-1">
+            <v-icon class="mr-2">mdi-eye</v-icon>
+            文件预览
+            <v-spacer></v-spacer>
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              color="white"
+              @click="previewDialog = false"
+            ></v-btn>
+          </v-row>
         </v-card-title>
         <v-card-text class="pa-4">
           <div v-if="selectedFile" class="text-center">
@@ -323,7 +325,7 @@
     <v-dialog v-model="editDialog" max-width="600px">
       <v-card>
         <v-card-title class="text-h5 bg-primary text-white">
-          <v-row class="mt-2 mb-2">
+          <v-row class="mt-1 mb-1">
             <v-icon class="mr-2">mdi-pencil</v-icon>
             修改文件信息
             <v-spacer></v-spacer>
@@ -409,15 +411,17 @@
     <v-dialog v-model="deleteDialog" max-width="500px">
       <v-card>
         <v-card-title class="text-h5 bg-error text-white">
-          <v-icon class="mr-2">mdi-delete</v-icon>
-          确认删除
-          <v-spacer></v-spacer>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            color="white"
-            @click="deleteDialog = false"
-          ></v-btn>
+          <v-row class="mt-1 mb-1">
+            <v-icon class="mr-2">mdi-delete</v-icon>
+            确认删除
+            <v-spacer></v-spacer>
+            <v-btn
+              icon="mdi-close"
+              variant="text"
+              color="white"
+              @click="deleteDialog = false"
+            ></v-btn>
+          </v-row>
         </v-card-title>
         <v-card-text class="pa-4">
           <v-alert type="warning" variant="tonal" border="start" density="comfortable" class="mb-3">
