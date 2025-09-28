@@ -7,6 +7,7 @@ import com.buguagaoshu.tiktube.entity.OSSConfigEntity;
 import com.buguagaoshu.tiktube.service.impl.OssConfigService;
 import io.minio.*;
 import io.minio.http.Method;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -28,34 +29,31 @@ import java.util.concurrent.TimeUnit;
 public class FileRepositoryInOSS {
     private final OssConfigService ossConfigService;
 
-    Map<Integer, MinioClient> minioClients = new HashMap<Integer, MinioClient>();
-
+    Map<Integer, MinioClient> minioClients = new HashMap<>();
     Map<Integer, OSSConfigEntity> configEntityMap = new HashMap<>();
 
     @Autowired
     public FileRepositoryInOSS(OssConfigService ossConfigService) {
         this.ossConfigService = ossConfigService;
-        // 初始化时更新客户端
+        // 不在构造函数里初始化客户端
+    }
+
+    @PostConstruct
+    public void init() {
         updateMinioClient();
     }
 
-    /**
-     * 当对象存储配置发生变化后，更新客户端
-     * 更新 Minio 客户端
-     * */
     public void updateMinioClient() {
         boolean flag = false;
-        // 获取所有对象存储配置
         List<OSSConfigEntity> ossConfigEntities = this.ossConfigService.listAllOssConfigs();
         if (ossConfigEntities == null || ossConfigEntities.isEmpty()) {
             WebConfig.FILE_SAVE_LOCATION = 0;
             return;
         }
-        // 创建客户端并保存
+
         minioClients.clear();
         for (OSSConfigEntity ossConfigEntity : ossConfigEntities) {
             configEntityMap.put(ossConfigEntity.getId(), ossConfigEntity);
-            // 创建 Minio S3 兼容客户端
             try {
                 if (ossConfigEntity.getStatus().equals(1)) {
                     WebConfig.FILE_SAVE_LOCATION = ossConfigEntity.getId();
@@ -64,30 +62,23 @@ public class FileRepositoryInOSS {
                 MinioClient.Builder builder = MinioClient.builder()
                         .endpoint(ossConfigEntity.getEndpoint())
                         .credentials(ossConfigEntity.getAccessKey(), ossConfigEntity.getSecretKey());
-                
-                // 设置区域（如果有）
+
                 if (ossConfigEntity.getRegion() != null && !ossConfigEntity.getRegion().isEmpty()) {
                     builder.region(ossConfigEntity.getRegion());
                 }
 
-                
                 MinioClient minioClient = builder.build();
 
-                //minioClient.traceOn(System.out);
-
-                // 设置路径访问风格
-                if (ossConfigEntity.getPathStyleAccess() != null) {
-                    if (ossConfigEntity.getPathStyleAccess().equals(1)) {
-                        minioClient.enableVirtualStyleEndpoint();
-                    }
+                if (ossConfigEntity.getPathStyleAccess() != null && ossConfigEntity.getPathStyleAccess().equals(1)) {
+                    minioClient.enableVirtualStyleEndpoint();
                 }
-                // 检查存储桶是否存在，不存在则创建
+
                 boolean bucketExists = minioClient.bucketExists(
                         BucketExistsArgs.builder()
                                 .bucket(ossConfigEntity.getBucketName())
                                 .build()
                 );
-                
+
                 if (!bucketExists && ossConfigEntity.getStatus() == 1) {
                     minioClient.makeBucket(
                             MakeBucketArgs.builder()
@@ -96,7 +87,7 @@ public class FileRepositoryInOSS {
                     );
                     log.info("创建存储桶成功: {}", ossConfigEntity.getBucketName());
                 }
-                
+
                 minioClients.put(ossConfigEntity.getId(), minioClient);
                 log.info("初始化对象存储客户端成功: {}", ossConfigEntity.getConfigName());
             } catch (Exception e) {

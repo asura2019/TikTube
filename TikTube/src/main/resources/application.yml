@@ -3,12 +3,12 @@ tiktube:
   # 默认 false
   is-the-proxy-configured: false
   # IP地址数据库
-  ip-db-path: C:\\data\\code\\Spring\\PornTube\\TikTube\\ip2region.xdb
+  ip-db-path: D:\\ip2region.xdb
   # 是否启用 redis 缓存，默认 false，开启后需在配置文件中增加 redis 配置项目
   open-redis: true
 
 server:
-  port: 8080
+  port: 8081
   http2:
     enabled: true
 
@@ -26,9 +26,9 @@ spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     # 192.168.43.128
-    url: jdbc:mysql://192.168.0.100:3306/tik_tube?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://118.31.69.52:3306/tik_tube?useUnicode=true&characterEncoding=UTF-8
     username: root
-    password: 123456
+    password: asd@1984521200
   servlet:
     multipart:
       enabled: true
@@ -36,9 +36,9 @@ spring:
       max-request-size: 1024000000MB
   data:
     redis:
-      host: 192.168.0.100
+      host: 118.31.69.52
       port: 6379
-      password: 123456
+      password: asd@1984521200
       # 连接超时时间
       timeout: 10000
       lettuce:
